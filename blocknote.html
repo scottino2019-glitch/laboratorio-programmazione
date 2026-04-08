@@ -20,8 +20,8 @@
         /* Barra del Titolo */
         .title-bar {
             background-color: #fff;
-            padding: 5px 15px;
-            font-size: 12px;
+            padding: 8px 15px;
+            font-size: 13px;
             color: #333;
             display: flex;
             align-items: center;
@@ -31,10 +31,15 @@
         #current-filename {
             font-weight: bold;
             cursor: pointer;
-            padding: 2px 5px;
+            padding: 2px 8px;
             border-radius: 3px;
             color: #0078d7;
-            text-decoration: underline;
+            background-color: #f0f7ff;
+            border: 1px solid #cce4f7;
+        }
+
+        #current-filename:hover {
+            background-color: #e5f3ff;
         }
 
         /* Barra dei Menu */
@@ -48,7 +53,7 @@
         }
 
         .menu-item {
-            padding: 6px 12px;
+            padding: 8px 12px;
             font-size: 13px;
             cursor: pointer;
             position: relative;
@@ -66,7 +71,7 @@
             background-color: #f2f2f2;
             border: 1px solid #ccc;
             box-shadow: 3px 3px 5px rgba(0,0,0,0.15);
-            min-width: 220px;
+            min-width: 240px;
         }
 
         .menu-item:hover .dropdown {
@@ -74,7 +79,7 @@
         }
 
         .dropdown-item {
-            padding: 6px 15px;
+            padding: 8px 15px;
             color: black;
             font-size: 13px;
             display: flex;
@@ -120,7 +125,7 @@
             resize: none;
             line-height: 1.6;
             color: #1a1a1a;
-            white-space: pre;
+            white-space: pre-wrap;
             overflow: auto;
         }
 
@@ -128,7 +133,7 @@
         #status-bar {
             background-color: #f0f0f0;
             border-top: 1px solid #ccc;
-            padding: 4px 20px;
+            padding: 6px 20px;
             display: flex;
             justify-content: flex-end;
             font-size: 12px;
@@ -141,7 +146,7 @@
             display: none;
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.4);
+            background: rgba(0,0,0,0.5);
             z-index: 200;
             justify-content: center;
             align-items: center;
@@ -149,43 +154,76 @@
 
         .modal {
             background: white;
-            width: 400px;
+            width: 450px;
             border: 1px solid #0078d7;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+            border-radius: 4px;
+            overflow: hidden;
         }
 
         .modal-header {
             background: #0078d7;
             color: white;
-            padding: 10px 15px;
+            padding: 12px 15px;
             display: flex;
             justify-content: space-between;
-            font-size: 14px;
+            font-size: 15px;
+            font-weight: bold;
         }
 
         .modal-body {
-            padding: 10px;
-            max-height: 300px;
+            padding: 0;
+            max-height: 350px;
             overflow-y: auto;
+            background-color: #f9f9f9;
         }
 
         .note-row {
-            padding: 10px;
+            padding: 15px;
             border-bottom: 1px solid #eee;
             display: flex;
             justify-content: space-between;
+            align-items: center;
             cursor: pointer;
+            background-color: white;
+            transition: background 0.2s;
         }
 
         .note-row:hover { background: #f0f7ff; }
-        .btn-del { color: red; font-weight: bold; cursor: pointer; padding: 0 5px; }
+        
+        .note-info {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            flex: 1;
+        }
+
+        .note-name { font-weight: 500; color: #333; }
+        .note-date { font-size: 11px; color: #888; }
+
+        .btn-delete-task {
+            background-color: #fff;
+            color: #d93025;
+            border: 1px solid #d93025;
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.2s;
+        }
+
+        .btn-delete-task:hover {
+            background-color: #d93025;
+            color: white;
+        }
     </style>
 </head>
 <body>
 
     <div class="title-bar">
-        <span id="current-filename" onclick="renameNote()">Senza titolo.txt</span>
-        <span style="margin-left: 5px;">- Blocco Note</span>
+        <span id="current-filename" title="Clicca per rinominare" onclick="renameNote()">Senza titolo.txt</span>
+        <span style="margin-left: 8px;">- Blocco Note</span>
     </div>
 
     <div class="menu-bar">
@@ -258,7 +296,7 @@
     <div id="note-manager" class="modal-overlay" onclick="closeModal()">
         <div class="modal" onclick="event.stopPropagation()">
             <div class="modal-header">
-                <span>Apri file salvato</span>
+                <span>Apri o Gestisci File</span>
                 <span style="cursor:pointer" onclick="closeModal()">✕</span>
             </div>
             <div id="note-list" class="modal-body"></div>
@@ -275,21 +313,28 @@
 
         let currentNoteId = null;
 
-        // Inizializzazione dati
+        // Inizializzazione
         window.onload = function() {
             const storage = getStorage();
-            const lastId = localStorage.getItem('last_id_v4');
-            if (lastId && storage[lastId]) loadNote(lastId);
-            else createNew();
+            const lastId = localStorage.getItem('notepad_v5_last_id');
+            if (lastId && storage[lastId]) {
+                loadNote(lastId);
+            } else {
+                createNew();
+            }
             updateStatus();
         };
 
         function getStorage() {
-            return JSON.parse(localStorage.getItem('notepad_v4_data') || '{}');
+            try {
+                return JSON.parse(localStorage.getItem('notepad_v5_data') || '{}');
+            } catch (e) {
+                return {};
+            }
         }
 
         function saveStorage(data) {
-            localStorage.setItem('notepad_v4_data', JSON.stringify(data));
+            localStorage.setItem('notepad_v5_data', JSON.stringify(data));
         }
 
         // Funzioni File
@@ -297,6 +342,7 @@
             const storage = getStorage();
             if (!currentNoteId) return;
             storage[currentNoteId].content = editor.value;
+            storage[currentNoteId].timestamp = Date.now();
             saveStorage(storage);
             updateStatus();
         }
@@ -305,12 +351,13 @@
             const storage = getStorage();
             currentNoteId = 'note_' + Date.now();
             const name = "Nota_" + (Object.keys(storage).length + 1) + ".txt";
-            storage[currentNoteId] = { id: currentNoteId, title: name, content: '' };
+            storage[currentNoteId] = { id: currentNoteId, title: name, content: '', timestamp: Date.now() };
             saveStorage(storage);
-            localStorage.setItem('last_id_v4', currentNoteId);
+            localStorage.setItem('notepad_v5_last_id', currentNoteId);
             editor.value = '';
             fileNameDisplay.innerText = name;
             editor.focus();
+            updateStatus();
         }
 
         function loadNote(id) {
@@ -319,25 +366,42 @@
                 currentNoteId = id;
                 editor.value = storage[id].content;
                 fileNameDisplay.innerText = storage[id].title;
-                localStorage.setItem('last_id_v4', id);
+                localStorage.setItem('notepad_v5_last_id', id);
                 closeModal();
+                editor.focus();
+                updateStatus();
             }
         }
 
-        function deleteNote(id) {
+        function deleteNote(id, event) {
+            event.stopPropagation();
             const storage = getStorage();
-            delete storage[id];
-            saveStorage(storage);
-            if (currentNoteId === id) createNew();
-            else renderList();
+            const noteName = storage[id] ? storage[id].title : "questa nota";
+            
+            if (confirm("Sei sicuro di voler eliminare \"" + noteName + "\"?")) {
+                delete storage[id];
+                saveStorage(storage);
+                
+                if (currentNoteId === id) {
+                    const remaining = Object.keys(storage);
+                    if (remaining.length > 0) {
+                        loadNote(remaining[0]);
+                    } else {
+                        createNew();
+                    }
+                } else {
+                    renderList();
+                }
+            }
         }
 
         function renameNote() {
-            const name = prompt("Rinomina file:", fileNameDisplay.innerText);
+            const name = prompt("Rinomina il file:", fileNameDisplay.innerText);
             if (name) {
                 const storage = getStorage();
-                storage[currentNoteId].title = name.endsWith('.txt') ? name : name + '.txt';
-                fileNameDisplay.innerText = storage[currentNoteId].title;
+                const newTitle = name.toLowerCase().endsWith('.txt') ? name : name + '.txt';
+                storage[currentNoteId].title = newTitle;
+                fileNameDisplay.innerText = newTitle;
                 saveStorage(storage);
             }
         }
@@ -354,16 +418,14 @@
                 editor.selectionStart = editor.selectionEnd = start;
                 saveCurrent();
             }
-            if (cmd === 'cut' || cmd === 'copy') {
-                document.execCommand(cmd);
-            }
+            if (cmd === 'cut' || cmd === 'copy') document.execCommand(cmd);
             if (cmd === 'paste') {
-                alert("Per incollare usa la scorciatoia Ctrl+V del browser.");
+                alert("Per incollare, usa la scorciatoia Ctrl+V (o Cmd+V).");
             }
         }
 
         function findText() {
-            const search = prompt("Trova testo:");
+            const search = prompt("Trova:");
             if (search) {
                 const text = editor.value;
                 const index = text.indexOf(search);
@@ -377,8 +439,7 @@
         }
 
         function insertDateTime() {
-            const now = new Date();
-            const dtString = now.toLocaleString();
+            const dtString = new Date().toLocaleString();
             const start = editor.selectionStart;
             const end = editor.selectionEnd;
             editor.value = editor.value.slice(0, start) + dtString + editor.value.slice(end);
@@ -386,39 +447,49 @@
             saveCurrent();
         }
 
-        // Formato e Visualizza
+        // Formato/Visualizza
         function changeFont(font) { editor.style.fontFamily = font; }
         function changeSize(size) { editor.style.fontSize = size; }
         function toggleWrap() {
-            editor.style.whiteSpace = editor.style.whiteSpace === 'pre' ? 'pre-wrap' : 'pre';
+            editor.style.whiteSpace = (editor.style.whiteSpace === 'pre') ? 'pre-wrap' : 'pre';
         }
         function toggleStatusBar() {
-            statusBar.style.display = statusBar.style.display === 'none' ? 'flex' : 'none';
+            statusBar.style.display = (statusBar.style.display === 'none') ? 'flex' : 'none';
         }
 
-        // Gestione Modali
+        // UI Gestore File
         function openManager() {
             manager.style.display = 'flex';
             renderList();
         }
-        function closeModal() { manager.style.display = 'none'; }
+        function closeModal() {
+            manager.style.display = 'none';
+        }
 
         function renderList() {
             const storage = getStorage();
-            const keys = Object.keys(storage).sort((a,b) => b.split('_')[1] - a.split('_')[1]);
+            const keys = Object.keys(storage).sort((a,b) => storage[b].timestamp - storage[a].timestamp);
+            
             if (keys.length === 0) {
-                noteList.innerHTML = '<p style="text-align:center; color:#888;">Nessuna nota salvata.</p>';
+                noteList.innerHTML = '<div style="padding:40px; text-align:center; color:#888;">Nessun file salvato.</div>';
                 return;
             }
-            noteList.innerHTML = keys.map(id => `
-                <div class="note-row" onclick="loadNote('${id}')">
-                    <span>${storage[id].title}</span>
-                    <span class="btn-del" onclick="event.stopPropagation(); deleteNote('${id}')">×</span>
-                </div>
-            `).join('');
+
+            noteList.innerHTML = keys.map(id => {
+                const dateStr = new Date(storage[id].timestamp).toLocaleString();
+                return `
+                    <div class="note-row" onclick="loadNote('${id}')">
+                        <div class="note-info">
+                            <span class="note-name">${storage[id].title}</span>
+                            <span class="note-date">Ultima modifica: ${dateStr}</span>
+                        </div>
+                        <button class="btn-delete-task" onclick="deleteNote('${id}', event)">ELIMINA</button>
+                    </div>
+                `;
+            }).join('');
         }
 
-        // Stato
+        // Aggiornamento Stato
         function updateStatus() {
             const text = editor.value;
             const pos = editor.selectionStart;
@@ -434,16 +505,20 @@
             a.href = URL.createObjectURL(blob);
             a.download = fileNameDisplay.innerText;
             a.click();
+            URL.revokeObjectURL(a.href);
         }
 
-        // Eventi e Scorciatoie
+        // Event Listener
         editor.addEventListener('input', saveCurrent);
         editor.onkeyup = updateStatus;
         editor.onclick = updateStatus;
 
         window.onkeydown = function(e) {
-            if (e.key === 'F5') { e.preventDefault(); insertDateTime(); }
-            if (e.ctrlKey) {
+            if (e.key === 'F5') {
+                e.preventDefault();
+                insertDateTime();
+            }
+            if (e.ctrlKey || e.metaKey) {
                 if (e.key === 'n') { e.preventDefault(); createNew(); }
                 if (e.key === 'o') { e.preventDefault(); openManager(); }
                 if (e.key === 's') { e.preventDefault(); downloadTxt(); }
