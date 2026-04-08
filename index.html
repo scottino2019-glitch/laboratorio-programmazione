@@ -134,6 +134,22 @@
         .close-btn:hover { background: rgba(255, 95, 86, 0.1); }
         .window-content { flex: 1; background: #fff; }
         iframe { width: 100%; height: 100%; border: none; }
+        /* --- AGGIUNTA PER MOBILE --- */
+@media (max-width: 768px) {
+    .window { 
+        top: 0 !important; 
+        left: 0 !important; 
+        width: 100% !important; 
+        height: calc(100% - 60px) !important; /* Sottrae lo spazio della taskbar */
+        border-radius: 0 !important; 
+    }
+    
+    #desktop {
+        grid-template-columns: repeat(auto-fill, minmax(85px, 1fr));
+        grid-auto-rows: 110px;
+        overflow-y: auto;
+    }
+}
     </style>
 </head>
 <body>
@@ -217,12 +233,41 @@
         }
 
         function openApp(app) {
-            startMenu.classList.remove('open');
-            
-            const win = document.createElement('div');
-            win.className = 'window';
-            win.style.width = '80%';
-            win.style.height = '75%';
+    startMenu.classList.remove('open');
+    const win = document.createElement('div');
+    win.className = 'window';
+    
+    // Controlla se è mobile
+    const isMobile = window.innerWidth <= 768;
+    
+    if (!isMobile) {
+        // Applica dimensioni e cascata solo su Desktop
+        win.style.width = '75%';
+        win.style.height = '70%';
+        const count = document.querySelectorAll('.window').length;
+        win.style.left = (60 + (count * 20)) + 'px';
+        win.style.top = (40 + (count * 20)) + 'px';
+    }
+    
+    win.style.zIndex = zIndex++;
+    win.innerHTML = `
+        <div class="window-header">
+            <span>${app.icon} ${app.name}</span>
+            <span class="close-btn" onclick="this.closest('.window').remove()">✕</span>
+        </div>
+        <div class="window-content">
+            <iframe src="${app.file}"></iframe>
+        </div>
+    `;
+
+    win.onmousedown = () => { win.style.zIndex = zIndex++; };
+    document.body.appendChild(win);
+    
+    // Attiva il trascinamento SOLO se non è mobile
+    if (!isMobile) {
+        setupDraggable(win);
+    }
+}
             
             // Posizionamento a cascata intelligente
             const count = document.querySelectorAll('.window').length;
