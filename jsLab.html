@@ -1,0 +1,282 @@
+```html
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>JS Lab Soft Dark</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Palette Soft Dark */
+        :root {
+            --bg-main: #1e293b;    /* Slate 800 */
+            --bg-editor: #0f172a;  /* Slate 900 */
+            --text-main: #f1f5f9;  /* Slate 100 */
+            --accent: #38bdf8;     /* Light Blue */
+            --border: #334155;     /* Slate 700 */
+        }
+
+        body { 
+            font-family: system-ui, -apple-system, sans-serif;
+            background: var(--bg-main); 
+            height: 100vh;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            color: var(--text-main);
+        }
+
+        /* Editor: Sfondo scuro riposante */
+        #editor-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: var(--bg-editor);
+        }
+
+        textarea {
+            flex: 1;
+            width: 100%;
+            padding: 20px;
+            background: var(--bg-editor);
+            color: #e2e8f0;
+            font-family: 'Menlo', 'Monaco', 'Courier New', monospace;
+            font-size: 19px; /* Ancora leggermente più grande */
+            line-height: 1.6;
+            border: none;
+            outline: none;
+            resize: none;
+            -webkit-appearance: none;
+            caret-color: var(--accent);
+        }
+
+        /* Anteprima */
+        #preview-container {
+            flex: 1;
+            background: var(--bg-main);
+            overflow-y: auto;
+            display: none;
+        }
+
+        .active-view { display: flex !important; }
+
+        /* Componenti UI scuri */
+        .app-card {
+            background: #334155;
+            padding: 24px;
+            border-radius: 20px;
+            border: 1px solid #475569;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn-action {
+            background: var(--accent);
+            color: #0f172a;
+            padding: 18px;
+            border-radius: 14px;
+            font-size: 19px;
+            font-weight: 800;
+            text-align: center;
+            width: 100%;
+            display: block;
+            border: none;
+        }
+
+        /* Navigazione Superiore */
+        .nav-top {
+            background: #0f172a;
+            padding: 12px;
+            display: flex;
+            gap: 10px;
+            overflow-x: auto;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .nav-btn {
+            background: #334155;
+            border: 1px solid #475569;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: bold;
+            white-space: nowrap;
+        }
+
+        /* Tab Bar Inferiore */
+        .tab-bar {
+            height: 80px;
+            background: #0f172a;
+            display: flex;
+            border-top: 1px solid var(--border);
+            padding-bottom: env(safe-area-inset-bottom);
+        }
+
+        .tab-item {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            font-weight: 700;
+            color: #94a3b8;
+        }
+
+        .tab-item.active {
+            color: var(--accent);
+            background: #1e293b;
+        }
+
+        input {
+            background: #1e293b !important;
+            color: white !important;
+            border: 2px solid #475569 !important;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header Soft Dark -->
+    <div class="p-4 bg-[#0f172a] border-b border-slate-700 flex justify-between items-center">
+        <h1 class="text-xl font-black text-white">JS_LAB <span class="text-sky-400">SOFT</span></h1>
+        <button onclick="executeCode()" class="bg-sky-500 text-slate-900 px-6 py-2 rounded-xl font-black shadow-lg active:scale-95 transition-transform">
+            ESEGUI ▶
+        </button>
+    </div>
+
+    <!-- Toolbar Esempi -->
+    <div class="nav-top">
+        <button onclick="loadTemplate('input')" class="nav-btn">MODULO INPUT</button>
+        <button onclick="loadTemplate('color')" class="nav-btn">CAMBIA SFONDO</button>
+        <button onclick="loadTemplate('counter')" class="nav-btn">CONTATORE</button>
+    </div>
+
+    <!-- Area Codice -->
+    <div id="editor-container" class="active-view">
+        <textarea id="code-input" spellcheck="false" placeholder="// Scrivi qui il tuo codice..."></textarea>
+    </div>
+
+    <!-- Area Anteprima -->
+    <div id="preview-container">
+        <div id="output" class="p-6 w-full text-slate-100"></div>
+    </div>
+
+    <!-- Navigazione Inferiore -->
+    <div class="tab-bar">
+        <div id="tab-editor" onclick="switchView('editor')" class="tab-item active">CODICE</div>
+        <div id="tab-preview" onclick="switchView('preview')" class="tab-item">RISULTATO</div>
+    </div>
+
+    <script>
+        const input = document.getElementById('code-input');
+        const output = document.getElementById('output');
+        const editorCont = document.getElementById('editor-container');
+        const previewCont = document.getElementById('preview-container');
+
+        const templates = {
+            input: `/* ESEMPIO: MODULO INPUT */
+output.innerHTML = \`
+  <div class="app-card">
+    <h2 class="text-2xl font-bold mb-4 text-white">Profilo Utente</h2>
+    <input id="nome" type="text" placeholder="Scrivi il tuo nome..." 
+           class="w-full p-5 rounded-xl mb-5 text-xl outline-none">
+    <button id="saluta" class="btn-action">CONFERMA</button>
+    <div id="msg" class="mt-8 text-3xl font-bold text-sky-400 text-center"></div>
+  </div>
+\`;
+
+document.getElementById('saluta').onclick = () => {
+  const nome = document.getElementById('nome').value;
+  if(nome) {
+    document.getElementById('msg').innerText = "Benvenuto, " + nome + "!";
+  } else {
+    document.getElementById('msg').innerText = "Scrivi qualcosa!";
+  }
+};`,
+
+            color: `/* ESEMPIO: CAMBIA SFONDO */
+output.innerHTML = \`
+  <div class="app-card text-center">
+    <div id="box" class="w-full h-48 rounded-2xl bg-slate-700 mb-8 flex items-center justify-center text-4xl font-black">
+      TAP!
+    </div>
+    <div class="grid grid-cols-2 gap-4">
+      <button id="btn1" class="p-6 bg-emerald-500 rounded-2xl text-slate-900 font-black">VERDE</button>
+      <button id="btn2" class="p-6 bg-violet-500 rounded-2xl text-white font-black">VIOLETTO</button>
+    </div>
+  </div>
+\`;
+
+const box = document.getElementById('box');
+document.getElementById('btn1').onclick = () => box.style.background = "#10b981";
+document.getElementById('btn2').onclick = () => box.style.background = "#8b5cf6";`,
+
+            counter: `/* ESEMPIO: CONTATORE */
+let count = 0;
+
+output.innerHTML = \`
+  <div class="app-card text-center">
+    <p class="text-lg font-bold text-slate-400 uppercase tracking-widest">Totale</p>
+    <h1 id="num" class="text-9xl font-black my-8 text-white">0</h1>
+    <button id="add" class="btn-action bg-sky-500 mb-6">INCREMENTA +1</button>
+    <button id="reset" class="text-slate-400 font-bold text-xl p-2">RESETTA</button>
+  </div>
+\`;
+
+const display = document.getElementById('num');
+document.getElementById('add').onclick = () => {
+  count++;
+  display.innerText = count;
+  display.style.transform = "scale(1.1)";
+  setTimeout(() => display.style.transform = "scale(1)", 100);
+};
+document.getElementById('reset').onclick = () => {
+  count = 0;
+  display.innerText = count;
+};`
+        };
+
+        function switchView(view) {
+            if(view === 'editor') {
+                editorCont.classList.add('active-view');
+                previewCont.classList.remove('active-view');
+                document.getElementById('tab-editor').classList.add('active');
+                document.getElementById('tab-preview').classList.remove('active');
+            } else {
+                editorCont.classList.remove('active-view');
+                previewCont.classList.add('active-view');
+                document.getElementById('tab-editor').classList.remove('active');
+                document.getElementById('tab-preview').classList.add('active');
+            }
+        }
+
+        function loadTemplate(key) {
+            input.value = templates[key];
+            switchView('editor');
+        }
+
+        function executeCode() {
+            output.innerHTML = '';
+            try {
+                const run = new Function('output', 'document', 'localStorage', input.value);
+                run(output, document, localStorage);
+                switchView('preview');
+            } catch (err) {
+                switchView('preview');
+                output.innerHTML = `
+                    <div class="bg-red-900/40 border-2 border-red-500 p-8 rounded-3xl">
+                        <h3 class="text-red-400 font-black text-2xl">ERRORE CODICE</h3>
+                        <p class="text-red-200 font-mono text-xl mt-4">${err.message}</p>
+                    </div>
+                `;
+            }
+        }
+
+        window.onload = () => loadTemplate('input');
+    </script>
+</body>
+</html>
+
+```

@@ -1,0 +1,280 @@
+```html
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>JS Mobile Lab - Comfort Edition</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&display=swap');
+        
+        :root {
+            --editor-bg: #1e293b; /* Slate 900 - Blu scuro riposante */
+            --text-main: #e2e8f0; /* Slate 200 - Quasi bianco */
+            --accent: #38bdf8;    /* Sky 400 - Azzurro chiaro */
+        }
+
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background: #0f172a; 
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            color: var(--text-main);
+        }
+
+        .code-font { font-family: 'Fira Code', monospace; }
+
+        .content-area { height: calc(100vh - 120px); position: relative; }
+        
+        textarea {
+            background: var(--editor-bg);
+            color: var(--text-main);
+            line-height: 1.6;
+            resize: none;
+            border: none;
+            outline: none;
+            -webkit-appearance: none;
+            padding: 20px;
+        }
+
+        /* Barra tasti rapidi con contrasto ridotto */
+        .keys-bar {
+            height: 45px;
+            background: #334155;
+            display: flex;
+            overflow-x: auto;
+            border-bottom: 1px solid #475569;
+        }
+        .key-btn {
+            min-width: 45px;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #cbd5e1;
+            font-family: monospace;
+            border-right: 1px solid #475569;
+            flex-shrink: 0;
+            font-size: 16px;
+        }
+
+        /* Anteprima */
+        #preview-view { background: #f8fafc; color: #1e293b; }
+
+        /* Tab Active State */
+        .active-tab { border-bottom: 4px solid var(--accent); color: var(--accent) !important; }
+        
+        .hidden { display: none !important; }
+
+        /* Flashcard Mobile Style */
+        .flashcard { perspective: 1000px; width: 100%; height: 220px; cursor: pointer; }
+        .flashcard-inner {
+            position: relative; width: 100%; height: 100%;
+            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            transform-style: preserve-3d;
+        }
+        .flashcard.flipped .flashcard-inner { transform: rotateY(180deg); }
+        .card-front, .card-back {
+            position: absolute; width: 100%; height: 100%;
+            backface-visibility: hidden; display: flex;
+            align-items: center; justify-content: center;
+            border-radius: 20px; padding: 25px; text-align: center;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+        }
+        .card-front { background: white; border: 1px solid #e2e8f0; color: #0369a1; font-size: 1.1rem; }
+        .card-back { transform: rotateY(180deg); background: #0ea5e9; color: white; font-weight: bold; }
+    </style>
+</head>
+<body class="flex flex-col">
+
+    <!-- Header -->
+    <header class="h-14 bg-[#1e293b] border-b border-slate-700 flex items-center justify-between px-4">
+        <div class="flex items-center gap-2">
+            <span class="bg-sky-500 text-white px-2 py-0.5 rounded font-bold text-xs">JS</span>
+            <h1 class="font-bold text-sm tracking-tight text-slate-200">Logic Lab</h1>
+        </div>
+        <button onclick="runAndShow()" class="bg-sky-600 hover:bg-sky-500 text-white px-5 py-2 rounded-lg text-xs font-bold transition-all active:scale-95 shadow-lg shadow-sky-900/20">
+            ESEGUI E VEDI ▶
+        </button>
+    </header>
+
+    <!-- Menu Logiche -->
+    <div class="bg-[#1e293b] border-b border-slate-700 flex overflow-x-auto no-scrollbar py-2 px-2 gap-2">
+        <button onclick="changeLogic('animation')" class="logic-btn px-4 py-1.5 rounded-lg text-[10px] font-bold bg-slate-700 text-slate-300">ANIMAZIONE</button>
+        <button onclick="changeLogic('flashcards')" class="logic-btn px-4 py-1.5 rounded-lg text-[10px] font-bold bg-slate-700 text-slate-300">CARTE</button>
+        <button onclick="changeLogic('search')" class="logic-btn px-4 py-1.5 rounded-lg text-[10px] font-bold bg-slate-700 text-slate-300">RICERCA</button>
+        <button onclick="changeLogic('quiz')" class="logic-btn px-4 py-1.5 rounded-lg text-[10px] font-bold bg-slate-700 text-slate-300">QUIZ</button>
+    </div>
+
+    <!-- Area Contenuto -->
+    <div class="flex-1 relative content-area">
+        <!-- EDITOR -->
+        <div id="editor-view" class="absolute inset-0 z-10 flex flex-col">
+            <!-- Barra Simboli Rapidi -->
+            <div id="keys-bar" class="keys-bar">
+                <button class="key-btn" onclick="insertChar('{')">{</button>
+                <button class="key-btn" onclick="insertChar('}')">}</button>
+                <button class="key-btn" onclick="insertChar('(')">(</button>
+                <button class="key-btn" onclick="insertChar(')')">)</button>
+                <button class="key-btn" onclick="insertChar('[')">[</button>
+                <button class="key-btn" onclick="insertChar(']')">]</button>
+                <button class="key-btn" onclick="insertChar(';')">;</button>
+                <button class="key-btn" onclick="insertChar('=')">=</button>
+                <button class="key-btn" onclick="insertChar('\'')">'</button>
+                <button class="key-btn" onclick="insertChar('`')">`</button>
+            </div>
+            <textarea id="js-input" class="flex-1 w-full code-font text-[14px]" spellcheck="false" placeholder="// Scrivi il tuo codice qui..."></textarea>
+        </div>
+
+        <!-- ANTEPRIMA -->
+        <div id="preview-view" class="absolute inset-0 z-0 overflow-y-auto hidden">
+            <div id="render-target" class="p-6 min-h-full"></div>
+        </div>
+    </div>
+
+    <!-- Navigazione Inferiore -->
+    <footer class="h-16 bg-[#1e293b] border-t border-slate-700 flex">
+        <button onclick="showTab('editor')" id="tab-editor" class="flex-1 flex flex-col items-center justify-center text-slate-400 active-tab">
+            <span class="text-[11px] font-black tracking-widest">CODICE</span>
+        </button>
+        <button onclick="showTab('preview')" id="tab-preview" class="flex-1 flex flex-col items-center justify-center text-slate-400">
+            <span class="text-[11px] font-black tracking-widest">RISULTATO</span>
+        </button>
+    </footer>
+
+    <script>
+        const jsInput = document.getElementById('js-input');
+        const previewView = document.getElementById('preview-view');
+        const editorView = document.getElementById('editor-view');
+        const renderTarget = document.getElementById('render-target');
+
+        const snippets = {
+            animation: `/* ANIMAZIONE FLUIDA */
+const palla = document.createElement('div');
+palla.style.cssText = "width:60px;height:60px;background:#38bdf8;border-radius:50%;position:relative;left:0;box-shadow:0 10px 20px rgba(56,189,248,0.3)";
+renderTarget.appendChild(palla);
+
+let x = 0; let dir = 1;
+function muovi() {
+  x += 3 * dir;
+  palla.style.left = x + "px";
+  if(x > renderTarget.clientWidth - 70 || x < 0) dir *= -1;
+  window.animFrame = requestAnimationFrame(muovi);
+}
+if(window.animFrame) cancelAnimationFrame(window.animFrame);
+muovi();`,
+            flashcards: `/* CARTE INTERATTIVE */
+renderTarget.innerHTML = \`
+  <div class="flashcard" onclick="this.classList.toggle('flipped')">
+    <div class="flashcard-inner">
+      <div class="card-front">Cos'è una variabile?</div>
+      <div class="card-back">Un contenitore di dati che può cambiare nel tempo!</div>
+    </div>
+  </div>
+  <p class="text-center text-slate-400 mt-6 text-sm italic">Tocca la carta per girarla</p>
+\`;`,
+            search: `/* RICERCA DATI */
+const database = ["JavaScript", "HTML5", "CSS3", "React", "Angular", "Vue.js"];
+renderTarget.innerHTML = \`
+  <input id="searchBox" class="w-full p-4 rounded-xl border border-slate-200 mb-4 outline-none focus:ring-2 ring-sky-500" placeholder="Cerca tecnologia...">
+  <div id="lista" class="flex flex-wrap gap-2"></div>
+\`;
+
+const box = document.getElementById('searchBox');
+const list = document.getElementById('lista');
+
+function visualizza(filtro = "") {
+  list.innerHTML = database
+    .filter(item => item.toLowerCase().includes(filtro.toLowerCase()))
+    .map(item => \`<span class="bg-sky-100 text-sky-700 px-3 py-1 rounded-full text-sm font-bold border border-sky-200">\${item}</span>\`)
+    .join('');
+}
+
+box.oninput = (e) => visualizza(e.target.value);
+visualizza();`,
+            quiz: `/* LOGICA QUIZ */
+renderTarget.innerHTML = \`
+  <div class="bg-white p-6 rounded-2xl shadow-lg">
+    <h3 class="font-bold text-slate-800 text-lg mb-4">Quale operatore serve per il confronto stretto?</h3>
+    <div class="grid gap-2">
+      <button onclick="msg('SBAGLIATO')" class="p-3 bg-slate-50 rounded-xl text-left">==</button>
+      <button onclick="msg('ESATTO!')" class="p-3 bg-slate-50 rounded-xl text-left border-2 border-transparent focus:border-sky-500">===</button>
+      <button onclick="msg('SBAGLIATO')" class="p-3 bg-slate-50 rounded-xl text-left">=</button>
+    </div>
+  </div>
+\`;
+
+window.msg = (t) => {
+    const feedback = document.createElement('div');
+    feedback.className = "mt-4 text-center font-black text-sky-600 animate-pulse";
+    feedback.innerText = t;
+    renderTarget.appendChild(feedback);
+    setTimeout(() => feedback.remove(), 1500);
+};`
+        };
+
+        function showTab(type) {
+            if(type === 'editor') {
+                editorView.classList.remove('hidden');
+                previewView.classList.add('hidden');
+                document.getElementById('tab-editor').classList.add('active-tab');
+                document.getElementById('tab-preview').classList.remove('active-tab');
+            } else {
+                editorView.classList.add('hidden');
+                previewView.classList.remove('hidden');
+                document.getElementById('tab-editor').classList.remove('active-tab');
+                document.getElementById('tab-preview').classList.add('active-tab');
+            }
+        }
+
+        function runAndShow() {
+            runJS();
+            showTab('preview');
+        }
+
+        function insertChar(char) {
+            const start = jsInput.selectionStart;
+            const end = jsInput.selectionEnd;
+            jsInput.value = jsInput.value.substring(0, start) + char + jsInput.value.substring(end);
+            jsInput.focus();
+            jsInput.setSelectionRange(start + 1, start + 1);
+        }
+
+        function changeLogic(key) {
+            jsInput.value = snippets[key];
+            // Highlight bottone
+            document.querySelectorAll('.logic-btn').forEach(b => {
+                b.classList.remove('bg-sky-500', 'text-white');
+                if(b.innerText.toLowerCase().includes(key.substring(0,3))) {
+                    b.classList.add('bg-sky-500', 'text-white');
+                }
+            });
+            runJS(); // Carica l'anteprima silenziosamente
+        }
+
+        function runJS() {
+            if(window.animFrame) cancelAnimationFrame(window.animFrame);
+            renderTarget.innerHTML = '';
+            try {
+                const func = new Function('renderTarget', jsInput.value);
+                func(renderTarget);
+            } catch (err) {
+                renderTarget.innerHTML = `
+                    <div class="p-4 bg-red-50 text-red-600 rounded-xl border border-red-100">
+                        <p class="font-bold text-sm">Errore nel Codice:</p>
+                        <p class="text-xs font-mono mt-1">${err.message}</p>
+                    </div>
+                `;
+            }
+        }
+
+        // Init
+        window.onload = () => changeLogic('animation');
+    </script>
+</body>
+</html>
+
+```

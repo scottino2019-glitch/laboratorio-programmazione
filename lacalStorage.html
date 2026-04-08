@@ -1,0 +1,174 @@
+```html
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>JSON Storage Lab - Leggibile</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { 
+            background: #0f172a; 
+            color: #f1f5f9; 
+            height: 100vh; 
+            overflow: hidden; 
+            display: flex; 
+            flex-direction: column; 
+        }
+
+        /* AREA EDITOR: Colore font impostato su grigio/bianco leggibile */
+        textarea { 
+            flex: 1; 
+            width: 100%; 
+            padding: 20px; 
+            background: #1e293b; 
+            color: #e2e8f0; /* Grigio chiaro per massima leggibilità */
+            font-family: 'ui-monospace', monospace; 
+            font-size: 16px; 
+            border: none; 
+            outline: none; 
+            resize: none;
+            line-height: 1.5;
+        }
+
+        #output { 
+            background: #ffffff; 
+            color: #1e293b; 
+            flex: 1; 
+            overflow-y: auto; 
+            padding: 20px; 
+            display: none; 
+        }
+
+        .tab-btn { 
+            flex: 1; 
+            padding: 15px; 
+            font-weight: bold; 
+            text-align: center; 
+            cursor: pointer; 
+            background: #1e293b;
+            border-bottom: 2px solid #334155;
+        }
+
+        .active-tab { 
+            border-bottom: 4px solid #3b82f6; 
+            color: #3b82f6; 
+            background: #1e293b;
+        }
+
+        .action-bar {
+            padding: 15px;
+            background: #0f172a;
+            display: flex;
+            gap: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="flex">
+        <div id="tab-edit" onclick="switchView('edit')" class="tab-btn active-tab uppercase tracking-widest">Codice</div>
+        <div id="tab-prev" onclick="switchView('prev')" class="tab-btn uppercase tracking-widest">Risultato</div>
+    </nav>
+
+    <div id="editor-container" class="flex flex-col flex-1">
+        <textarea id="code-input" spellcheck="false"></textarea>
+        <div class="action-bar">
+            <button onclick="runCode()" class="flex-1 bg-blue-600 hover:bg-blue-500 text-white font-black py-4 rounded-xl text-lg transition-all">
+                ESEGUI LOGICA
+            </button>
+        </div>
+    </div>
+
+    <div id="output"></div>
+
+    <script>
+        const input = document.getElementById('code-input');
+        const output = document.getElementById('output');
+
+        // Il codice pre-caricato focalizzato sulla logica JSON
+        const logicaBase = `// LOGICA: GESTIONE LISTA CON JSON PARSE
+// 1. Leggiamo dal database locale
+let datiRecuperati = localStorage.getItem('lista_spesa');
+
+// 2. Trasformiamo la stringa in Array (JSON.parse)
+// Se non c'è nulla, creiamo un array vuoto []
+let prodotti = datiRecuperati ? JSON.parse(datiRecuperati) : [];
+
+function render() {
+    output.innerHTML = \`
+        <div class="p-4">
+            <h2 class="text-2xl font-black mb-6">La Mia Lista (JSON)</h2>
+            <div class="flex gap-2 mb-8">
+                <input id="new-item" type="text" placeholder="Aggiungi..." 
+                       class="border-2 border-slate-200 p-4 flex-1 rounded-xl text-lg outline-none focus:border-blue-500">
+                <button id="add-btn" class="bg-blue-600 text-white px-6 rounded-xl font-bold">OK</button>
+            </div>
+            <ul class="space-y-3">
+                \${prodotti.map((p, i) => \`
+                    <li class="flex justify-between items-center p-4 bg-slate-50 border border-slate-100 rounded-xl">
+                        <span class="text-lg font-medium text-slate-700">\${p}</span>
+                        <button onclick="rimuovi(\${i})" class="text-red-500 text-sm font-bold bg-white px-3 py-1 rounded-lg border">CANCELLA</button>
+                    </li>
+                \`).join('')}
+            </ul>
+        </div>
+    \`;
+
+    document.getElementById('add-btn').onclick = () => {
+        const val = document.getElementById('new-item').value;
+        if(val) {
+            prodotti.push(val);
+            // SALVATAGGIO: Trasformiamo Array in Stringa per il browser
+            localStorage.setItem('lista_spesa', JSON.stringify(prodotti));
+            render();
+        }
+    };
+}
+
+// Funzione globale per eliminare
+window.rimuovi = (index) => {
+    prodotti.splice(index, 1);
+    localStorage.setItem('lista_spesa', JSON.stringify(prodotti));
+    render();
+};
+
+render();`;
+
+        function runCode() {
+            output.innerHTML = '';
+            try {
+                const execute = new Function('output', 'localStorage', 'document', input.value);
+                execute(output, localStorage, document);
+                switchView('prev');
+            } catch (e) {
+                switchView('prev');
+                output.innerHTML = `<div class="text-red-600 p-6 bg-red-50 rounded-xl border-2 border-red-200">
+                    <b class="text-xl">Errore:</b><br>
+                    <code class="block mt-2 font-mono">${e.message}</code>
+                </div>`;
+            }
+        }
+
+        function switchView(view) {
+            if(view === 'edit') {
+                document.getElementById('editor-container').style.display = 'flex';
+                output.style.display = 'none';
+                document.getElementById('tab-edit').classList.add('active-tab');
+                document.getElementById('tab-prev').classList.remove('active-tab');
+            } else {
+                document.getElementById('editor-container').style.display = 'none';
+                output.style.display = 'block';
+                document.getElementById('tab-edit').classList.remove('active-tab');
+                document.getElementById('tab-prev').classList.add('active-tab');
+            }
+        }
+
+        window.onload = () => {
+            input.value = logicaBase;
+        };
+    </script>
+</body>
+</html>
+
+```

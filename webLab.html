@@ -1,0 +1,269 @@
+```html
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web Architect Skeleton Lab</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style id="live-css">
+        /* Il CSS modificato verrà iniettato qui */
+    </style>
+</head>
+<body class="bg-slate-100 font-sans text-slate-900 min-h-screen flex flex-col">
+
+    <!-- HEADER FISSO -->
+    <header class="bg-slate-800 text-white p-4 shadow-md z-30">
+        <h1 class="text-lg font-bold tracking-tight">WEB ARCHITECT LAB 🏗️</h1>
+        <p class="text-[10px] text-slate-400 uppercase">Progetta lo scheletro del tuo sito</p>
+    </header>
+
+    <!-- AREA PRINCIPALE (CONTROLLI SOPRA, PREVIEW SOTTO SU MOBILE) -->
+    <main class="flex-1 flex flex-col md:flex-row overflow-hidden">
+        
+        <!-- COLONNA COMANDI -->
+        <div class="w-full md:w-1/2 flex flex-col border-r border-slate-300 bg-white">
+            
+            <!-- SELETTORE COMPONENTI (SCROLL ORIZZONTALE SU MOBILE) -->
+            <div class="flex overflow-x-auto bg-slate-200 p-2 gap-2 border-b border-slate-300 no-scrollbar">
+                <button onclick="loadStep('grid')" class="flex-none px-4 py-2 bg-white rounded-lg text-xs font-bold shadow-sm border border-slate-300">GRID LAYOUT</button>
+                <button onclick="loadStep('flex')" class="flex-none px-4 py-2 bg-white rounded-lg text-xs font-bold shadow-sm border border-slate-300">FLEX ALIGN</button>
+                <button onclick="loadStep('nav')" class="flex-none px-4 py-2 bg-white rounded-lg text-xs font-bold shadow-sm border border-slate-300">NAV MENU</button>
+                <button onclick="loadStep('hero')" class="flex-none px-4 py-2 bg-white rounded-lg text-xs font-bold shadow-sm border border-slate-300">HERO UNIT</button>
+                <button onclick="loadStep('cards')" class="flex-none px-4 py-2 bg-white rounded-lg text-xs font-bold shadow-sm border border-slate-300">CARD SKELETON</button>
+            </div>
+
+            <!-- EDITOR DI CODICE -->
+            <div class="flex-1 flex flex-col min-h-[300px]">
+                <div class="bg-slate-800 text-slate-400 px-4 py-1 text-[10px] font-mono flex justify-between">
+                    <span>CSS SKELETON EDITOR</span>
+                    <span id="comp-name" class="text-emerald-400 uppercase">Grid</span>
+                </div>
+                <textarea id="css-input" 
+                    class="flex-1 p-4 font-mono text-sm bg-slate-900 text-emerald-400 outline-none resize-none leading-relaxed"
+                    spellcheck="false"></textarea>
+            </div>
+
+            <!-- GUIDA RAPIDA -->
+            <div class="p-4 bg-blue-50 border-t border-blue-100">
+                <p id="guide-text" class="text-xs text-blue-700 leading-tight">Modifica i valori per vedere come cambia la struttura.</p>
+            </div>
+        </div>
+
+        <!-- COLONNA ANTEPRIMA -->
+        <div class="w-full md:w-1/2 bg-slate-300 p-4 overflow-y-auto flex items-start justify-center">
+            <div id="preview-wrapper" class="w-full bg-white shadow-xl min-h-[400px] border border-slate-400 relative">
+                <div id="preview-content"></div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        const cssInput = document.getElementById('css-input');
+        const liveStyle = document.getElementById('live-css');
+        const previewContent = document.getElementById('preview-content');
+        const compLabel = document.getElementById('comp-name');
+        const guideText = document.getElementById('guide-text');
+
+        const steps = {
+            grid: {
+                label: "Grid Layout",
+                guide: "Lo scheletro del sito: Header, Sidebar, Main e Footer. Usa 'grid-template-areas' per disporli.",
+                html: `<div class="s-grid">
+    <div class="s-item s-header">HEADER</div>
+    <div class="s-item s-sidebar">SIDEBAR</div>
+    <div class="s-item s-main">MAIN CONTENT</div>
+    <div class="s-item s-footer">FOOTER</div>
+</div>`,
+                css: `/* SCHELETRO GRID */
+.s-grid {
+  display: grid;
+  height: 500px;
+  gap: 5px;
+  grid-template-areas: 
+    "head head"
+    "side main"
+    "foot foot";
+  grid-template-columns: 80px 1fr;
+  grid-template-rows: 60px 1fr 40px;
+}
+
+.s-item {
+  border: 2px dashed #94a3b8;
+  background: #f8fafc;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  color: #64748b;
+}
+
+.s-header { grid-area: head; border-style: solid; }
+.s-sidebar { grid-area: side; }
+.s-main { grid-area: main; background: #fff; }
+.s-footer { grid-area: foot; border-style: solid; }`
+            },
+            flex: {
+                label: "Flex Alignment",
+                guide: "Allineamento di blocchi generici. Cambia 'justify-content' per distanziarli.",
+                html: `<div class="s-flex">
+    <div class="s-box">BOX 1</div>
+    <div class="s-box">BOX 2</div>
+    <div class="s-box">BOX 3</div>
+</div>`,
+                css: `/* SCHELETRO FLEXBOX */
+.s-flex {
+  display: flex;
+  height: 300px;
+  background: #f1f5f9;
+  
+  /* ALLINEAMENTO */
+  justify-content: space-around;
+  align-items: center;
+  flex-direction: row;
+}
+
+.s-box {
+  width: 60px;
+  height: 60px;
+  border: 2px solid #64748b;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: bold;
+}`
+            },
+            nav: {
+                label: "Nav Menu",
+                guide: "Struttura di una barra di navigazione con logo a sinistra e link a destra.",
+                html: `<nav class="s-nav">
+    <div class="s-logo">LOGO</div>
+    <div class="s-links">
+        <span>LINK</span>
+        <span>LINK</span>
+        <span>LINK</span>
+    </div>
+</nav>`,
+                css: `/* SCHELETRO NAVBAR */
+.s-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 20px;
+  height: 60px;
+  border-bottom: 2px solid #334155;
+}
+
+.s-logo {
+  font-weight: 800;
+  border: 1px solid #334155;
+  padding: 5px 10px;
+}
+
+.s-links {
+  display: flex;
+  gap: 15px;
+}
+
+.s-links span {
+  font-size: 10px;
+  text-decoration: underline;
+  color: #64748b;
+}`
+            },
+            hero: {
+                label: "Hero Unit",
+                guide: "Il blocco centrale del sito. Studia come centrare il testo nel vuoto.",
+                html: `<section class="s-hero">
+    <div class="s-hero-box">
+        <div class="s-title-bar"></div>
+        <div class="s-text-bar"></div>
+        <div class="s-btn-bar"></div>
+    </div>
+</section>`,
+                css: `/* SCHELETRO HERO */
+.s-hero {
+  height: 350px;
+  background: #e2e8f0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.s-hero-box {
+  width: 70%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.s-title-bar { width: 100%; height: 30px; background: #94a3b8; }
+.s-text-bar { width: 80%; height: 15px; background: #cbd5e1; }
+.s-btn-bar { width: 100px; height: 35px; border: 2px solid #64748b; margin-top: 10px; }`
+            },
+            cards: {
+                label: "Card Skeleton",
+                guide: "Griglia di schede responsive. Nota come 'repeat(auto-fit...)' crea le colonne da solo.",
+                html: `<div class="s-card-grid">
+    <div class="s-card-wire">IMAGE</div>
+    <div class="s-card-wire">IMAGE</div>
+    <div class="s-card-wire">IMAGE</div>
+</div>`,
+                css: `/* SCHELETRO CARDS */
+.s-card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 15px;
+  padding: 20px;
+}
+
+.s-card-wire {
+  height: 180px;
+  border: 1px solid #cbd5e1;
+  background: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #cbd5e1;
+  font-size: 10px;
+  /* Effetto profondità scheletro */
+  box-shadow: 4px 4px 0px #cbd5e1;
+}`
+            }
+        };
+
+        function loadStep(id) {
+            const step = steps[id];
+            compLabel.innerText = step.label;
+            guideText.innerText = step.guide;
+            htmlEditorValue = step.html; // Non mostriamo l'HTML editabile per semplicità
+            cssInput.value = step.css;
+            previewContent.innerHTML = step.html;
+            updateCSS();
+        }
+
+        function updateCSS() {
+            liveStyle.innerHTML = cssInput.value;
+        }
+
+        cssInput.addEventListener('input', updateCSS);
+
+        // Avvio
+        window.onload = () => loadStep('grid');
+    </script>
+
+    <style>
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        
+        /* Forza l'anteprima a stare dentro il contenitore */
+        #preview-content {
+            width: 100%;
+        }
+    </style>
+</body>
+</html>
+
+```

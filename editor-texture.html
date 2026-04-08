@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Centrare Immagini di Sfondo</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style id="live-style">
+        /* Il CSS modificato apparirà qui */
+    </style>
+</head>
+<body class="bg-slate-900 min-h-screen text-slate-200 p-4 md:p-8 font-sans">
+
+    <div class="max-w-6xl mx-auto flex flex-col h-[90vh]">
+        
+        <header class="mb-6">
+            <h1 class="text-3xl font-black text-white uppercase tracking-tight">Editor Immagini e Texture 📰</h1>
+            <p class="text-slate-400">Incolla l'URL della tua immagine e impara a posizionarla.</p>
+        </header>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 flex-1 min-h-0">
+            
+            <!-- EDITOR CSS -->
+            <div class="flex flex-col bg-slate-800 rounded-2xl overflow-hidden border border-slate-700 shadow-2xl">
+                <div class="bg-slate-700 px-4 py-2 text-xs font-bold uppercase tracking-widest text-slate-300">
+                    Proprietà CSS
+                </div>
+                <textarea id="code-editor" 
+                    class="flex-1 w-full bg-slate-950 text-emerald-300 p-6 font-mono text-sm outline-none resize-none leading-relaxed"
+                    spellcheck="false">
+/* --- FOGLIO DI GIORNALE CENTRATO --- */
+#preview-box {
+  background-color: #f1f5f9;
+  
+  /* L'URL dell'immagine che hai scelto */
+  background-image: url("https://media.istockphoto.com/id/157293816/it/foto/giornale-singola-a-strappo-su-bianco.jpg?s=2048x2048&w=is&k=20&c=JLi0jdXC5h_ptPoruUP8xbZGRnXcUYrl-t8Ba0EMp-A=");
+  
+  /* 1. NON RIPETERE L'IMMAGINE */
+  background-repeat: no-repeat;
+  
+  /* 2. CENTRA ORIZZONTALMENTE E VERTICALMENTE */
+  background-position: center;
+  
+  /* 3. DIMENSIONE: 'contain' la adatta senza tagliarla */
+  /* PROVA: Cambia 'contain' in 'cover' per riempire tutto lo spazio */
+  background-size: contain;
+
+  /* Estetica del contenitore */
+  border: 10px solid #cbd5e1;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+}</textarea>
+            </div>
+
+            <!-- ANTEPRIMA -->
+            <div class="flex flex-col gap-6">
+                <div id="preview-box" class="flex-1 rounded-2xl shadow-2xl relative overflow-hidden transition-all duration-300">
+                    <!-- L'immagine di sfondo apparirà qui -->
+                </div>
+
+                <div class="bg-blue-900/20 p-6 rounded-2xl border border-blue-500/30">
+                    <h3 class="text-sm font-bold text-blue-400 mb-2 uppercase tracking-widest">Trucchi per l'immagine:</h3>
+                    <ul class="text-xs text-slate-300 space-y-2 leading-relaxed">
+                        <li><strong>background-size: contain;</strong> L'immagine si vede tutta, ma potrebbero avanzare bordi vuoti.</li>
+                        <li><strong>background-size: cover;</strong> L'immagine riempie tutto il quadrato (ottimo per i muri), ma alcuni bordi verranno tagliati.</li>
+                        <li><strong>background-size: 50% 50%;</strong> Puoi anche decidere la dimensione esatta in percentuale!</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const editor = document.getElementById('code-editor');
+        const styleTag = document.getElementById('live-style');
+
+        function update() {
+            styleTag.innerHTML = editor.value;
+        }
+
+        editor.addEventListener('input', update);
+        window.onload = update;
+    </script>
+</body>
+</html>

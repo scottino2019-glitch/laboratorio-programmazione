@@ -1,0 +1,136 @@
+```html
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Laboratorio JS Pulito</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Interfaccia Chiara e Leggibile */
+        body {
+            background-color: #f8fafc;
+            color: #1e293b;
+        }
+
+        #codice-editor {
+            font-size: 20px !important;
+            line-height: 1.4;
+            font-family: 'Courier New', monospace;
+            background: #ffffff;
+            color: #000000;
+            border: 2px solid #cbd5e1;
+            resize: none;
+            width: 100%;
+            height: 65vh;
+            padding: 20px;
+            outline: none;
+        }
+
+        .btn-interfaccia {
+            padding: 18px;
+            font-weight: bold;
+            font-size: 18px;
+            border-bottom: 4px solid transparent;
+        }
+
+        .tab-attiva {
+            background-color: #ffffff;
+            border-bottom: 4px solid #2563eb;
+            color: #2563eb;
+        }
+
+        #output-area {
+            font-size: 20px;
+            min-height: 60vh;
+        }
+
+        .pulsante-azione {
+            font-size: 20px;
+            font-weight: 800;
+            padding: 20px;
+            border-radius: 12px;
+        }
+    </style>
+</head>
+<body class="flex flex-col h-screen overflow-hidden">
+
+    <!-- Navigazione Semplice -->
+    <nav class="flex bg-slate-200 border-b border-slate-300">
+        <button onclick="cambiaVista('scrivi')" id="nav-scrivi" class="flex-1 btn-interfaccia tab-attiva">SCRIVI</button>
+        <button onclick="cambiaVista('risultato')" id="nav-risultato" class="flex-1 btn-interfaccia">RISULTATO</button>
+    </nav>
+
+    <!-- Sezione Scrittura -->
+    <div id="sezione-scrivi" class="p-4 flex flex-col gap-4">
+        <textarea id="codice-editor" spellcheck="false" placeholder="Scrivi il tuo codice qui...">// Esempio semplice:
+const nome = "Utente";
+output.innerHTML = "<h1>Benvenuto, " + nome + "</h1>";</textarea>
+        
+        <div class="flex gap-4">
+            <button onclick="eseguiCodice()" class="flex-[2] bg-blue-600 text-white pulsante-azione shadow-lg">
+                ESEGUI CODICE
+            </button>
+            <button onclick="svuotaTutto()" class="flex-1 bg-slate-400 text-white pulsante-azione">
+                CANCELLA
+            </button>
+        </div>
+    </div>
+
+    <!-- Sezione Visualizzazione -->
+    <div id="sezione-risultato" class="hidden bg-white h-full overflow-y-auto p-6">
+        <div id="output-area"></div>
+        
+        <button onclick="cambiaVista('scrivi')" class="mt-10 w-full p-4 border-2 border-blue-600 text-blue-600 font-bold rounded-xl">
+            TORNA ALL'EDITOR
+        </button>
+    </div>
+
+    <script>
+        const editor = document.getElementById('codice-editor');
+        const output = document.getElementById('output-area');
+        const sScrivi = document.getElementById('sezione-scrivi');
+        const sRisultato = document.getElementById('sezione-risultato');
+        const nScrivi = document.getElementById('nav-scrivi');
+        const nRisultato = document.getElementById('nav-risultato');
+
+        function cambiaVista(vista) {
+            if (vista === 'scrivi') {
+                sScrivi.classList.remove('hidden');
+                sRisultato.classList.add('hidden');
+                nScrivi.classList.add('tab-attiva');
+                nRisultato.classList.remove('tab-attiva');
+            } else {
+                sScrivi.classList.add('hidden');
+                sRisultato.classList.remove('hidden');
+                nScrivi.classList.remove('tab-attiva');
+                nRisultato.classList.add('tab-attiva');
+            }
+        }
+
+        function eseguiCodice() {
+            output.innerHTML = "";
+            try {
+                const codice = new Function('output', editor.value);
+                codice(output);
+                cambiaVista('risultato');
+            } catch (errore) {
+                cambiaVista('risultato');
+                output.innerHTML = `
+                    <div style="color: red; padding: 20px; border: 2px solid red; border-radius: 10px;">
+                        <strong>Errore:</strong><br>${errore.message}
+                    </div>
+                `;
+            }
+        }
+
+        function svuotaTutto() {
+            if(confirm("Vuoi cancellare tutto?")) {
+                editor.value = "";
+            }
+        }
+    </script>
+</body>
+</html>
+
+```

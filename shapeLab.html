@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shape Design Lab - CSS Clip & Shapes</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Courier+Prime&family=Montserrat:wght@900&display=swap" rel="stylesheet">
+    <style id="shape-live-style">
+        /* Il CSS generato apparirà qui */
+    </style>
+</head>
+<body class="bg-zinc-900 min-h-screen p-4 md:p-10 font-sans text-zinc-300">
+
+    <div class="max-w-6xl mx-auto flex flex-col gap-8">
+        
+        <header class="flex flex-col md:flex-row justify-between items-start md:items-center bg-zinc-800 p-6 rounded-3xl border border-zinc-700 shadow-xl">
+            <div>
+                <h1 class="text-2xl font-black text-white uppercase tracking-tighter">Shape Design Lab 📐</h1>
+                <p class="text-zinc-400 text-sm">Oltre il rettangolo: clip-path e geometrie fluide.</p>
+            </div>
+            <div class="flex gap-2 mt-4 md:mt-0">
+                <button onclick="loadShape('francobollo')" class="px-4 py-2 bg-orange-600 text-white text-xs rounded-lg font-bold uppercase hover:bg-orange-500 transition">Francobollo</button>
+                <button onclick="loadShape('organic')" class="px-4 py-2 bg-emerald-600 text-white text-xs rounded-lg font-bold uppercase hover:bg-emerald-500 transition">Goccia</button>
+                <button onclick="loadShape('folder')" class="px-4 py-2 bg-amber-500 text-black text-xs rounded-lg font-bold uppercase hover:bg-amber-400 transition">Archivio</button>
+            </div>
+        </header>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            
+            <!-- EDITOR CSS -->
+            <div class="flex flex-col bg-black rounded-3xl overflow-hidden border border-zinc-800 shadow-2xl">
+                <div class="bg-zinc-800 px-4 py-2 flex justify-between items-center">
+                    <span class="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">Geometria CSS</span>
+                    <span class="text-[10px] text-orange-400 font-mono italic">Modifica le coordinate</span>
+                </div>
+                <textarea id="shape-editor" 
+                    class="w-full h-[550px] bg-zinc-950 text-orange-300 p-6 font-mono text-sm outline-none resize-none leading-relaxed"
+                    spellcheck="false"></textarea>
+            </div>
+
+            <!-- ANTEPRIMA -->
+            <div id="canvas" class="flex items-center justify-center min-h-[500px] bg-zinc-800/50 rounded-3xl border-2 border-dashed border-zinc-700 relative overflow-hidden">
+                <!-- La Card con forma particolare -->
+                <div id="custom-card">
+                    <div class="inner-content">
+                        <h2 id="card-title">Titolo</h2>
+                        <p id="card-text">Contenuto della forma particolare.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const editor = document.getElementById('shape-editor');
+        const styleTag = document.getElementById('shape-live-style');
+        const title = document.getElementById('card-title');
+        const text = document.getElementById('card-text');
+
+        const shapePresets = {
+            francobollo: {
+                title: "Poste Italiane",
+                text: "Questa forma è creata con un clip-path complesso che simula i bordi seghettati tipici dei francobolli rari.",
+                css: `/* --- CARD FRANCOBOLLO --- */
+#custom-card {
+  width: 320px;
+  height: 400px;
+  background: #f4f1ea;
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  
+  /* IL SEGRETO: Taglio seghettato con clip-path */
+  clip-path: polygon(
+    0% 5%, 5% 5%, 5% 0%, 10% 0%, 10% 5%, 15% 5%, 15% 0%, 20% 0%, 20% 5%, 25% 5%, 25% 0%, 30% 0%, 30% 5%, 35% 5%, 35% 0%, 40% 0%, 40% 5%, 45% 5%, 45% 0%, 50% 0%, 50% 5%, 55% 5%, 55% 0%, 60% 0%, 60% 5%, 65% 5%, 65% 0%, 70% 0%, 70% 5%, 75% 5%, 75% 0%, 80% 0%, 80% 5%, 85% 5%, 85% 0%, 90% 0%, 90% 5%, 95% 5%, 95% 0%, 100% 0%, 100% 5%, 95% 5%, 95% 10%, 100% 10%, 100% 15%, 95% 15%, 95% 20%, 100% 20%, 100% 25%, 95% 25%, 95% 30%, 100% 30%, 100% 35%, 95% 35%, 95% 40%, 100% 40%, 100% 45%, 95% 45%, 95% 50%, 100% 50%, 100% 55%, 95% 55%, 95% 60%, 100% 60%, 100% 65%, 95% 65%, 95% 70%, 100% 70%, 100% 75%, 95% 75%, 95% 80%, 100% 80%, 100% 85%, 95% 85%, 95% 90%, 100% 90%, 100% 95%, 95% 95%, 95% 100%, 90% 100%, 90% 95%, 85% 95%, 85% 100%, 80% 100%, 80% 95%, 75% 95%, 75% 100%, 70% 100%, 70% 95%, 65% 95%, 65% 100%, 60% 100%, 60% 95%, 55% 95%, 55% 100%, 50% 100%, 50% 95%, 45% 95%, 45% 100%, 40% 100%, 40% 95%, 35% 95%, 35% 100%, 30% 100%, 30% 95%, 25% 95%, 25% 100%, 20% 100%, 20% 95%, 15% 95%, 15% 100%, 10% 100%, 10% 95%, 5% 95%, 5% 100%, 0% 100%, 0% 95%, 5% 95%, 5% 90%, 0% 90%, 0% 85%, 5% 85%, 5% 80%, 0% 80%, 0% 75%, 5% 75%, 5% 70%, 0% 70%, 0% 65%, 5% 65%, 5% 60%, 0% 60%, 0% 55%, 5% 55%, 5% 50%, 0% 50%, 0% 45%, 5% 45%, 5% 40%, 0% 40%, 0% 35%, 5% 35%, 5% 30%, 0% 30%, 0% 25%, 5% 25%, 5% 20%, 0% 20%, 0% 15%, 5% 15%, 5% 10%, 0% 10%
+  );
+  
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+  font-family: 'Courier Prime', monospace;
+  text-align: center;
+  border: 1px solid #d1c7a7;
+}
+
+.inner-content h2 {
+  color: #a34134;
+  font-size: 1.2rem;
+  font-weight: bold;
+  text-transform: uppercase;
+  border: 2px solid #a34134;
+  padding: 5px;
+  margin-bottom: 10px;
+}`
+            },
+            organic: {
+                title: "Fluid Shape",
+                text: "Usando i valori doppi di border-radius (separati da /) creiamo forme asimmetriche che sembrano naturali.",
+                css: `/* --- FORMA ORGANICA FLUIDA --- */
+#custom-card {
+  width: 350px;
+  height: 350px;
+  background: linear-gradient(45deg, #10b981, #3b82f6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  text-align: center;
+  color: white;
+  
+  /* IL SEGRETO: Border Radius asimmetrico */
+  /* Top-L Top-R Bot-R Bot-L / Verticali... */
+  border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
+  
+  box-shadow: 0 20px 40px rgba(16, 185, 129, 0.3);
+  animation: blobby 10s infinite alternate;
+}
+
+@keyframes blobby {
+  from { border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%; }
+  to { border-radius: 40% 60% 70% 30% / 40% 70% 30% 60%; }
+}
+
+.inner-content h2 {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 2rem;
+  line-height: 1;
+  margin-bottom: 10px;
+}`
+            },
+            folder: {
+                title: "Archivio Progetti",
+                text: "Utilizziamo uno pseudo-elemento ::before per creare la linguetta superiore della cartella.",
+                css: `/* --- CARD A CARTELLA --- */
+#custom-card {
+  width: 400px;
+  height: 250px;
+  background: #fbbf24;
+  border-radius: 0 20px 20px 20px;
+  position: relative;
+  padding: 30px;
+  box-shadow: 0 15px 30px rgba(0,0,0,0.3);
+  color: #451a03;
+}
+
+/* LA LINGUETTA */
+#custom-card::before {
+  content: "TOP SECRET";
+  position: absolute;
+  top: -30px;
+  left: 0;
+  width: 150px;
+  height: 35px;
+  background: #fbbf24;
+  border-radius: 15px 15px 0 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: bold;
+  letter-spacing: 1px;
+}
+
+.inner-content h2 {
+  font-weight: 900;
+  font-size: 1.5rem;
+  border-bottom: 2px solid #451a03;
+  padding-bottom: 5px;
+  margin-bottom: 15px;
+}`
+            }
+        };
+
+        function loadShape(name) {
+            const data = shapePresets[name];
+            editor.value = data.css;
+            title.innerText = data.title;
+            text.innerText = data.text;
+            updateStyle();
+        }
+
+        function updateStyle() {
+            styleTag.innerHTML = editor.value;
+        }
+
+        editor.addEventListener('input', updateStyle);
+        window.onload = () => loadShape('francobollo');
+    </script>
+</body>
+</html>

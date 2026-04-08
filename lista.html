@@ -1,0 +1,194 @@
+```html
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Laboratorio JS con Esempi</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            background-color: #f8fafc;
+            color: #1e293b;
+            font-family: system-ui, -apple-system, sans-serif;
+        }
+
+        #codice-editor {
+            font-size: 18px !important;
+            line-height: 1.5;
+            font-family: 'ui-monospace', 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', monospace;
+            background: #ffffff;
+            color: #1e293b;
+            border: 2px solid #e2e8f0;
+            resize: none;
+            width: 100%;
+            height: 50vh;
+            padding: 15px;
+            outline: none;
+            border-radius: 8px;
+        }
+
+        .btn-nav {
+            padding: 15px;
+            font-weight: 700;
+            font-size: 16px;
+            transition: all 0.2s;
+        }
+
+        .tab-attiva {
+            background-color: #ffffff;
+            border-bottom: 4px solid #3b82f6;
+            color: #3b82f6;
+        }
+
+        .pill-button {
+            padding: 8px 16px;
+            background: #e2e8f0;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        #output-area {
+            font-size: 18px;
+            min-height: 50vh;
+        }
+    </style>
+</head>
+<body class="flex flex-col h-screen overflow-hidden">
+
+    <!-- Navigazione Superiore -->
+    <nav class="flex bg-slate-100 border-b border-slate-200">
+        <button onclick="cambiaVista('scrivi')" id="nav-scrivi" class="flex-1 btn-nav tab-attiva uppercase tracking-wider">Editor</button>
+        <button onclick="cambiaVista('risultato')" id="nav-risultato" class="flex-1 btn-nav uppercase tracking-wider">Anteprima</button>
+    </nav>
+
+    <!-- Barra degli Esempi (Codice Pronto) -->
+    <div class="flex overflow-x-auto gap-2 p-3 bg-white border-b border-slate-100 no-scrollbar">
+        <button onclick="caricaEsempio('saluto')" class="pill-button text-blue-600">👋 Saluto Simple</button>
+        <button onclick="caricaEsempio('contatore')" class="pill-button text-green-600">🔢 Contatore</button>
+        <button onclick="caricaEsempio('colore')" class="pill-button text-purple-600">🎨 Cambia Colore</button>
+        <button onclick="caricaEsempio('lista')" class="pill-button text-orange-600">📝 Lista Dinamica</button>
+    </div>
+
+    <!-- Sezione Scrittura -->
+    <div id="sezione-scrivi" class="p-4 flex flex-col flex-1 overflow-hidden">
+        <textarea id="codice-editor" spellcheck="false" placeholder="Seleziona un esempio o scrivi qui..."></textarea>
+        
+        <div class="flex gap-3 mt-4">
+            <button onclick="eseguiCodice()" class="flex-[2] bg-blue-600 text-white font-black py-5 rounded-xl shadow-lg active:scale-95 transition-transform">
+                ESEGUI CODICE
+            </button>
+            <button onclick="svuotaTutto()" class="flex-1 bg-slate-200 text-slate-600 font-bold py-5 rounded-xl active:scale-95">
+                RESET
+            </button>
+        </div>
+    </div>
+
+    <!-- Sezione Visualizzazione -->
+    <div id="sezione-risultato" class="hidden bg-white flex-1 overflow-y-auto p-6">
+        <div id="output-area"></div>
+        <button onclick="cambiaVista('scrivi')" class="mt-8 w-full py-4 border-2 border-slate-200 text-slate-500 font-bold rounded-xl italic">
+            Torna indietro per modificare
+        </button>
+    </div>
+
+    <script>
+        const editor = document.getElementById('codice-editor');
+        const output = document.getElementById('output-area');
+        
+        const esempi = {
+            saluto: `// Esempio 1: Messaggio Semplice
+const utente = "Amico";
+output.innerHTML = \`
+  <div style="padding: 20px; text-align: center;">
+    <h1 style="font-size: 30px;">Ciao \${utente}! 👋</h1>
+    <p>Questo codice è stato generato in JavaScript.</p>
+  </div>
+\`;`,
+            contatore: `// Esempio 2: Un contatore interattivo
+let click = 0;
+output.innerHTML = \`
+  <div style="text-align: center; padding: 20px;">
+    <h2>Contatore Interattivo</h2>
+    <div id="cifra" style="font-size: 50px; font-weight: bold;">0</div>
+    <button id="btn" style="padding: 15px 30px; background: #2563eb; color: white; border-radius: 10px; border: none; font-size: 18px; margin-top: 10px;">
+      PREMIMI
+    </button>
+  </div>
+\`;
+
+document.getElementById('btn').onclick = function() {
+    click++;
+    document.getElementById('cifra').innerText = click;
+};`,
+            colore: `// Esempio 3: Cambio colore di sfondo
+output.innerHTML = \`
+  <div id="box" style="height: 200px; border-radius: 15px; background: #f1f5f9; display: flex; align-items: center; justify-content: center; transition: 0.3s;">
+    <button id="colorBtn" style="padding: 15px; background: black; color: white; border-radius: 8px;">Cambia Colore</button>
+  </div>
+\`;
+
+document.getElementById('colorBtn').onclick = () => {
+  const casuale = '#' + Math.floor(Math.random()*16777215).toString(16);
+  document.getElementById('box').style.background = casuale;
+};`,
+            lista: `// Esempio 4: Generare una lista da dati
+const frutti = ["Mela", "Banana", "Arancia", "Kiwi"];
+let html = "<h3>La mia Lista della Spesa:</h3><ul>";
+
+frutti.forEach(f => {
+  html += \`<li style="padding: 10px; border-bottom: 1px solid #eee;">🍎 \${f}</li>\`;
+});
+
+html += "</ul>";
+output.innerHTML = html;`
+        };
+
+        function caricaEsempio(nome) {
+            editor.value = esempi[nome];
+            eseguiCodice();
+        }
+
+        function cambiaVista(vista) {
+            if (vista === 'scrivi') {
+                document.getElementById('sezione-scrivi').classList.remove('hidden');
+                document.getElementById('sezione-risultato').classList.add('hidden');
+                document.getElementById('nav-scrivi').classList.add('tab-attiva');
+                document.getElementById('nav-risultato').classList.remove('tab-attiva');
+            } else {
+                document.getElementById('sezione-scrivi').classList.add('hidden');
+                document.getElementById('sezione-risultato').classList.remove('hidden');
+                document.getElementById('nav-scrivi').classList.remove('tab-attiva');
+                document.getElementById('nav-risultato').classList.add('tab-attiva');
+            }
+        }
+
+        function eseguiCodice() {
+            output.innerHTML = "";
+            try {
+                // Passiamo 'output' e 'document' alla funzione
+                const codice = new Function('output', 'document', editor.value);
+                codice(output, document);
+                cambiaVista('risultato');
+            } catch (errore) {
+                cambiaVista('risultato');
+                output.innerHTML = `<div style="color: #b91c1c; padding: 20px; background: #fee2e2; border-radius: 10px;">
+                    <strong>Errore nel codice:</strong><br>\${errore.message}
+                </div>`;
+            }
+        }
+
+        function svuotaTutto() {
+            editor.value = "";
+            output.innerHTML = "";
+        }
+
+        // Carica il primo esempio all'avvio
+        window.onload = () => caricaEsempio('saluto');
+    </script>
+</body>
+</html>
+
+```

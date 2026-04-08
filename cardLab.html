@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Card Designer Lab</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=Playfair+Display:ital,wght@0,700;1,700&display=swap" rel="stylesheet">
+    <style id="card-live-style">
+        /* Il CSS generato apparirà qui */
+    </style>
+</head>
+<body class="bg-slate-200 min-h-screen p-4 md:p-10 font-sans text-slate-800">
+
+    <div class="max-w-6xl mx-auto flex flex-col gap-8">
+        
+        <header class="flex justify-between items-center bg-white p-6 rounded-2xl shadow-sm border border-slate-300">
+            <div>
+                <h1 class="text-2xl font-black uppercase tracking-tight">Card Designer Lab 🎴</h1>
+                <p class="text-slate-500 text-sm">Progetta componenti interattivi con CSS moderno.</p>
+            </div>
+            <div class="flex gap-2">
+                <button onclick="loadCard('modern')" class="px-3 py-1 bg-slate-800 text-white text-xs rounded-full font-bold uppercase hover:bg-slate-700 transition">Moderna</button>
+                <button onclick="loadCard('vintage')" class="px-3 py-1 bg-amber-700 text-white text-xs rounded-full font-bold uppercase hover:bg-amber-600 transition">Vintage</button>
+                <button onclick="loadCard('glass')" class="px-3 py-1 bg-blue-500 text-white text-xs rounded-full font-bold uppercase hover:bg-blue-400 transition">Glass</button>
+            </div>
+        </header>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
+            
+            <!-- EDITOR DEL CODICE -->
+            <div class="flex flex-col bg-slate-900 rounded-3xl overflow-hidden shadow-2xl border border-slate-700">
+                <div class="bg-slate-800 px-4 py-3 flex justify-between items-center border-b border-slate-700">
+                    <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">CSS della Card</span>
+                    <span class="text-[10px] text-emerald-400 font-mono">Modificabile in tempo reale</span>
+                </div>
+                <textarea id="css-editor" 
+                    class="w-full h-[550px] bg-slate-950 text-emerald-300 p-6 font-mono text-sm outline-none resize-none leading-relaxed"
+                    spellcheck="false"></textarea>
+            </div>
+
+            <!-- ANTEPRIMA DELLA CARD -->
+            <div id="preview-viewport" class="sticky top-10 flex items-center justify-center min-h-[500px] bg-slate-300/30 rounded-3xl border-4 border-dashed border-slate-400/50 p-10">
+                <div id="my-card">
+                    <div class="card-header">
+                        <h2>Titolo della Card</h2>
+                    </div>
+                    <div class="card-body">
+                        <p>Questo è il contenuto principale della tua scheda. Puoi cambiare i margini, i font e le ombre nell'editor a sinistra.</p>
+                        <button class="card-button">Scopri di più</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const editor = document.getElementById('css-editor');
+        const styleTag = document.getElementById('card-live-style');
+
+        const cardPresets = {
+            modern: `/* --- CARD MODERNA PULITA --- */
+#my-card {
+  background: white;
+  width: 350px;
+  border-radius: 24px;
+  overflow: hidden;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.2);
+  font-family: 'Inter', sans-serif;
+  transition: transform 0.3s ease;
+}
+
+#my-card:hover {
+  transform: translateY(-10px);
+}
+
+.card-header {
+  height: 180px;
+  background: linear-gradient(135deg, #6366f1, #a855f7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.card-header h2 {
+  color: white;
+  font-size: 1.5rem;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.card-body {
+  padding: 24px;
+}
+
+.card-body p {
+  color: #64748b;
+  line-height: 1.6;
+  margin-bottom: 20px;
+}
+
+.card-button {
+  width: 100%;
+  padding: 12px;
+  background: #0f172a;
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}`,
+            vintage: `/* --- CARD VINTAGE GIORNALE --- */
+#my-card {
+  background-color: #fdfaf0;
+  background-image: url("https://www.transparenttextures.com/patterns/handmade-paper.png");
+  width: 380px;
+  padding: 30px;
+  border: 2px solid #d1c7a7;
+  box-shadow: 10px 10px 0px #d1c7a7;
+  font-family: 'Playfair Display', serif;
+}
+
+.card-header h2 {
+  color: #4a3728;
+  font-size: 2rem;
+  border-bottom: 3px double #4a3728;
+  margin-bottom: 15px;
+  text-align: center;
+}
+
+.card-body p {
+  color: #5d4037;
+  font-style: italic;
+  text-align: justify;
+}
+
+.card-button {
+  display: block;
+  margin: 20px auto 0;
+  background: transparent;
+  border: 1px solid #4a3728;
+  padding: 10px 20px;
+  font-weight: bold;
+  color: #4a3728;
+  cursor: pointer;
+}`,
+            glass: `/* --- CARD GLASSMORPHISM --- */
+#my-card {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(15px);
+  width: 320px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 30px;
+  padding: 40px;
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+  text-align: center;
+}
+
+#preview-viewport {
+  background: linear-gradient(45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+  background-size: 400% 400%;
+  animation: gradient 15s ease infinite;
+}
+
+@keyframes gradient {
+	0% { background-position: 0% 50%; }
+	50% { background-position: 100% 50%; }
+	100% { background-position: 0% 50%; }
+}
+
+.card-header h2 {
+  color: white;
+  font-size: 1.8rem;
+  margin-bottom: 10px;
+}
+
+.card-body p {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.card-button {
+  margin-top: 25px;
+  padding: 10px 30px;
+  border-radius: 50px;
+  background: white;
+  color: #e73c7e;
+  font-weight: bold;
+  border: none;
+}`
+        };
+
+        function loadCard(type) {
+            editor.value = cardPresets[type];
+            updateStyle();
+        }
+
+        function updateStyle() {
+            styleTag.innerHTML = editor.value;
+        }
+
+        editor.addEventListener('input', updateStyle);
+        window.onload = () => loadCard('modern');
+    </script>
+</body>
+</html>

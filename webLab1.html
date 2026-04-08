@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web Architect - Strutture e Navigazione</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style id="live-css">
+        /* Il CSS modificato verrà iniettato qui */
+    </style>
+</head>
+<body class="bg-slate-100 font-sans text-slate-900 min-h-screen flex flex-col">
+
+    <!-- HEADER DEL LABORATORIO -->
+    <header class="bg-slate-900 text-white p-4 shadow-lg z-30 flex justify-between items-center">
+        <div>
+            <h1 class="text-lg font-black tracking-tighter">ARCHITECT MASTER LAB 🏗️</h1>
+            <p class="text-[9px] text-slate-400 uppercase tracking-widest">Header, Nav & Structure Skeleton</p>
+        </div>
+    </header>
+
+    <!-- MAIN INTERFACE -->
+    <main class="flex-1 flex flex-col md:flex-row overflow-hidden">
+        
+        <!-- CONTROLLI E EDITOR -->
+        <div class="w-full md:w-5/12 flex flex-col border-r border-slate-300 bg-white">
+            
+            <!-- SELETTORE COMPONENTI -->
+            <div class="flex overflow-x-auto bg-slate-200 p-2 gap-2 border-b border-slate-300 no-scrollbar">
+                <button onclick="loadStep('header')" class="flex-none px-4 py-2 bg-white rounded-lg text-[10px] font-bold shadow-sm border border-slate-300 uppercase">Header & Logo</button>
+                <button onclick="loadStep('dropdown')" class="flex-none px-4 py-2 bg-white rounded-lg text-[10px] font-bold shadow-sm border border-slate-300 uppercase">Dropdown Nav</button>
+                <button onclick="loadStep('hamburger')" class="flex-none px-4 py-2 bg-white rounded-lg text-[10px] font-bold shadow-sm border border-slate-300 uppercase">Hamburger Menu</button>
+                <button onclick="loadStep('fullLayout')" class="flex-none px-4 py-2 bg-white rounded-lg text-[10px] font-bold shadow-sm border border-slate-300 uppercase">Full Layout</button>
+            </div>
+
+            <!-- EDITOR CSS -->
+            <div class="flex-1 flex flex-col min-h-[350px]">
+                <div class="bg-slate-800 text-slate-500 px-4 py-2 text-[10px] font-mono flex justify-between items-center">
+                    <span>CSS SKELETON</span>
+                    <span id="comp-name" class="text-blue-400 font-bold">HEADER</span>
+                </div>
+                <textarea id="css-input" 
+                    class="flex-1 p-4 font-mono text-xs md:text-sm bg-slate-950 text-blue-300 outline-none resize-none leading-relaxed"
+                    spellcheck="false"></textarea>
+            </div>
+
+            <!-- SPIEGAZIONE TECNICA -->
+            <div class="p-4 bg-slate-50 border-t border-slate-200">
+                <h4 class="text-[10px] font-bold text-slate-400 uppercase mb-1">Logica Strutturale</h4>
+                <p id="guide-text" class="text-xs text-slate-600 leading-tight">Carica un componente per vedere la guida.</p>
+            </div>
+        </div>
+
+        <!-- AREA ANTEPRIMA -->
+        <div class="w-full md:w-7/12 bg-slate-200 p-4 md:p-8 overflow-y-auto flex flex-col items-center">
+            <div class="w-full max-w-4xl bg-white shadow-2xl min-h-[500px] border border-slate-300 relative" id="preview-window">
+                <div id="preview-content"></div>
+            </div>
+            <p class="mt-4 text-[10px] text-slate-500 uppercase font-bold italic text-center">
+                Anteprima Wireframe (Usa i bordi tratteggiati per capire i contenitori)
+            </p>
+        </div>
+    </main>
+
+    <script>
+        const cssInput = document.getElementById('css-input');
+        const liveStyle = document.getElementById('live-css');
+        const previewContent = document.getElementById('preview-content');
+        const compLabel = document.getElementById('comp-name');
+        const guideText = document.getElementById('guide-text');
+
+        const steps = {
+            header: {
+                label: "Header & Logo",
+                guide: "L'Header usa Flexbox per separare il logo dalla navigazione. 'justify-content: space-between' spinge i due elementi ai lati opposti.",
+                html: `<header class="w-header">
+    <div class="w-logo">LOGO_SPACE</div>
+    <nav class="w-nav-links">
+        <div class="w-nav-item">LINK_1</div>
+        <div class="w-nav-item">LINK_2</div>
+        <div class="w-nav-item">LINK_3</div>
+    </nav>
+</header>`,
+                css: `/* SCHELETRO HEADER */
+.w-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 30px;
+  height: 80px;
+  border-bottom: 2px solid #334155;
+  background: #ffffff;
+}
+
+.w-logo {
+  width: 120px;
+  height: 40px;
+  border: 2px dashed #94a3b8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: bold;
+}
+
+.w-nav-links {
+  display: flex;
+  gap: 20px;
+}
+
+.w-nav-item {
+  padding: 5px 15px;
+  border: 1px solid #cbd5e1;
+  font-size: 10px;
+  background: #f8fafc;
+}`
+            },
+            dropdown: {
+                label: "Dropdown Nav",
+                guide: "Il sottomenu appare quando si passa il mouse sull'elemento padre. La chiave è 'position: absolute' per il menu che scende.",
+                html: `<nav class="w-dropdown-nav">
+    <div class="w-nav-item">HOME</div>
+    <div class="w-parent">
+        PRODOTTI ▾
+        <div class="w-child-menu">
+            <div class="w-child-item">SUB_ITEM_A</div>
+            <div class="w-child-item">SUB_ITEM_B</div>
+            <div class="w-child-item">SUB_ITEM_C</div>
+        </div>
+    </div>
+    <div class="w-nav-item">CONTATTI</div>
+</nav>`,
+                css: `/* SCHELETRO DROPDOWN */
+.w-dropdown-nav {
+  display: flex;
+  gap: 20px;
+  padding: 20px;
+  background: white;
+  border-bottom: 1px solid #ddd;
+}
+
+.w-nav-item, .w-parent {
+  font-size: 11px;
+  padding: 10px;
+  border: 1px solid #cbd5e1;
+  cursor: pointer;
+}
+
+.w-parent {
+  position: relative;
+  background: #f1f5f9;
+}
+
+/* IL MENU NASCOSTO */
+.w-child-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 150px;
+  background: #fff;
+  border: 1px solid #334155;
+  display: none; /* Inizialmente nascosto */
+  z-index: 10;
+}
+
+/* LOGICA DI VISUALIZZAZIONE */
+.w-parent:hover .w-child-menu {
+  display: block;
+}
+
+.w-child-item {
+  padding: 10px;
+  border-bottom: 1px dashed #cbd5e1;
+  font-size: 9px;
+}
+
+.w-child-item:hover {
+  background: #e2e8f0;
+}`
+            },
+            hamburger: {
+                label: "Hamburger Menu",
+                guide: "In CSS puro, usiamo un checkbox invisibile. Se è 'checked', mostriamo la lista dei link che altrimenti sarebbe nascosta.",
+                html: `<nav class="w-mobile-nav">
+    <div class="w-logo">BRAND</div>
+    
+    <input type="checkbox" id="menu-check">
+    <label for="menu-check" class="w-burger">
+        <span></span><span></span><span></span>
+    </label>
+
+    <div class="w-mobile-menu">
+        <div class="w-nav-item">HOME</div>
+        <div class="w-nav-item">SERVIZI</div>
+        <div class="w-nav-item">CHI SIAMO</div>
+    </div>
+</nav>`,
+                css: `/* SCHELETRO HAMBURGER */
+.w-mobile-nav {
+  display: flex;
+  justify-content: space-between;
+  padding: 20px;
+  background: #1e293b;
+  color: white;
+  position: relative;
+}
+
+#menu-check { display: none; } /* Nascondi il quadratino */
+
+.w-burger {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  cursor: pointer;
+}
+
+.w-burger span {
+  width: 20px;
+  height: 2px;
+  background: white;
+}
+
+/* MENU NASCOSTO */
+.w-mobile-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  background: #334155;
+  height: 0;
+  overflow: hidden;
+  transition: 0.3s;
+}
+
+/* LOGICA: SE CHECKBOX ATTIVO -> MOSTRA MENU */
+#menu-check:checked ~ .w-mobile-menu {
+  height: 200px;
+  padding: 20px;
+}
+
+.w-mobile-menu .w-nav-item {
+  border-color: #475569;
+  margin-bottom: 10px;
+  color: white;
+}`
+            },
+            fullLayout: {
+                label: "Full Layout",
+                guide: "Unione di Header, Hero e Content Grid. Qui vedi come i componenti convivono nello spazio verticale.",
+                html: `<div class="full-site">
+    <header class="s-header-full">HEADER (80px)</header>
+    <section class="s-hero-full">HERO (300px)</section>
+    <main class="s-grid-full">
+        <div class="s-card-full">CARD</div>
+        <div class="s-card-full">CARD</div>
+        <div class="s-card-full">CARD</div>
+    </main>
+</div>`,
+                css: `/* SCHELETRO SITO COMPLETO */
+.full-site { display: flex; flex-direction: column; }
+
+.s-header-full {
+  height: 80px;
+  border-bottom: 3px solid #334155;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+}
+
+.s-hero-full {
+  height: 300px;
+  background: #f1f5f9;
+  border-bottom: 1px dashed #94a3b8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #64748b;
+}
+
+.s-grid-full {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  padding: 20px;
+}
+
+.s-card-full {
+  height: 150px;
+  border: 1px solid #cbd5e1;
+  background: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+}`
+            }
+        };
+
+        function loadStep(id) {
+            const step = steps[id];
+            compLabel.innerText = step.label;
+            guideText.innerText = step.guide;
+            cssInput.value = step.css;
+            previewContent.innerHTML = step.html;
+            updateCSS();
+        }
+
+        function updateCSS() {
+            liveStyle.innerHTML = cssInput.value;
+        }
+
+        cssInput.addEventListener('input', updateCSS);
+
+        // Inizializzazione
+        window.onload = () => loadStep('header');
+    </script>
+
+    <style>
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        
+        /* Reset per l'anteprima interna */
+        #preview-content * {
+            box-sizing: border-box;
+        }
+    </style>
+</body>
+</html>
+
+```
