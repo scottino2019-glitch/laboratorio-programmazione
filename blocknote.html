@@ -1,238 +1,455 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { 
-  Plus, 
-  Trash2, 
-  FileText, 
-  FolderOpen, 
-  Download,
-  Menu
-} from 'lucide-react';
-
-/**
- * NOTEPAD CLASSIC LOCAL
- * Stile Windows classico con persistenza localStorage.
- */
-
-export default function App() {
-  const [notes, setNotes] = useState([]);
-  const [activeNoteId, setActiveNoteId] = useState(null);
-  const [content, setContent] = useState('');
-  const [title, setTitle] = useState('');
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
-  const [cursorPos, setCursorPos] = useState({ ln: 1, col: 1 });
-  
-  const editorRef = useRef(null);
-
-  // --- LOGICA DI STORAGE LOCALE ---
-  
-  useEffect(() => {
-    // Carica le note all'avvio
-    const savedNotes = localStorage.getItem('local_notepad_notes');
-    if (savedNotes) {
-      try {
-        const parsed = JSON.parse(savedNotes);
-        setNotes(parsed);
-        if (parsed.length > 0) {
-          setActiveNoteId(parsed[0].id);
-          setContent(parsed[0].content);
-          setTitle(parsed[0].title);
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blocco Note Classico</title>
+    <style>
+        * { box-sizing: border-box; }
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            font-family: 'Segoe UI', Tahoma, sans-serif;
+            display: flex;
+            flex-direction: column;
+            background-color: #f0f0f0;
+            overflow: hidden;
         }
-      } catch (e) {
-        console.error("Errore nel caricamento delle note:", e);
-        initDefaultNote();
-      }
-    } else {
-      initDefaultNote();
-    }
-  }, []);
 
-  const initDefaultNote = () => {
-    const initialId = Date.now();
-    const initialNote = { id: initialId, title: 'Nota 1.txt', content: '' };
-    setNotes([initialNote]);
-    setActiveNoteId(initialId);
-    setTitle(initialNote.title);
-    setContent('');
-  };
+        /* Barra del Titolo */
+        .title-bar {
+            background-color: #fff;
+            padding: 5px 15px;
+            font-size: 12px;
+            color: #333;
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid #eee;
+        }
 
-  // Salva automaticamente nel localStorage ogni volta che cambiano le note
-  useEffect(() => {
-    if (notes.length > 0) {
-      localStorage.setItem('local_notepad_notes', JSON.stringify(notes));
-    }
-  }, [notes]);
+        #current-filename {
+            font-weight: bold;
+            cursor: pointer;
+            padding: 2px 5px;
+            border-radius: 3px;
+            color: #0078d7;
+            text-decoration: underline;
+        }
 
-  const updateCurrentNote = (newContent, newTitle) => {
-    setNotes(prev => prev.map(n => 
-      n.id === activeNoteId ? { ...n, content: newContent, title: newTitle } : n
-    ));
-  };
+        /* Barra dei Menu */
+        .menu-bar {
+            background-color: white;
+            display: flex;
+            border-bottom: 1px solid #d1d1d1;
+            padding: 0 5px;
+            user-select: none;
+            z-index: 100;
+        }
 
-  // --- AZIONI ---
+        .menu-item {
+            padding: 6px 12px;
+            font-size: 13px;
+            cursor: pointer;
+            position: relative;
+        }
 
-  const handleCreateNote = () => {
-    const newId = Date.now();
-    const newNote = { id: newId, title: `Nota ${notes.length + 1}.txt`, content: '' };
-    const newNotes = [...notes, newNote];
-    setNotes(newNotes);
-    setActiveNoteId(newId);
-    setContent('');
-    setTitle(newNote.title);
-  };
+        .menu-item:hover {
+            background-color: #e5f3ff;
+        }
 
-  const switchNote = (id) => {
-    const target = notes.find(n => n.id === id);
-    if (target) {
-      setActiveNoteId(id);
-      setContent(target.content);
-      setTitle(target.title);
-    }
-  };
+        .dropdown {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background-color: #f2f2f2;
+            border: 1px solid #ccc;
+            box-shadow: 3px 3px 5px rgba(0,0,0,0.15);
+            min-width: 220px;
+        }
 
-  const handleDeleteNote = (id, e) => {
-    e.stopPropagation();
-    if (notes.length === 1) {
-      // Non eliminare l'ultima nota, svuotala invece
-      setContent('');
-      setTitle('Nota 1.txt');
-      updateCurrentNote('', 'Nota 1.txt');
-      return;
-    }
-    const filtered = notes.filter(n => n.id !== id);
-    setNotes(filtered);
-    if (activeNoteId === id) {
-      const nextNote = filtered[0];
-      setActiveNoteId(nextNote.id);
-      setContent(nextNote.content);
-      setTitle(nextNote.title);
-    }
-  };
+        .menu-item:hover .dropdown {
+            display: block;
+        }
 
-  const downloadFile = () => {
-    const element = document.createElement("a");
-    const file = new Blob([content], {type: 'text/plain'});
-    element.href = URL.createObjectURL(file);
-    element.download = title.endsWith('.txt') ? title : `${title}.txt`;
-    document.body.appendChild(element);
-    element.click();
-    document.body.removeChild(element);
-  };
+        .dropdown-item {
+            padding: 6px 15px;
+            color: black;
+            font-size: 13px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
 
-  const handleTextChange = (e) => {
-    const val = e.target.value;
-    setContent(val);
-    updateCurrentNote(val, title);
-  };
+        .dropdown-item:hover {
+            background-color: #0078d7;
+            color: white;
+        }
 
-  const handleTitleChange = (e) => {
-    const val = e.target.value;
-    setTitle(val);
-    updateCurrentNote(content, val);
-  };
+        .dropdown-item .shortcut {
+            font-size: 11px;
+            color: #888;
+        }
 
-  const updateCursor = () => {
-    if (!editorRef.current) return;
-    const text = editorRef.current.value;
-    const pos = editorRef.current.selectionStart;
-    const lines = text.substring(0, pos).split('\n');
-    setCursorPos({ ln: lines.length, col: lines[lines.length - 1].length + 1 });
-  };
+        .dropdown-item:hover .shortcut {
+            color: #fff;
+        }
 
-  return (
-    <div className="flex h-screen bg-[#f0f0f0] text-black font-sans overflow-hidden border border-[#999]">
-      
-      {/* Sidebar - Pannello Gestione File */}
-      {isSidebarOpen && (
-        <div className="w-64 bg-white border-r border-[#ccc] flex flex-col select-none">
-          <div className="p-2 bg-[#eee] border-b border-[#ccc] flex justify-between items-center text-xs font-bold uppercase tracking-tight text-[#555]">
-            <span className="flex items-center gap-1"><FolderOpen size={14}/> I miei file</span>
-            <button onClick={handleCreateNote} className="p-1 hover:bg-[#ddd] border border-transparent hover:border-[#aaa] rounded">
-              <Plus size={16} />
-            </button>
-          </div>
-          <div className="flex-1 overflow-y-auto">
-            {notes.map(note => (
-              <div 
-                key={note.id}
-                onClick={() => switchNote(note.id)}
-                className={`flex items-center justify-between px-3 py-2 cursor-default border-b border-[#f5f5f5] text-sm ${
-                  activeNoteId === note.id ? 'bg-[#0078d7] text-white' : 'hover:bg-[#e5f3ff]'
-                }`}
-              >
-                <div className="flex items-center gap-2 truncate pointer-events-none">
-                  <FileText size={16} className={activeNoteId === note.id ? 'text-white' : 'text-[#0078d7]'} />
-                  <span className="truncate">{note.title}</span>
-                </div>
-                <button 
-                  onClick={(e) => handleDeleteNote(note.id, e)}
-                  className={`p-1 rounded ${activeNoteId === note.id ? 'hover:bg-[#005a9e]' : 'hover:bg-red-100 text-red-600'}`}
-                >
-                  <Trash2 size={12} />
-                </button>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
+        .divider {
+            height: 1px;
+            background-color: #ccc;
+            margin: 4px 0;
+        }
 
-      {/* Area Principale Notepad */}
-      <div className="flex-1 flex flex-col bg-white overflow-hidden">
-        
-        {/* Barra dei menu stile Windows */}
-        <div className="flex items-center bg-white border-b border-[#eee] text-[12px] px-1 select-none">
-          <button onClick={() => setIsSidebarOpen(!isSidebarOpen)} className="p-1.5 hover:bg-[#e5f3ff] flex items-center gap-1">
-             <Menu size={14} /> {isSidebarOpen ? 'Chiudi' : 'Esplora'}
-          </button>
-          <div className="w-[1px] h-4 bg-[#ccc] mx-1"></div>
-          <button onClick={handleCreateNote} className="p-1.5 hover:bg-[#e5f3ff]">File</button>
-          <button onClick={() => editorRef.current?.focus()} className="p-1.5 hover:bg-[#e5f3ff]">Modifica</button>
-          <button onClick={() => {}} className="p-1.5 hover:bg-[#e5f3ff]">Formato</button>
-          <button onClick={() => alert("Notepad Classic Local v1.1\nSalvataggio nel browser attivo.")} className="p-1.5 hover:bg-[#e5f3ff]">?</button>
-        </div>
+        /* Area di Testo */
+        .editor-container {
+            flex: 1;
+            background-color: white;
+            display: flex;
+            overflow: hidden;
+        }
 
-        {/* Toolbar Azioni Rapide */}
-        <div className="flex items-center gap-4 px-4 py-2 bg-[#f9f9f9] border-b border-[#ddd]">
-          <input 
-            type="text" 
-            value={title}
-            onChange={handleTitleChange}
-            className="flex-1 bg-white border border-[#ccc] px-2 py-1 text-sm outline-none focus:border-[#0078d7]"
-          />
-          <button 
-            onClick={downloadFile}
-            className="flex items-center gap-1 px-3 py-1 bg-[#eee] border border-[#bbb] text-xs hover:bg-[#ddd]"
-          >
-            <Download size={14} /> Scarica .txt
-          </button>
-        </div>
+        #editor {
+            flex: 1;
+            border: none;
+            outline: none;
+            padding: 20px;
+            font-family: 'Consolas', monospace;
+            font-size: 18px;
+            resize: none;
+            line-height: 1.6;
+            color: #1a1a1a;
+            white-space: pre;
+            overflow: auto;
+        }
 
-        {/* Text Area */}
-        <textarea
-          ref={editorRef}
-          value={content}
-          onChange={handleTextChange}
-          onKeyUp={updateCursor}
-          onClick={updateCursor}
-          onFocus={updateCursor}
-          spellCheck="false"
-          className="flex-1 p-3 outline-none resize-none font-mono text-[14px] leading-tight text-black selection:bg-[#0078d7] selection:text-white"
-          placeholder="Inizia a scrivere..."
-        />
+        /* Barra di Stato */
+        #status-bar {
+            background-color: #f0f0f0;
+            border-top: 1px solid #ccc;
+            padding: 4px 20px;
+            display: flex;
+            justify-content: flex-end;
+            font-size: 12px;
+            color: #555;
+            gap: 25px;
+        }
 
-        {/* Barra di stato classica */}
-        <div className="h-[22px] bg-[#f0f0f0] border-t border-[#ccc] flex items-center justify-end px-4 gap-6 text-[11px] text-[#444] select-none">
-          <div className="flex gap-4 border-l border-[#ccc] pl-4">
-             <span>Caratteri: {content.length}</span>
-             <span>Ln {cursorPos.ln}, Col {cursorPos.col}</span>
-          </div>
-          <div className="border-l border-[#ccc] pl-4 hidden sm:block">
-            Windows (CRLF)
-          </div>
-          <div className="border-l border-[#ccc] pl-4 w-20 hidden sm:block">
-            UTF-8
-          </div>
-        </div>
-      </div>
+        /* Modale Gestore File */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.4);
+            z-index: 200;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal {
+            background: white;
+            width: 400px;
+            border: 1px solid #0078d7;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+
+        .modal-header {
+            background: #0078d7;
+            color: white;
+            padding: 10px 15px;
+            display: flex;
+            justify-content: space-between;
+            font-size: 14px;
+        }
+
+        .modal-body {
+            padding: 10px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .note-row {
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            cursor: pointer;
+        }
+
+        .note-row:hover { background: #f0f7ff; }
+        .btn-del { color: red; font-weight: bold; cursor: pointer; padding: 0 5px; }
+    </style>
+</head>
+<body>
+
+    <div class="title-bar">
+        <span id="current-filename" onclick="renameNote()">Senza titolo.txt</span>
+        <span style="margin-left: 5px;">- Blocco Note</span>
     </div>
-  );
-}
+
+    <div class="menu-bar">
+        <!-- FILE -->
+        <div class="menu-item">
+            File
+            <div class="dropdown">
+                <div class="dropdown-item" onclick="createNew()">Nuovo <span class="shortcut">Ctrl+N</span></div>
+                <div class="dropdown-item" onclick="openManager()">Apri... <span class="shortcut">Ctrl+O</span></div>
+                <div class="divider"></div>
+                <div class="dropdown-item" onclick="downloadTxt()">Salva con nome... <span class="shortcut">Ctrl+S</span></div>
+            </div>
+        </div>
+
+        <!-- MODIFICA -->
+        <div class="menu-item">
+            Modifica
+            <div class="dropdown">
+                <div class="dropdown-item" onclick="execCmd('undo')">Annulla <span class="shortcut">Ctrl+Z</span></div>
+                <div class="divider"></div>
+                <div class="dropdown-item" onclick="execCmd('cut')">Taglia <span class="shortcut">Ctrl+X</span></div>
+                <div class="dropdown-item" onclick="execCmd('copy')">Copia <span class="shortcut">Ctrl+C</span></div>
+                <div class="dropdown-item" onclick="execCmd('paste')">Incolla <span class="shortcut">Ctrl+V</span></div>
+                <div class="dropdown-item" onclick="execCmd('delete')">Elimina <span class="shortcut">Del</span></div>
+                <div class="divider"></div>
+                <div class="dropdown-item" onclick="findText()">Trova... <span class="shortcut">Ctrl+F</span></div>
+                <div class="divider"></div>
+                <div class="dropdown-item" onclick="execCmd('selectAll')">Seleziona tutto <span class="shortcut">Ctrl+A</span></div>
+                <div class="dropdown-item" onclick="insertDateTime()">Ora/Data <span class="shortcut">F5</span></div>
+            </div>
+        </div>
+
+        <!-- FORMATO -->
+        <div class="menu-item">
+            Formato
+            <div class="dropdown">
+                <div class="dropdown-item" onclick="toggleWrap()">A capo automatico</div>
+                <div class="divider"></div>
+                <div class="dropdown-item" onclick="changeFont('Consolas, monospace')">Carattere: Monospazio</div>
+                <div class="dropdown-item" onclick="changeFont('serif')">Carattere: Serif</div>
+                <div class="dropdown-item" onclick="changeFont('sans-serif')">Carattere: Sans-Serif</div>
+                <div class="divider"></div>
+                <div class="dropdown-item" onclick="changeSize('14px')">Dimensione: Piccola</div>
+                <div class="dropdown-item" onclick="changeSize('18px')">Dimensione: Media</div>
+                <div class="dropdown-item" onclick="changeSize('24px')">Dimensione: Grande</div>
+            </div>
+        </div>
+
+        <!-- VISUALIZZA -->
+        <div class="menu-item">
+            Visualizza
+            <div class="dropdown">
+                <div class="dropdown-item" onclick="toggleStatusBar()">Barra di stato</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="editor-container">
+        <textarea id="editor" spellcheck="false" placeholder="Inizia a scrivere..."></textarea>
+    </div>
+
+    <div id="status-bar">
+        <div id="status-info">Ln 1, Col 1 | Caratteri: 0</div>
+        <div style="border-left: 1px solid #ccc; padding-left: 15px;">100%</div>
+        <div style="border-left: 1px solid #ccc; padding-left: 15px;">Windows (CRLF)</div>
+        <div style="border-left: 1px solid #ccc; padding-left: 15px;">UTF-8</div>
+    </div>
+
+    <!-- Gestore File -->
+    <div id="note-manager" class="modal-overlay" onclick="closeModal()">
+        <div class="modal" onclick="event.stopPropagation()">
+            <div class="modal-header">
+                <span>Apri file salvato</span>
+                <span style="cursor:pointer" onclick="closeModal()">✕</span>
+            </div>
+            <div id="note-list" class="modal-body"></div>
+        </div>
+    </div>
+
+    <script>
+        const editor = document.getElementById('editor');
+        const statusInfo = document.getElementById('status-info');
+        const fileNameDisplay = document.getElementById('current-filename');
+        const manager = document.getElementById('note-manager');
+        const noteList = document.getElementById('note-list');
+        const statusBar = document.getElementById('status-bar');
+
+        let currentNoteId = null;
+
+        // Inizializzazione dati
+        window.onload = function() {
+            const storage = getStorage();
+            const lastId = localStorage.getItem('last_id_v4');
+            if (lastId && storage[lastId]) loadNote(lastId);
+            else createNew();
+            updateStatus();
+        };
+
+        function getStorage() {
+            return JSON.parse(localStorage.getItem('notepad_v4_data') || '{}');
+        }
+
+        function saveStorage(data) {
+            localStorage.setItem('notepad_v4_data', JSON.stringify(data));
+        }
+
+        // Funzioni File
+        function saveCurrent() {
+            const storage = getStorage();
+            if (!currentNoteId) return;
+            storage[currentNoteId].content = editor.value;
+            saveStorage(storage);
+            updateStatus();
+        }
+
+        function createNew() {
+            const storage = getStorage();
+            currentNoteId = 'note_' + Date.now();
+            const name = "Nota_" + (Object.keys(storage).length + 1) + ".txt";
+            storage[currentNoteId] = { id: currentNoteId, title: name, content: '' };
+            saveStorage(storage);
+            localStorage.setItem('last_id_v4', currentNoteId);
+            editor.value = '';
+            fileNameDisplay.innerText = name;
+            editor.focus();
+        }
+
+        function loadNote(id) {
+            const storage = getStorage();
+            if (storage[id]) {
+                currentNoteId = id;
+                editor.value = storage[id].content;
+                fileNameDisplay.innerText = storage[id].title;
+                localStorage.setItem('last_id_v4', id);
+                closeModal();
+            }
+        }
+
+        function deleteNote(id) {
+            const storage = getStorage();
+            delete storage[id];
+            saveStorage(storage);
+            if (currentNoteId === id) createNew();
+            else renderList();
+        }
+
+        function renameNote() {
+            const name = prompt("Rinomina file:", fileNameDisplay.innerText);
+            if (name) {
+                const storage = getStorage();
+                storage[currentNoteId].title = name.endsWith('.txt') ? name : name + '.txt';
+                fileNameDisplay.innerText = storage[currentNoteId].title;
+                saveStorage(storage);
+            }
+        }
+
+        // Funzioni Modifica
+        function execCmd(cmd) {
+            editor.focus();
+            if (cmd === 'undo') document.execCommand('undo');
+            if (cmd === 'selectAll') editor.select();
+            if (cmd === 'delete') {
+                const start = editor.selectionStart;
+                const end = editor.selectionEnd;
+                editor.value = editor.value.slice(0, start) + editor.value.slice(end);
+                editor.selectionStart = editor.selectionEnd = start;
+                saveCurrent();
+            }
+            if (cmd === 'cut' || cmd === 'copy') {
+                document.execCommand(cmd);
+            }
+            if (cmd === 'paste') {
+                alert("Per incollare usa la scorciatoia Ctrl+V del browser.");
+            }
+        }
+
+        function findText() {
+            const search = prompt("Trova testo:");
+            if (search) {
+                const text = editor.value;
+                const index = text.indexOf(search);
+                if (index !== -1) {
+                    editor.focus();
+                    editor.setSelectionRange(index, index + search.length);
+                } else {
+                    alert("Testo non trovato.");
+                }
+            }
+        }
+
+        function insertDateTime() {
+            const now = new Date();
+            const dtString = now.toLocaleString();
+            const start = editor.selectionStart;
+            const end = editor.selectionEnd;
+            editor.value = editor.value.slice(0, start) + dtString + editor.value.slice(end);
+            editor.selectionStart = editor.selectionEnd = start + dtString.length;
+            saveCurrent();
+        }
+
+        // Formato e Visualizza
+        function changeFont(font) { editor.style.fontFamily = font; }
+        function changeSize(size) { editor.style.fontSize = size; }
+        function toggleWrap() {
+            editor.style.whiteSpace = editor.style.whiteSpace === 'pre' ? 'pre-wrap' : 'pre';
+        }
+        function toggleStatusBar() {
+            statusBar.style.display = statusBar.style.display === 'none' ? 'flex' : 'none';
+        }
+
+        // Gestione Modali
+        function openManager() {
+            manager.style.display = 'flex';
+            renderList();
+        }
+        function closeModal() { manager.style.display = 'none'; }
+
+        function renderList() {
+            const storage = getStorage();
+            const keys = Object.keys(storage).sort((a,b) => b.split('_')[1] - a.split('_')[1]);
+            if (keys.length === 0) {
+                noteList.innerHTML = '<p style="text-align:center; color:#888;">Nessuna nota salvata.</p>';
+                return;
+            }
+            noteList.innerHTML = keys.map(id => `
+                <div class="note-row" onclick="loadNote('${id}')">
+                    <span>${storage[id].title}</span>
+                    <span class="btn-del" onclick="event.stopPropagation(); deleteNote('${id}')">×</span>
+                </div>
+            `).join('');
+        }
+
+        // Stato
+        function updateStatus() {
+            const text = editor.value;
+            const pos = editor.selectionStart;
+            const lines = text.substring(0, pos).split('\n');
+            const ln = lines.length;
+            const col = lines[lines.length - 1].length + 1;
+            statusInfo.innerText = `Ln ${ln}, Col ${col} | Caratteri: ${text.length}`;
+        }
+
+        function downloadTxt() {
+            const blob = new Blob([editor.value], { type: 'text/plain' });
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = fileNameDisplay.innerText;
+            a.click();
+        }
+
+        // Eventi e Scorciatoie
+        editor.addEventListener('input', saveCurrent);
+        editor.onkeyup = updateStatus;
+        editor.onclick = updateStatus;
+
+        window.onkeydown = function(e) {
+            if (e.key === 'F5') { e.preventDefault(); insertDateTime(); }
+            if (e.ctrlKey) {
+                if (e.key === 'n') { e.preventDefault(); createNew(); }
+                if (e.key === 'o') { e.preventDefault(); openManager(); }
+                if (e.key === 's') { e.preventDefault(); downloadTxt(); }
+                if (e.key === 'f') { e.preventDefault(); findText(); }
+            }
+        };
+    </script>
+</body>
+</html>
