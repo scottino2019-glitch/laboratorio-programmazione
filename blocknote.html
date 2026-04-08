@@ -3,51 +3,63 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Blocco Note - Stile Windows</title>
+    <title>Blocco Note - Windows Style</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-            background-color: #f0f0f0;
+        :root {
+            --win-bg: #ffffff;
+            --win-hover: #e5f3ff;
+            --win-border: #d1d1d1;
+            --win-menu-text: #000000;
         }
 
-        /* Menu Bar Styling */
-        .menu-bar {
-            background-color: #fff;
+        body, html {
+            height: 100%;
+            margin: 0;
+            overflow: hidden;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background-color: var(--win-bg);
+        }
+
+        .app-container {
             display: flex;
-            font-size: 13px;
-            padding: 2px 5px;
-            border-bottom: 1px solid #d1d1d1;
+            flex-direction: column;
+            height: 100vh;
+        }
+
+        /* Menu Bar */
+        .menu-bar {
+            background-color: var(--win-bg);
+            display: flex;
+            padding: 2px 4px;
+            font-size: 12px;
+            border-bottom: 1px solid var(--win-border);
             user-select: none;
+            z-index: 50;
         }
 
         .menu-item {
             padding: 4px 8px;
-            cursor: default;
             position: relative;
+            cursor: default;
         }
 
         .menu-item:hover {
-            background-color: #e5f3ff;
-            outline: 1px solid #91c9f7;
+            background-color: var(--win-hover);
         }
 
-        /* Dropdown menu */
+        /* Dropdown */
         .dropdown {
             display: none;
             position: absolute;
             top: 100%;
             left: 0;
             background-color: #f2f2f2;
-            min-width: 180px;
-            box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
-            z-index: 100;
+            min-width: 200px;
+            box-shadow: 2px 2px 5px rgba(0,0,0,0.15);
             border: 1px solid #ccc;
-            padding: 2px;
+            padding: 3px;
+            z-index: 100;
         }
 
         .menu-item:hover .dropdown {
@@ -55,209 +67,213 @@
         }
 
         .dropdown-item {
-            padding: 5px 25px 5px 30px;
+            padding: 6px 10px 6px 30px;
             display: flex;
             justify-content: space-between;
-            color: #000;
+            align-items: center;
+            color: #333;
         }
 
         .dropdown-item:hover {
-            background-color: #91c9f7;
-            color: #fff;
+            background-color: #0078d7;
+            color: white;
         }
 
-        .dropdown-divider {
+        .dropdown-item span {
+            font-size: 11px;
+            opacity: 0.7;
+        }
+
+        .divider {
             height: 1px;
             background-color: #ccc;
-            margin: 3px 5px;
+            margin: 4px 5px;
         }
 
-        /* Editor Styling */
+        /* Text Area */
         #editor {
             flex-grow: 1;
             width: 100%;
             border: none;
             outline: none;
-            padding: 10px;
-            font-family: 'Consolas', 'Courier New', monospace;
-            font-size: 16px;
+            padding: 8px;
+            font-family: 'Consolas', 'Lucida Console', monospace;
+            font-size: 14px;
             resize: none;
-            line-height: 1.4;
+            line-height: 1.5;
+            color: #1e1e1e;
         }
 
         /* Status Bar */
         .status-bar {
+            height: 22px;
             background-color: #f0f0f0;
-            border-top: 1px solid #d1d1d1;
+            border-top: 1px solid var(--win-border);
             display: flex;
+            align-items: center;
             justify-content: flex-end;
-            padding: 2px 20px;
-            font-size: 12px;
-            color: #555;
+            font-size: 11px;
+            color: #444;
+            padding: 0 15px;
             gap: 20px;
         }
 
-        /* Hidden file input */
-        #fileInput {
+        /* Overlay per "Esci" */
+        #exit-overlay {
             display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #0078d7;
+            color: white;
+            z-index: 9999;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+
+        .win-button {
+            background: #e1e1e1;
+            color: black;
+            border: 1px solid #adadad;
+            padding: 5px 20px;
+            margin-top: 20px;
+            cursor: pointer;
+        }
+
+        .win-button:hover {
+            background: #e5f1fb;
+            border-color: #0078d7;
         }
     </style>
 </head>
 <body>
 
-    <!-- Menu Bar -->
-    <div class="menu-bar">
-        <div class="menu-item">
-            File
-            <div class="dropdown">
-                <div class="dropdown-item" onclick="newFile()">Nuovo <span class="text-gray-500">Ctrl+N</span></div>
-                <div class="dropdown-item" onclick="triggerOpen()">Apri... <span class="text-gray-500">Ctrl+O</span></div>
-                <div class="dropdown-item" onclick="saveFile()">Salva <span class="text-gray-500">Ctrl+S</span></div>
-                <div class="dropdown-divider"></div>
-                <div class="dropdown-item" onclick="window.close()">Esci</div>
-            </div>
-        </div>
-        <div class="menu-item">
-            Modifica
-            <div class="dropdown">
-                <div class="dropdown-item" onclick="document.execCommand('undo')">Annulla</div>
-                <div class="dropdown-divider"></div>
-                <div class="dropdown-item" onclick="copyText()">Copia</div>
-                <div class="dropdown-item" onclick="document.execCommand('cut')">Taglia</div>
-                <div class="dropdown-item" onclick="pastePlaceholder()">Incolla</div>
-            </div>
-        </div>
-        <div class="menu-item">
-            Formato
-            <div class="dropdown">
-                <div class="dropdown-item" onclick="toggleWrap()">A capo automatico</div>
-            </div>
-        </div>
-        <div class="menu-item">
-            Aiuto
-            <div class="dropdown">
-                <div class="dropdown-item" onclick="showAbout()">Informazioni</div>
-            </div>
-        </div>
+    <div id="exit-overlay">
+        <h1 class="text-4xl mb-4">Chiusura sessione in corso...</h1>
+        <p>Il Blocco Note è stato chiuso virtualmente.</p>
+        <button class="win-button" onclick="cancelExit()">Riapri Blocco Note</button>
     </div>
 
-    <!-- Hidden Input for Opening Files -->
-    <input type="file" id="fileInput" accept=".txt">
+    <div class="app-container" id="main-app">
+        <!-- Menu Bar -->
+        <div class="menu-bar">
+            <div class="menu-item">
+                File
+                <div class="dropdown">
+                    <div class="dropdown-item" onclick="newFile()">Nuovo <span>Ctrl+N</span></div>
+                    <div class="dropdown-item" onclick="triggerOpen()">Apri... <span>Ctrl+O</span></div>
+                    <div class="dropdown-item" onclick="saveFile()">Salva <span>Ctrl+S</span></div>
+                    <div class="divider"></div>
+                    <div class="dropdown-item" onclick="exitApp()">Esci</div>
+                </div>
+            </div>
+            <div class="menu-item">
+                Modifica
+                <div class="dropdown">
+                    <div class="dropdown-item" onclick="document.execCommand('undo')">Annulla <span>Ctrl+Z</span></div>
+                    <div class="divider"></div>
+                    <div class="dropdown-item" onclick="cutText()">Taglia <span>Ctrl+X</span></div>
+                    <div class="dropdown-item" onclick="copyText()">Copia <span>Ctrl+C</span></div>
+                    <div class="dropdown-item" onclick="pasteInfo()">Incolla <span>Ctrl+V</span></div>
+                </div>
+            </div>
+            <div class="menu-item">
+                Visualizza
+                <div class="dropdown">
+                    <div class="dropdown-item" onclick="toggleStatusBar()">Barra di stato</div>
+                </div>
+            </div>
+        </div>
 
-    <!-- Main Text Area -->
-    <textarea id="editor" placeholder="Inizia a scrivere..."></textarea>
+        <input type="file" id="fileLoader" hidden accept=".txt">
 
-    <!-- Status Bar -->
-    <div class="status-bar">
-        <div id="cursorPos">Ln 1, Col 1</div>
-        <div>100%</div>
-        <div>Windows (CRLF)</div>
-        <div>UTF-8</div>
+        <!-- Editor -->
+        <textarea id="editor" spellcheck="false"></textarea>
+
+        <!-- Status Bar -->
+        <div class="status-bar" id="statusBar">
+            <div id="cursorPos">Ln 1, Col 1</div>
+            <div>Windows (CRLF)</div>
+            <div>UTF-8</div>
+        </div>
     </div>
 
     <script>
         const editor = document.getElementById('editor');
-        const fileInput = document.getElementById('fileInput');
-        const cursorPosDisplay = document.getElementById('cursorPos');
+        const statusBar = document.getElementById('statusBar');
+        const fileLoader = document.getElementById('fileLoader');
+        const cursorPos = document.getElementById('cursorPos');
+        const exitOverlay = document.getElementById('exit-overlay');
 
-        // Update Cursor Position Info
-        function updateCursorPos() {
-            const textBeforeCursor = editor.value.substring(0, editor.selectionStart);
-            const lines = textBeforeCursor.split("\n");
-            const currentLine = lines.length;
-            const currentCol = lines[lines.length - 1].length + 1;
-            cursorPosDisplay.textContent = `Ln ${currentLine}, Col ${currentCol}`;
+        // Aggiorna posizione cursore
+        function updateStatus() {
+            const text = editor.value;
+            const sub = text.substring(0, editor.selectionStart);
+            const lines = sub.split('\n');
+            const line = lines.length;
+            const col = lines[lines.length - 1].length + 1;
+            cursorPos.innerText = `Ln ${line}, Col ${col}`;
         }
 
-        editor.addEventListener('keyup', updateCursorPos);
-        editor.addEventListener('click', updateCursorPos);
-        editor.addEventListener('input', updateCursorPos);
+        editor.addEventListener('input', updateStatus);
+        editor.addEventListener('click', updateStatus);
+        editor.addEventListener('keyup', updateStatus);
 
-        // File Operations
+        // Operazioni File
         function newFile() {
-            if (editor.value !== "" && !confirm("Vuoi cancellare il contenuto attuale per un nuovo file?")) {
-                return;
-            }
-            editor.value = "";
-            updateCursorPos();
+            if (editor.value && !confirm("Vuoi scartare le modifiche correnti?")) return;
+            editor.value = '';
+            updateStatus();
         }
 
         function triggerOpen() {
-            fileInput.click();
+            fileLoader.click();
         }
 
-        fileInput.addEventListener('change', function(e) {
+        fileLoader.onchange = (e) => {
             const file = e.target.files[0];
             if (!file) return;
-
             const reader = new FileReader();
-            reader.onload = function(e) {
+            reader.onload = (e) => {
                 editor.value = e.target.result;
-                updateCursorPos();
+                updateStatus();
             };
             reader.readAsText(file);
-        });
+        };
 
         function saveFile() {
-            const text = editor.value;
-            const blob = new Blob([text], { type: 'text/plain' });
+            const blob = new Blob([editor.value], {type: 'text/plain'});
+            const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
-            a.href = URL.createObjectURL(blob);
-            a.download = 'senza_titolo.txt';
-            document.body.appendChild(a);
+            a.href = url;
+            a.download = 'Documento.txt';
             a.click();
-            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
         }
 
-        // Edit Operations
-        function copyText() {
-            editor.select();
-            document.execCommand('copy');
+        // Funzione Esci
+        function exitApp() {
+            if (editor.value && !confirm("Contenuto non salvato. Vuoi uscire comunque?")) return;
+            exitOverlay.style.display = 'flex';
         }
 
-        function pastePlaceholder() {
-            // Navigator.clipboard requires secure context, using basic notification
-            alert("Usa Ctrl+V per incollare il testo direttamente nell'editor.");
+        function cancelExit() {
+            exitOverlay.style.display = 'none';
         }
 
-        function toggleWrap() {
-            if (editor.style.whiteSpace === 'pre') {
-                editor.style.whiteSpace = 'pre-wrap';
-                editor.style.overflowX = 'hidden';
-            } else {
-                editor.style.whiteSpace = 'pre';
-                editor.style.overflowX = 'auto';
-            }
+        // Modifica
+        function cutText() { document.execCommand('cut'); }
+        function copyText() { document.execCommand('copy'); }
+        function pasteInfo() { 
+            alert("Per incollare, usa la scorciatoia da tastiera Ctrl + V."); 
         }
 
-        function showAbout() {
-            alert("Blocco Note Web v1.0\nUno strumento semplice in stile Windows creato con Gemini.");
+        function toggleStatusBar() {
+            statusBar.style.display = statusBar.style.display === 'none' ? 'flex' : 'none';
         }
 
-        // Keyboard Shortcuts
-        window.addEventListener('keydown', function(e) {
-            if (e.ctrlKey) {
-                switch(e.key.toLowerCase()) {
-                    case 's':
-                        e.preventDefault();
-                        saveFile();
-                        break;
-                    case 'n':
-                        e.preventDefault();
-                        newFile();
-                        break;
-                    case 'o':
-                        e.preventDefault();
-                        triggerOpen();
-                        break;
-                }
-            }
-        });
-
-        // Initialize focus
-        window.onload = () => {
-            editor.focus();
-        };
-    </script>
-</body>
-</html>
+       
