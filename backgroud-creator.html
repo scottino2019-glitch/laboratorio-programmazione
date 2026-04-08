@@ -16,55 +16,54 @@
         
         <header class="mb-6 flex flex-col md:flex-row justify-between items-start md:items-end gap-4">
             <div>
-                <h1 class="text-2xl md:text-3xl font-black text-white tracking-tight uppercase">Texture Lab Live 🧪</h1>
-                <p class="text-slate-400 text-sm">Modifica il codice CSS e osserva il cambiamento istantaneo.</p>
+                <h1 class="text-3xl font-black text-white tracking-tight uppercase">Texture Lab Live 🧪</h1>
+                <p class="text-slate-400">Modifica il codice CSS e osserva il cambiamento istantaneo.</p>
             </div>
-            <div id="status-indicator" class="text-[10px] md:text-xs font-mono text-emerald-400 bg-emerald-400/10 px-3 py-1 rounded-full border border-emerald-400/20 self-start md:self-auto">
+            <div id="status-indicator" class="text-xs font-mono text-emerald-400 bg-emerald-400/10 px-3 py-1 rounded-full border border-emerald-400/20">
                 ● Sincronizzato
             </div>
         </header>
 
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 pb-10">
             
-            <!-- PANNELLO DI SINISTRA: CODICE EDITABILE -->
+            <!-- PANNELLO DI SINISTRA: EDITOR -->
             <div class="flex flex-col bg-slate-800 rounded-2xl overflow-hidden border border-slate-700 shadow-2xl order-2 lg:order-1">
-                <div class="bg-slate-700 px-4 py-3 flex justify-between items-center">
+                <div class="bg-slate-700 px-4 py-2 flex justify-between items-center">
                     <span class="text-xs font-bold uppercase tracking-widest text-slate-300">Editor CSS</span>
-                    <div class="flex gap-1.5">
+                    <div class="flex gap-1">
                         <div class="w-3 h-3 rounded-full bg-red-500/50"></div>
                         <div class="w-3 h-3 rounded-full bg-yellow-500/50"></div>
                         <div class="w-3 h-3 rounded-full bg-green-500/50"></div>
                     </div>
                 </div>
                 
-                <!-- Altezza fissa su mobile per non allungare troppo la pagina all'inizio -->
-                <div class="h-[300px] md:h-[450px] lg:h-[500px] relative overflow-hidden">
+                <div class="h-[400px] md:h-[500px] relative overflow-hidden">
                     <textarea id="code-editor" 
                         class="w-full h-full bg-slate-900 text-emerald-300 p-6 font-mono text-sm outline-none resize-none leading-relaxed"
                         spellcheck="false"
                         autocomplete="off"></textarea>
                 </div>
 
-                <div class="bg-slate-800 p-3 border-t border-slate-700 grid grid-cols-3 md:grid-cols-5 gap-2">
-                    <button onclick="loadPreset('lavagna')" class="text-[10px] font-bold py-3 bg-slate-700 active:bg-slate-500 hover:bg-slate-600 rounded uppercase transition-colors">Lavagna</button>
-                    <button onclick="loadPreset('muro')" class="text-[10px] font-bold py-3 bg-slate-700 active:bg-slate-500 hover:bg-slate-600 rounded uppercase transition-colors">Mattoni</button>
-                    <button onclick="loadPreset('quadretti')" class="text-[10px] font-bold py-3 bg-slate-700 active:bg-slate-500 hover:bg-slate-600 rounded uppercase transition-colors">Quadretti</button>
-                    <button onclick="loadPreset('righe')" class="text-[10px] font-bold py-3 bg-slate-700 active:bg-slate-500 hover:bg-slate-600 rounded uppercase transition-colors">Righe</button>
-                    <button onclick="loadPreset('carta')" class="text-[10px] font-bold py-3 bg-slate-700 active:bg-slate-500 hover:bg-slate-600 rounded uppercase transition-colors">Carta</button>
+                <div class="bg-slate-800 p-4 border-t border-slate-700 grid grid-cols-3 md:grid-cols-5 gap-2">
+                    <button onclick="loadPreset('lavagna')" class="text-[10px] font-bold py-2 bg-slate-700 hover:bg-slate-600 rounded uppercase transition-colors">Lavagna</button>
+                    <button onclick="loadPreset('muro')" class="text-[10px] font-bold py-2 bg-slate-700 hover:bg-slate-600 rounded uppercase transition-colors">Mattoni</button>
+                    <button onclick="loadPreset('quadretti')" class="text-[10px] font-bold py-2 bg-slate-700 hover:bg-slate-600 rounded uppercase transition-colors">Quadretti</button>
+                    <button onclick="loadPreset('righe')" class="text-[10px] font-bold py-2 bg-slate-700 hover:bg-slate-600 rounded uppercase transition-colors">Righe</button>
+                    <button onclick="loadPreset('carta')" class="text-[10px] font-bold py-2 bg-slate-700 hover:bg-slate-600 rounded uppercase transition-colors">Carta</button>
                 </div>
             </div>
 
             <!-- PANNELLO DI DESTRA: ANTEPRIMA -->
             <div class="flex flex-col gap-6 order-1 lg:order-2">
-                <div id="preview-box" class="min-h-[250px] md:min-h-[350px] lg:flex-1 rounded-2xl shadow-2xl flex items-center justify-center relative overflow-hidden border-4 border-slate-800 transition-all duration-300">
-                    <div id="preview-text" class="z-10 select-none pointer-events-none text-center p-4">
+                <div id="preview-box" class="min-h-[300px] lg:flex-1 rounded-2xl shadow-2xl flex items-center justify-center relative overflow-hidden border-4 border-slate-800 transition-all duration-300">
+                    <div id="preview-text" class="z-10 select-none pointer-events-none text-center">
                         <!-- Testo dinamico -->
                     </div>
                 </div>
 
                 <div class="bg-slate-800/50 p-6 rounded-2xl border border-slate-700">
                     <h3 class="text-sm font-bold text-blue-400 mb-2 uppercase tracking-widest">Guida alla modifica</h3>
-                    <div id="hint-text" class="text-xs md:text-sm text-slate-400 leading-relaxed">
+                    <div id="hint-text" class="text-xs text-slate-400 leading-relaxed">
                         Seleziona un preset per iniziare. Prova a cambiare i valori numerici (px) o i codici colore (#).
                     </div>
                 </div>
@@ -81,23 +80,23 @@
 
         const presets = {
             lavagna: {
-                hint: "PROVA: Cambia 'border: 20px' in '40px' per una cornice più spessa, o '#2c3e50' in '#1a472a' per una lavagna verde.",
-                text: "<span style='font-family:\"Permanent Marker\"; color:rgba(255,255,255,0.7); font-size:clamp(1.5rem, 5vw, 3rem); transform:rotate(-2deg); display:block;'>CORREZIONE</span>",
+                hint: "CAMBIA: Prova a cambiare 'border: 20px' in '40px' per una cornice più spessa, o '#2c3e50' in '#1a472a' per una lavagna verde.",
+                text: "<span style='font-family:\"Permanent Marker\"; color:rgba(255,255,255,0.7); font-size:3rem; transform:rotate(-2deg); display:block;'>CORREZIONE</span>",
                 css: `/* --- LA VERA LAVAGNA --- */
 #preview-box {
   background-color: #2c3e50;
   background-image: url("https://www.transparenttextures.com/patterns/asfalt-dark.png");
   
   /* La cornice di legno */
-  border: 15px solid #4a3728;
+  border: 20px solid #4a3728;
   
   /* L'effetto profondità */
   box-shadow: inset 0 0 100px rgba(0,0,0,0.8);
 }`
             },
             muro: {
-                hint: "PROVA: Cambia '#a34134' in '#444' per un muro di mattoni grigi moderni.",
-                text: "<span style='font-family:sans-serif; font-weight:900; color:white; font-size:clamp(2rem, 8vw, 4rem); text-shadow:4px 4px 0px #852d1b;'>LOFT</span>",
+                hint: "CAMBIA: Cambia '#a34134' in '#444' per un muro di mattoni grigi moderni.",
+                text: "<span style='font-family:sans-serif; font-weight:900; color:white; font-size:4rem; text-shadow:4px 4px 0px #852d1b;'>LOFT</span>",
                 css: `/* --- MURO DI MATTONI --- */
 #preview-box {
   background-color: #a34134;
@@ -109,43 +108,46 @@
 }`
             },
             quadretti: {
-                hint: "PROVA: Cambia '20px 20px' in '10px 10px' per quadretti più piccoli.",
-                text: "<span style='font-family:\"Indie Flower\"; color:#3b82f6; font-size:clamp(1.5rem, 5vw, 3rem);'>Matematica</span>",
-                css: `/* --- QUADRETTI --- */
+                hint: "CAMBIA: Cambia '20px 20px' in '10px 10px' per quadretti millimetrati. Cambia 'rgba(59,130,246,0.2)' in 'black' per linee forti.",
+                text: "<span style='font-family:\"Indie Flower\"; color:#3b82f6; font-size:3rem;'>Matematica</span>",
+                css: `/* --- QUADRETTI 5mm --- */
 #preview-box {
   background-color: #ffffff;
   background-image: 
     linear-gradient(90deg, rgba(59,130,246,0.2) 1px, transparent 1px),
     linear-gradient(rgba(59,130,246,0.2) 1px, transparent 1px);
     
+  /* Dimensione dei quadretti */
   background-size: 20px 20px;
-  border: 2px solid #ddd;
+  
+  border: 1px solid #ddd;
 }`
             },
             righe: {
-                hint: "PROVA: Cambia '60px' in '100px' per spostare il margine rosso.",
-                text: "<span style='font-family:\"Indie Flower\"; color:#1e293b; font-size:clamp(1.5rem, 5vw, 3rem);'>Compito</span>",
+                hint: "CAMBIA: Cambia '60px' in '100px' per spostare il margine più a destra.",
+                text: "<span style='font-family:\"Indie Flower\"; color:#1e293b; font-size:3rem;'>Compito in classe</span>",
                 css: `/* --- QUADERNO A RIGHE --- */
 #preview-box {
   background-color: #fff;
   background-image: 
-    /* Margine Rosso */
+    /* Margine Rosso verticale */
     linear-gradient(90deg, transparent 60px, #fca5a5 60px, #fca5a5 62px, transparent 62px),
-    /* Righe azzurre */
+    /* Righe azzurre orizzontali */
     linear-gradient(#e2e8f0 1px, transparent 1px);
     
+  /* Il margine non si ripete (100%), le righe ogni 35px */
   background-size: 100% 100%, 100% 35px;
-  border: 1px solid #eee;
 }`
             },
             carta: {
-                hint: "PROVA: Cambia '#fdfaf0' in '#e3d5b8' per una pergamena più scura.",
-                text: "<span style='font-style:italic; color:#78350f; font-size:clamp(1rem, 4vw, 2rem); opacity:0.6;'>Documento Antico</span>",
+                hint: "CAMBIA: Cambia '#fdfaf0' in '#e3d5b8' per una pergamena più antica.",
+                text: "<span style='font-style:italic; color:#78350f; font-size:2rem; opacity:0.5;'>Documento Antico</span>",
                 css: `/* --- CARTA DI RISO --- */
 #preview-box {
   background-color: #fdfaf0;
   background-image: url("https://www.transparenttextures.com/patterns/handmade-paper.png");
   
+  /* Ombra leggera ai bordi */
   box-shadow: inset 0 0 50px rgba(139,69,19,0.15);
   border: 1px solid #e5e0d0;
 }`
@@ -166,7 +168,6 @@
 
         editor.addEventListener('input', updateStyle);
 
-        // Inizializzazione
         window.onload = () => loadPreset('lavagna');
     </script>
 </body>
