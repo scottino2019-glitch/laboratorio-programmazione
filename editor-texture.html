@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Centrare Immagini di Sfondo</title>
+    <title>Editor Texture Responsivo</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style id="live-style">
         /* Il CSS modificato apparirà qui */
@@ -11,17 +11,17 @@
 </head>
 <body class="bg-slate-900 min-h-screen text-slate-200 p-4 md:p-8 font-sans">
 
-    <div class="max-w-6xl mx-auto flex flex-col h-[90vh]">
+    <div class="max-w-6xl mx-auto flex flex-col min-h-screen">
         
         <header class="mb-6">
-            <h1 class="text-3xl font-black text-white uppercase tracking-tight">Editor Immagini e Texture 📰</h1>
-            <p class="text-slate-400">Incolla l'URL della tua immagine e impara a posizionarla.</p>
+            <h1 class="text-2xl md:text-3xl font-black text-white uppercase tracking-tight">Editor Immagini e Texture 📰</h1>
+            <p class="text-slate-400 text-sm md:text-base">Incolla l'URL della tua immagine e impara a posizionarla su ogni schermo.</p>
         </header>
 
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 flex-1 min-h-0">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 pb-8">
             
             <!-- EDITOR CSS -->
-            <div class="flex flex-col bg-slate-800 rounded-2xl overflow-hidden border border-slate-700 shadow-2xl">
+            <div class="flex flex-col bg-slate-800 rounded-2xl overflow-hidden border border-slate-700 shadow-2xl h-[400px] lg:h-[600px]">
                 <div class="bg-slate-700 px-4 py-2 text-xs font-bold uppercase tracking-widest text-slate-300">
                     Proprietà CSS
                 </div>
@@ -32,7 +32,7 @@
 #preview-box {
   background-color: #f1f5f9;
   
-  /* L'URL dell'immagine che hai scelto */
+  /* URL dell'immagine */
   background-image: url("https://media.istockphoto.com/id/157293816/it/foto/giornale-singola-a-strappo-su-bianco.jpg?s=2048x2048&w=is&k=20&c=JLi0jdXC5h_ptPoruUP8xbZGRnXcUYrl-t8Ba0EMp-A=");
   
   /* 1. NON RIPETERE L'IMMAGINE */
@@ -42,27 +42,36 @@
   background-position: center;
   
   /* 3. DIMENSIONE: 'contain' la adatta senza tagliarla */
-  /* PROVA: Cambia 'contain' in 'cover' per riempire tutto lo spazio */
+  /* PROVA: Cambia 'contain' in 'cover' */
   background-size: contain;
 
   /* Estetica del contenitore */
-  border: 10px solid #cbd5e1;
-  box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+  border: 8px solid #cbd5e1;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
 }</textarea>
             </div>
 
-            <!-- ANTEPRIMA -->
+            <!-- ANTEPRIMA E INFO -->
             <div class="flex flex-col gap-6">
-                <div id="preview-box" class="flex-1 rounded-2xl shadow-2xl relative overflow-hidden transition-all duration-300">
+                <!-- BOX DI ANTEPRIMA: Altezza minima garantita su mobile -->
+                <div id="preview-box" class="min-h-[300px] lg:flex-1 rounded-2xl shadow-2xl relative overflow-hidden transition-all duration-300">
                     <!-- L'immagine di sfondo apparirà qui -->
                 </div>
 
                 <div class="bg-blue-900/20 p-6 rounded-2xl border border-blue-500/30">
-                    <h3 class="text-sm font-bold text-blue-400 mb-2 uppercase tracking-widest">Trucchi per l'immagine:</h3>
-                    <ul class="text-xs text-slate-300 space-y-2 leading-relaxed">
-                        <li><strong>background-size: contain;</strong> L'immagine si vede tutta, ma potrebbero avanzare bordi vuoti.</li>
-                        <li><strong>background-size: cover;</strong> L'immagine riempie tutto il quadrato (ottimo per i muri), ma alcuni bordi verranno tagliati.</li>
-                        <li><strong>background-size: 50% 50%;</strong> Puoi anche decidere la dimensione esatta in percentuale!</li>
+                    <h3 class="text-sm font-bold text-blue-400 mb-3 uppercase tracking-widest">Trucchi per il Mobile:</h3>
+                    <ul class="text-xs md:text-sm text-slate-300 space-y-3 leading-relaxed">
+                        <li>
+                            <code class="bg-slate-950 px-1 py-0.5 rounded text-emerald-400">contain</code>: 
+                            L'immagine è interamente visibile, utile per loghi o documenti.
+                        </li>
+                        <li>
+                            <code class="bg-slate-950 px-1 py-0.5 rounded text-emerald-400">cover</code>: 
+                            Riempie tutto lo spazio disponibile. Perfetto per texture e sfondi immersivi.
+                        </li>
+                        <li>
+                            <span class="text-blue-300">Consiglio:</span> Se l'immagine sparisce su mobile, assicurati che il contenitore abbia un'altezza minima definita nel CSS!
+                        </li>
                     </ul>
                 </div>
             </div>
@@ -74,10 +83,14 @@
         const styleTag = document.getElementById('live-style');
 
         function update() {
+            // Applichiamo il contenuto dell'editor al tag style
             styleTag.innerHTML = editor.value;
         }
 
+        // Ascolta ogni digitazione
         editor.addEventListener('input', update);
+        
+        // Inizializzazione al caricamento
         window.onload = update;
     </script>
 </body>
