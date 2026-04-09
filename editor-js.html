@@ -1,136 +1,198 @@
-```html
+
 <!DOCTYPE html>
 <html lang="it">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Laboratorio JS Pulito</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Documento senza titolo</title>
     <style>
-        /* Interfaccia Chiara e Leggibile */
-        body {
-            background-color: #f8fafc;
-            color: #1e293b;
-        }
+        #palestra {
+    font-family: sans-serif;
+    max-width: 800px;
+    margin: 20px auto;
+    padding: 20px;
+    background: #f4f4f4;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
 
-        #codice-editor {
-            font-size: 20px !important;
-            line-height: 1.4;
-            font-family: 'Courier New', monospace;
-            background: #ffffff;
-            color: #000000;
-            border: 2px solid #cbd5e1;
-            resize: none;
-            width: 100%;
-            height: 65vh;
-            padding: 20px;
-            outline: none;
-        }
+.editor-container {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 15px;
+}
 
-        .btn-interfaccia {
-            padding: 18px;
-            font-weight: bold;
-            font-size: 18px;
-            border-bottom: 4px solid transparent;
-        }
+.colonna { flex: 1; }
 
-        .tab-attiva {
-            background-color: #ffffff;
-            border-bottom: 4px solid #2563eb;
-            color: #2563eb;
-        }
+textarea {
+    width: 100%;
+    height: 150px;
+    font-family: monospace;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-sizing: border-box; /* Evita che la textarea esca dai bordi */
+}
 
-        #output-area {
-            font-size: 20px;
-            min-height: 60vh;
-        }
+#btn-lancia {
+    background: #27ae60;
+    color: white;
+    padding: 12px 25px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+}
 
-        .pulsante-azione {
-            font-size: 20px;
-            font-weight: 800;
-            padding: 20px;
-            border-radius: 12px;
-        }
+#output-box {
+    background: white;
+    border: 2px solid #3498db;
+    min-height: 100px;
+    padding: 15px;
+    margin-top: 10px;
+    border-radius: 5px;
+}
+
     </style>
 </head>
-<body class="flex flex-col h-screen overflow-hidden">
+<body>
+    <div id="palestra">
+    <h2>🚀 Il mio Playground HTML + JS</h2>
+<label for="menu-esercizi">Scegli una sfida:</label>
+<select id="menu-esercizi">
+    <option value="libero">Modalità Libera</option>
+    <option value="saluto">1. Saluto h1</option>
+    <option value="colore">2. Bottone Rosso</option>
+<option value="saluto_dinamico">3. Il Saluto Dinamico</option>
+        <option value="raddoppia">4. Il Raddoppiatore</option>
+        <option value="lista">5. Crea un Elemento</option>
+<option value="sottrazione">6. Crea due variabili</option>
+<option value="confronto">7. Usa if</option>
+<option value="pari_dispari">8. Scopri il numero</option>
+<option value="ciclo_base">9. Ciclo for</option>
+<option value="messaggio_composto">10. Unire nomi</option>
+</select>
 
-    <!-- Navigazione Semplice -->
-    <nav class="flex bg-slate-200 border-b border-slate-300">
-        <button onclick="cambiaVista('scrivi')" id="nav-scrivi" class="flex-1 btn-interfaccia tab-attiva">SCRIVI</button>
-        <button onclick="cambiaVista('risultato')" id="nav-risultato" class="flex-1 btn-interfaccia">RISULTATO</button>
-    </nav>
+<div id="istruzioni-sfida" style="margin: 10px 0; font-weight: bold; color: #2c3e50;">
+    Scegli un esercizio dal menu per iniziare!
+</div>
 
-    <!-- Sezione Scrittura -->
-    <div id="sezione-scrivi" class="p-4 flex flex-col gap-4">
-        <textarea id="codice-editor" spellcheck="false" placeholder="Scrivi il tuo codice qui...">// Esempio semplice:
-const nome = "Utente";
-output.innerHTML = "<h1>Benvenuto, " + nome + "</h1>";</textarea>
-        
-        <div class="flex gap-4">
-            <button onclick="eseguiCodice()" class="flex-[2] bg-blue-600 text-white pulsante-azione shadow-lg">
-                ESEGUI CODICE
-            </button>
-            <button onclick="svuotaTutto()" class="flex-1 bg-slate-400 text-white pulsante-azione">
-                CANCELLA
-            </button>
+<br>
+    
+    <div class="editor-container">
+        <div class="colonna">
+            <label>💻 Scrivi HTML qui:</label>
+            <textarea id="area-html" placeholder="Es: <button id='mioBtn'>Clicca!</button>"></textarea>
+        </div>
+        <div class="colonna">
+            <label>📜 Scrivi JS qui:</label>
+            <textarea id="area-js" placeholder="Es: document.getElementById('mioBtn').onclick = ..."></textarea>
         </div>
     </div>
 
-    <!-- Sezione Visualizzazione -->
-    <div id="sezione-risultato" class="hidden bg-white h-full overflow-y-auto p-6">
-        <div id="output-area"></div>
-        
-        <button onclick="cambiaVista('scrivi')" class="mt-10 w-full p-4 border-2 border-blue-600 text-blue-600 font-bold rounded-xl">
-            TORNA ALL'EDITOR
-        </button>
+    <button id="btn-lancia">Lancia il Codice! 🚀</button>
+    
+    <div id="anteprima">
+        <h4>Anteprima Visiva:</h4>
+        <div id="output-box"></div>
+        <p><strong>Log:</strong> <span id="log-testo">-</span></p>
     </div>
+</div>
+<button id="btn-soluzione" style="background-color: #ff9800; color: white;">Mostra Soluzione</button>
 
-    <script>
-        const editor = document.getElementById('codice-editor');
-        const output = document.getElementById('output-area');
-        const sScrivi = document.getElementById('sezione-scrivi');
-        const sRisultato = document.getElementById('sezione-risultato');
-        const nScrivi = document.getElementById('nav-scrivi');
-        const nRisultato = document.getElementById('nav-risultato');
+<div id="area-soluzione" style="margin-top: 10px; font-family: monospace; color: #555; font-style: italic;">
+    </div>
+<script>
+// Questo oggetto contiene i testi delle sfide e le soluzioni
+const sfide = {
+    saluto: {
+        consegna: "Crea un h1 con id 'titolo' in HTML e usa JS per scriverci 'Ciao!'",
+        html: "<h1 id='titolo'></h1>",
+        js: "document.getElementById('titolo').innerText = 'Ciao!';"
+    },
+    colore: {
+        consegna: "Crea un bottone in HTML e cambia il suo sfondo in rosso con JS.",
+        html: "<button id='btn'>Cliccami</button>",
+        js: "document.getElementById('btn').style.background = 'red';"
+    },
 
-        function cambiaVista(vista) {
-            if (vista === 'scrivi') {
-                sScrivi.classList.remove('hidden');
-                sRisultato.classList.add('hidden');
-                nScrivi.classList.add('tab-attiva');
-                nRisultato.classList.remove('tab-attiva');
-            } else {
-                sScrivi.classList.add('hidden');
-                sRisultato.classList.remove('hidden');
-                nScrivi.classList.remove('tab-attiva');
-                nRisultato.classList.add('tab-attiva');
-            }
-        }
+    saluto_dinamico: {
+        consegna: "Assegna alla variabile 'risultato' il testo 'Ciao Mondo!'.",
+        soluzione: "risultato = 'Ciao Mondo!';"
+    },
+    raddoppia: {
+        consegna: "Crea una variabile 'n' uguale a 5, poi assegna a 'risultato' il valore di n * 2.",
+        soluzione: "let n = 5;\nrisultato = n * 2;"
+    },
+    lista: {
+        consegna: "Crea un nuovo elemento 'p' con scritto 'Esercizio Fatto' e aggiungilo all'output.",
+        soluzione: "let p = document.createElement('p');\np.innerText = 'Esercizio Fatto';\ndocument.getElementById('output').appendChild(p);\nrisultato = 'Fatto!';"
+    },
+    sottrazione: {
+        consegna: "Crea due variabili (a = 20 e b = 8) e assegna a 'risultato' la loro differenza.",
+        soluzione: "let a = 20; let b = 8; risultato = a - b;"
+    },
+    confronto: {
+        consegna: "Usa un 'if' per controllare se la variabile 'eta' (impostala a 18) è maggiore o uguale a 18. Se sì, scrivi in 'risultato' il testo 'Maggiorenne'.",
+        soluzione: "let eta = 18; if(eta >= 18) { risultato = 'Maggiorenne'; }"
+    },
+    pari_dispari: {
+        consegna: "Scopri se il numero 10 è pari usando l'operatore resto (%). Se è pari, scrivi 'Pari' in 'risultato'.",
+        soluzione: "let n = 10; if(n % 2 === 0) { risultato = 'Pari'; }"
+    },
+    ciclo_base: {
+        consegna: "Usa un ciclo 'for' per sommare i numeri da 1 a 3 e metti il totale in 'risultato' (deve venire 6).",
+        soluzione: "let somma = 0; for(let i=1; i<=3; i++) { somma += i; } risultato = somma;"
+    },
+    messaggio_composto: {
+        consegna: "Unisci il nome 'Luca' e il cognome 'Rossi' in una variabile 'risultato' separandoli con uno spazio.",
+        soluzione: "let nome = 'Luca'; let cognome = 'Rossi'; risultato = nome + ' ' + cognome;"
+    }
+};
+// Colleghiamo gli elementi con gli ID corretti
+const areaHtml = document.getElementById("area-html");
+const areaJs = document.getElementById("area-js");
+const btnLancia = document.getElementById("btn-lancia");
+const outputBox = document.getElementById("output-box");
+const logTesto = document.getElementById("log-testo");
 
-        function eseguiCodice() {
-            output.innerHTML = "";
-            try {
-                const codice = new Function('output', editor.value);
-                codice(output);
-                cambiaVista('risultato');
-            } catch (errore) {
-                cambiaVista('risultato');
-                output.innerHTML = `
-                    <div style="color: red; padding: 20px; border: 2px solid red; border-radius: 10px;">
-                        <strong>Errore:</strong><br>${errore.message}
-                    </div>
-                `;
-            }
-        }
+btnLancia.addEventListener("click", () => {
+    try {
+        // 1. Puliamo il risultato precedente
+        outputBox.innerHTML = "";
+        logTesto.innerText = "-";
 
-        function svuotaTutto() {
-            if(confirm("Vuoi cancellare tutto?")) {
-                editor.value = "";
-            }
-        }
-    </script>
+        // 2. Inseriamo l'HTML nell'anteprima
+        outputBox.innerHTML = areaHtml.value;
+
+        // 3. Eseguiamo il JavaScript
+        // Definiamo 'risultato' così puoi usarlo nei tuoi esercizi
+        let risultato = "Codice eseguito correttamente!";
+        
+        eval(areaJs.value);
+        
+        // Mostriamo il messaggio nel log
+        logTesto.innerText = risultato;
+
+    } catch (errore) {
+        logTesto.innerText = "Errore: " + errore.message;
+    }
+});
+const btnSoluzione = document.getElementById("btn-soluzione");
+const areaSoluzione = document.getElementById("area-soluzione");
+
+// 2. Quando cambia l'esercizio nel menu, puliamo la vecchia soluzione
+menu.addEventListener("change", () => {
+    const scelta = menu.value;
+    istruzioni.innerText = "Consegna: " + sfide[scelta].consegna;
+    areaSoluzione.innerText = ""; // Nasconde la soluzione della sfida precedente
+});
+
+// 3. Logica del bottone Mostra Soluzione
+btnSoluzione.addEventListener("click", () => {
+    const scelta = menu.value;
+    areaSoluzione.innerText = "Suggerimento: " + sfide[scelta].soluzione;
+});
+</script>
 </body>
 </html>
-
-```
