@@ -1,0 +1,400 @@
+
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generatore di Mini Siti a Fumetti</title>
+    <style>
+        /* =========================================
+           STILI DEL GENERATORE (L'interfaccia)
+           ========================================= */
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            background-color: #1e1e2f; 
+            color: #fff; 
+            margin: 0; 
+            padding: 20px; 
+        }
+        h1 { text-align: center; color: #ffeb3b; text-shadow: 2px 2px #d32f2f; margin-bottom: 30px; font-size: 2.5em; }
+        
+        .app-container { 
+            display: flex; 
+            flex-wrap: wrap; 
+            gap: 20px; 
+            max-width: 1400px; 
+            margin: 0 auto; 
+        }
+        
+        /* Pannello di controllo a sinistra */
+        .controls { 
+            flex: 1; 
+            min-width: 300px; 
+            background: #2a2a40; 
+            padding: 25px; 
+            border-radius: 15px; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5); 
+            border: 2px solid #3f3f5a;
+        }
+        .controls h2 { margin-top: 0; color: #00e5ff; border-bottom: 1px solid #3f3f5a; padding-bottom: 10px; }
+        .control-group { margin-bottom: 20px; }
+        label { display: block; font-weight: bold; margin-bottom: 8px; color: #b2b2d8; font-size: 0.9em; text-transform: uppercase; }
+        select, input[type="text"] { 
+            width: 100%; 
+            padding: 12px; 
+            border: 1px solid #3f3f5a; 
+            border-radius: 8px; 
+            font-size: 16px; 
+            background: #1e1e2f;
+            color: #fff;
+            box-sizing: border-box;
+        }
+        select:focus, input[type="text"]:focus { outline: none; border-color: #00e5ff; }
+
+        /* Area di Anteprima e Codice a destra */
+        .preview-section { 
+            flex: 2; 
+            min-width: 350px; 
+            display: flex; 
+            flex-direction: column; 
+            gap: 20px; 
+        }
+        
+        /* L'iframe serve per isolare il CSS del mini-sito da quello del generatore! */
+        iframe {
+            width: 100%;
+            height: 500px;
+            border: none;
+            border-radius: 15px;
+            background-color: #fff;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        .code-box { 
+            background: #000; 
+            padding: 20px; 
+            border-radius: 15px; 
+            color: #00ff00; 
+            font-family: 'Courier New', Courier, monospace; 
+            overflow-x: auto; 
+            height: 300px;
+            font-size: 14px; 
+            border: 2px solid #333;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.8);
+        }
+        .code-box h3 { color: #fff; margin-top: 0; border-bottom: 1px solid #333; padding-bottom: 10px; }
+        
+    </style>
+</head>
+<body>
+
+    <h1>💥 Generatore di Mini-Siti Fumettosi 💥</h1>
+
+    <div class="app-container">
+        
+        <!-- PANNELLO DI CONTROLLO -->
+        <div class="controls">
+            <h2>Personalizza il sito</h2>
+            
+            <div class="control-group">
+                <label>Testo Titolo Principale</label>
+                <input type="text" id="in-title" value="Benvenuti nel Mio Mondo!">
+            </div>
+
+            <div class="control-group">
+                <label>Stile / Tema Colori</label>
+                <select id="in-theme">
+                    <option value="classic">Classico (Biscotto e Arancio)</option>
+                    <option value="superhero">Supereroe (Blu, Rosso e Giallo)</option>
+                    <option value="popart">Pop Art (Rosa shocking e Verde)</option>
+                    <option value="noir">Noir / Dark (Grigio e Nero)</option>
+                    <option value="cyberpunk">Cyberpunk (Nero, Neon Rosa e Ciano)</option>
+                    <option value="pastel">Pastello (Rosa chiaro, Menta e Lilla)</option>
+                    <option value="retro">Retrò 80s (Viola scuro, Arancio e Giallo)</option>
+
+                </select>
+            </div>
+
+            
+            <div class="control-group">
+                <label>Pattern di Sfondo</label>
+                <select id="in-bg-pattern">
+                    <option value="none">Nessuno (Tinta Unita)</option>
+                    <option value="polka">Pois (Polka Dots)</option>
+                    <option value="stripes">Strisce Diagonali</option>
+                    <option value="grid">Griglia Retrò</option>
+                </select>
+            </div>
+<div class="control-group">
+                <label>Carattere del Testo</label>
+                <select id="in-font">
+                    <option value="'Comic Sans MS', cursive, sans-serif">Fumetto (Comic Sans)</option>
+                    <option value="Impact, Charcoal, sans-serif">Azione (Impact)</option>
+                    <option value="'Courier New', Courier, monospace">Macchina da scrivere (Courier)</option>
+                    <option value="Arial, sans-serif">Moderno (Arial)</option>
+                    <option value="'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif">Leggibile (Trebuchet)</option>
+                    <option value="'Brush Script MT', cursive">Corsivo (Brush Script)</option>
+                    <option value="'Palatino Linotype', 'Book Antiqua', Palatino, serif">Elegante (Palatino)</option>
+
+                </select>
+            </div>
+
+            <div class="control-group">
+                <label>Stile Bordo Contenitore</label>
+                <select id="in-border">
+                    <option value="dashed">Tratteggiato (Dashed)</option>
+                    <option value="solid">Unito (Solid)</option>
+                    <option value="dotted">A Puntini (Dotted)</option>
+                    <option value="double">Doppio (Double)</option>
+                    <option value="groove">Scanalato (Groove)</option>
+                    <option value="ridge">Rilevato (Ridge)</option>
+                    <option value="inset">Incavato (Inset)</option>
+
+                </select>
+            </div>
+
+            <div class="control-group">
+                <label>Testo della Nuvola Parlante</label>
+                <input type="text" id="in-bubble" value="Questo sito è stato generato in pochi secondi!">
+            </div>
+
+            <div class="control-group">
+                <label>Testo del Bottone</label>
+                <input type="text" id="in-button" value="Clicca Qui!">
+            </div>
+        </div>
+
+        <!-- AREA ANTEPRIMA (IFRAME) E CODICE -->
+        <div class="preview-section">
+            <!-- Usiamo iframe così il sito generato vive nel suo mondo protetto -->
+            <iframe id="preview-frame" title="Anteprima Sito"></iframe>
+
+            <div class="code-box">
+                <h3>Codice HTML Pronto da Copiare:</h3>
+                <pre><code id="output-code"></code></pre>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            // Riferimenti agli input
+            const elTitle = document.getElementById('in-title');
+            const elTheme = document.getElementById('in-theme');
+            const elFont = document.getElementById('in-font');
+            const elBorder = document.getElementById('in-border');
+            const elBubble = document.getElementById('in-bubble');
+            const elButtonText = document.getElementById('in-button');
+            const elBgPattern = document.getElementById('in-bg-pattern');
+            
+            const frame = document.getElementById('preview-frame');
+            const codeOutput = document.getElementById('output-code');
+
+            // Aggiungiamo gli ascoltatori eventi a tutti gli input
+[elTitle, elTheme, elFont, elBorder, elBubble, elButtonText, elBgPattern].forEach(input => {
+                input.addEventListener('input', generateSite);
+                input.addEventListener('change', generateSite);
+            });
+
+            // Funzione magica che costruisce il mini-sito
+            function generateSite() {
+                const title = elTitle.value || 'Titolo Vuoto';
+                const font = elFont.value;
+                const borderStyle = elBorder.value;
+                const bubble = elBubble.value || '...';
+                const btnText = elButtonText.value || 'Invia';
+                const theme = elTheme.value;
+                const bgPattern = elBgPattern.value;
+
+                // Variabili per i colori
+                let cBg, cCont, cBorder, cTitle, cShadow, cBtn, cBtnBorder, cBtnText;
+
+                // Impostazione Tavolozze Colori in base al tema scelto
+                switch(theme) {
+                    case 'superhero': // Stile Spiderman / Superman
+                        cBg = '#bbdefb'; cCont = '#ffffff'; cBorder = '#d32f2f'; 
+                        cTitle = '#1976d2'; cShadow = '#ffeb3b'; 
+                        cBtn = '#d32f2f'; cBtnBorder = '#b71c1c'; cBtnText = '#ffffff';
+                        break;
+                    case 'popart': // Stile Warhol molto acceso
+                        cBg = '#ff80ab'; cCont = '#ccff90'; cBorder = '#000000'; 
+                        cTitle = '#d50000'; cShadow = '#00e5ff'; 
+                        cBtn = '#00e5ff'; cBtnBorder = '#000000'; cBtnText = '#000000';
+                        break;
+                    case 'noir': // Stile Sin City, gotico
+                        cBg = '#616161'; cCont = '#eeeeee'; cBorder = '#212121'; 
+                        cTitle = '#000000'; cShadow = '#9e9e9e'; 
+                        cBtn = '#212121'; cBtnBorder = '#000000'; cBtnText = '#ffffff';
+                        break;
+                    
+                    case 'cyberpunk': // Stile Cyberpunk
+                        cBg = '#0d0221'; cCont = '#1f1035'; cBorder = '#ff007f'; 
+                        cTitle = '#00ffff'; cShadow = '#ff007f'; 
+                        cBtn = '#ff007f'; cBtnBorder = '#00ffff'; cBtnText = '#ffffff';
+                        break;
+                    case 'pastel': // Stile Pastello
+                        cBg = '#fdfbfb'; cCont = '#ffffff'; cBorder = '#ffb6b9'; 
+                        cTitle = '#8ac6d1'; cShadow = '#fae3d9'; 
+                        cBtn = '#bbded6'; cBtnBorder = '#8ac6d1'; cBtnText = '#333333';
+                        break;
+                    case 'retro': // Stile Retro 80s
+                        cBg = '#220033'; cCont = '#3b0066'; cBorder = '#ff9900'; 
+                        cTitle = '#ff00ff'; cShadow = '#00ffff'; 
+                        cBtn = '#ff9900'; cBtnBorder = '#ff00ff'; cBtnText = '#000000';
+                        break;
+                    case 'classic': // L'originale che mi hai mandato tu
+                    default:
+                        cBg = '#ffe0b2'; cCont = '#ffffff'; cBorder = '#ff9800'; 
+                        cTitle = '#e65100'; cShadow = '#fbc02d'; 
+                        cBtn = '#fdd835'; cBtnBorder = '#fbc02d'; cBtnText = '#e65100';
+                        break;
+                }
+
+                
+                // Generazione Background aggiuntivo (Pattern)
+                let cssPattern = "";
+                if (bgPattern === "polka") {
+                    cssPattern = `background-image: radial-gradient(${cBorder} 10%, transparent 11%); background-size: 20px 20px;`;
+                } else if (bgPattern === "stripes") {
+                    cssPattern = `background-image: repeating-linear-gradient(45deg, transparent, transparent 10px, ${cCont} 10px, ${cCont} 20px);`;
+                } else if (bgPattern === "grid") {
+                    cssPattern = `background-image: linear-gradient(${cBorder} 1px, transparent 1px), linear-gradient(90deg, ${cBorder} 1px, transparent 1px); background-size: 20px 20px;`;
+                }
+
+                // Generiamo la stringa intera con tutto il codice del nuovo sito
+                const htmlTemplate = `<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>${title}</title>
+    <style>
+        body {
+            font-family: ${font};
+                        background-color: ${cBg};
+            ${cssPattern}
+            color: #333;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            flex-direction: column;
+        }
+        .container {
+            background-color: ${cCont};
+            border: 5px ${borderStyle} ${cBorder};
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            max-width: 800px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        h1 {
+            color: ${cTitle};
+            font-size: 3em;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px ${cShadow};
+        }
+        p {
+            font-size: 1.2em;
+            line-height: 1.6;
+            margin-bottom: 25px;
+        }
+        .button {
+            background-color: ${cBtn};
+            color: ${cBtnText};
+            padding: 15px 30px;
+            border: 3px solid ${cBtnBorder};
+            border-radius: 10px;
+            font-size: 1.3em;
+            text-decoration: none;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            display: inline-block;
+            margin-top: 10px;
+        }
+        .button:hover {
+            transform: scale(1.05);
+            opacity: 0.9;
+        }
+        .comic-panel {
+            border: 4px solid #000;
+            background-color: #f8f8f8;
+            padding: 20px;
+            margin-top: 30px;
+            border-radius: 10px;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.1);
+        }
+        .comic-panel img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+        .comic-panel h2 {
+            color: ${cTitle};
+            font-size: 2em;
+            margin-bottom: 15px;
+        }
+        .speech-bubble {
+            position: relative;
+            background: #fff;
+            border: 2px solid #ccc;
+            border-radius: 20px;
+            padding: 10px 20px;
+            margin: 20px auto;
+            max-width: 70%;
+            text-align: center;
+            font-size: 1.1em;
+            font-weight: bold;
+        }
+        .speech-bubble::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            border-width: 10px 10px 0;
+            border-style: solid;
+            border-color: #ccc transparent transparent transparent;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>${title}</h1>
+        <p>Ecco una pagina web generata automaticamente con stile personalizzato!</p>
+
+        <div class="comic-panel">
+            <img src="https://via.placeholder.com/600x250/${cTitle.replace('#','')}/ffffff?text=Immagine+Fumetto" alt="Illustrazione">
+            <h2>Avventura in Corso!</h2>
+            <p>I layout a pannello sono ottimi per raccontare storie visive o separare i contenuti in modo divertente.</p>
+        </div>
+
+        <div class="speech-bubble">
+            "${bubble}"
+        </div>
+
+        <a href="#" class="button">${btnText}</a>
+    </div>
+</body>
+</html>`;
+
+                // 1. Inseriamo il codice HTML nell'iframe per mostrare l'anteprima Reale
+                frame.srcdoc = htmlTemplate;
+
+                // 2. Stampiamo il codice nel riquadro nero affinché l'utente possa copiarlo
+                // Usiamo replace per evitare che il browser del generatore lo interpreti come proprio HTML
+                codeOutput.textContent = htmlTemplate;
+            }
+
+            // Lanciamo la funzione all'apertura della pagina
+            generateSite();
+        });
+    </script>
+</body>
+</html>
