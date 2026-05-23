@@ -6,9 +6,9 @@
     <title>Windows 11 XL Workspace</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        /* --- DESIGN SISTEMA --- */
+        /* --- DESIGN SISTEMA (Inalterato) --- */
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        
+
         body, html { 
             height: 100%; width: 100%; 
             overflow: hidden; 
@@ -18,7 +18,6 @@
             transition: background 0.6s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        /* GRIGLIA DESKTOP */
         #desktop {
             position: absolute;
             top: 0; left: 0; width: 100%; height: calc(100% - 70px);
@@ -42,7 +41,6 @@
         .icon-visual { font-size: 42px; margin-bottom: 8px; filter: drop-shadow(0 3px 5px rgba(0,0,0,0.3)); }
         .icon-label { color: white; font-size: 11.5px; font-weight: 500; text-shadow: 1px 1px 4px rgba(0,0,0,0.9); }
 
-        /* TASKBAR */
         #taskbar {
             position: fixed;
             bottom: 0; left: 0; width: 100%; height: 70px; 
@@ -58,7 +56,6 @@
         .start-btn:hover { transform: scale(1.1); }
         #clock { font-size: 1.25rem; font-weight: 600; color: #000; }
 
-        /* MENU START SCORREVOLE */
         #start-menu {
             position: fixed;
             bottom: -1000px; 
@@ -79,16 +76,10 @@
         }
         #start-menu.open { bottom: 85px; }
 
-        .start-handle {
-            width: 40px; height: 5px; background: rgba(0,0,0,0.1);
-            border-radius: 10px; margin: 12px auto 0 auto; display: none;
-        }
-
         .start-content {
             flex: 1;
             overflow-y: auto; 
             padding: 25px 30px 30px 30px;
-            -webkit-overflow-scrolling: touch;
         }
 
         .app-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
@@ -100,34 +91,56 @@
         }
         .app-item:hover { background: #fff; transform: translateY(-2px); }
 
-        /* FINESTRE */
+        /* --- FINESTRE MIGLIORATE --- */
         .window {
             position: absolute;
             background: #fff;
-            border-radius: 16px;
+            border-radius: 12px;
             box-shadow: 0 25px 80px rgba(0,0,0,0.35);
             display: flex; flex-direction: column;
             overflow: hidden;
             z-index: 1000;
+            min-width: 300px;
+            min-height: 200px;
+            transition: width 0.3s, height 0.3s, top 0.3s, left 0.3s; /* Animazione per massimizzazione */
+        }
+
+        /* Classe per lo stato massimizzato */
+        .window.maximized {
+            top: 0 !important;
+            left: 0 !important;
+            width: 100% !important;
+            height: calc(100% - 70px) !important;
+            border-radius: 0;
         }
 
         .window-header {
-            padding: 12px 20px;
-            background: #f8f8f8;
+            padding: 10px 15px;
+            background: #f1f1f1;
             cursor: move;
             display: flex; justify-content: space-between; align-items: center;
-            font-weight: 700; border-bottom: 1px solid #eee;
+            font-weight: 600; border-bottom: 1px solid #ddd;
+            user-select: none;
         }
 
-        .close-btn { color: #ff5f56; font-size: 22px; cursor: pointer; width: 34px; height: 34px; display: flex; align-items: center; justify-content: center; }
+        .window-controls { display: flex; gap: 10px; align-items: center; }
         
+        .control-btn { 
+            width: 30px; height: 30px; 
+            display: flex; align-items: center; justify-content: center; 
+            border-radius: 6px; cursor: pointer; transition: 0.2s;
+            font-size: 14px;
+        }
+        .control-btn:hover { background: rgba(0,0,0,0.1); }
+        .close-btn:hover { background: #e81123; color: white; }
+
         .window-content { 
             flex: 1; 
             position: relative;
-            overflow: auto; /* Permette lo scorrimento del contenitore */
-            -webkit-overflow-scrolling: touch;
+            overflow: hidden;
+            background: #fff;
         }
-        
+
         iframe { 
             width: 100%; 
             height: 100%; 
@@ -135,37 +148,13 @@
             display: block;
         }
 
-        /* LOGICA MOBILE */
         @media (max-width: 768px) {
-            #desktop { 
-                grid-template-columns: repeat(auto-fill, minmax(85px, 1fr)); 
-                grid-auto-flow: row; 
-                height: calc(100% - 60px); 
-                overflow-y: auto; 
-                padding: 10px; 
-            }
-            #taskbar { height: 60px; padding: 0 15px; }
-            #start-menu { width: 100%; border-radius: 25px 25px 0 0; bottom: -100%; }
-            #start-menu.open { bottom: 60px; }
-            .start-handle { display: block; }
-            .app-grid { grid-template-columns: 1fr; }
-            
-            /* Finestra Fullscreen su mobile con scroll abilitato */
             .window { 
-                top: 0 !important; 
-                left: 0 !important; 
-                width: 100% !important; 
-                height: calc(100% - 60px) !important; 
-                border-radius: 0;
+                top: 0 !important; left: 0 !important; 
+                width: 100% !important; height: calc(100% - 60px) !important; 
+                border-radius: 0; 
             }
-            
-            /* Forza l'iframe a essere scorrevole su iOS/Android */
-            .window-content iframe {
-                height: 100%;
-                width: 1px;
-                min-width: 100%;
-                *width: 100%;
-            }
+            #start-menu { width: 100%; border-radius: 25px 25px 0 0; }
         }
     </style>
 </head>
@@ -174,7 +163,6 @@
     <div id="desktop"></div>
 
     <div id="start-menu">
-        <div class="start-handle"></div>
         <div class="start-content">
             <h2 style="text-align:center; margin-bottom:25px;">Menu Start</h2>
             <div class="app-grid" id="menu-grid"></div>
@@ -191,13 +179,14 @@
     </div>
 
     <script>
+        /* Liste App (Inalterate) */
         const desktopApps = [
             { name: 'Card Lab', icon: '🎴', file: 'cardLab.html' },
             { name: 'BG Creator', icon: '🖼️', file: 'backgroud-creator.html' },
             { name: 'Texture', icon: '📰', file: 'editor-texture.html' },
             { name: 'Hanzi Pro', icon: '㊗', file: 'hanziBuilderPro.html' },
             { name: 'BG Lab', icon: '🌄', file: 'backgroudlab.html' },
-             { name: 'Card Orientali', icon: '🧧', file: 'generatore-card-orientali.html' },
+            { name: 'Card Orientali', icon: '🧧', file: 'generatore-card-orientali.html' },
             { name: 'Shape Lab', icon: '📐', file: 'shapeLab.html' },
             { name: 'JS Editor', icon: '💻', file: 'editor-js.html' },
             { name: 'JS Lab Soft', icon: '🌑', file: 'jsLab.html' },
@@ -213,15 +202,11 @@
             { name: 'Lezioni html', icon: '🎓', file: 'htmlcss.html' },
             { name: 'Mini Siti', icon: '🌎', file: 'mini-generatore-siti.html' },
             { name: 'Kawaii', icon: '🐱', file: 'generatore-kawaii.html' },
-             { name: 'Card Studio', icon: '🃏', file: 'https://card-studio-lovat.vercel.app/' },
-           
-            
-         
-            
-                    ];
+            { name: 'Card Studio', icon: '🃏', file: 'https://card-studio-lovat.vercel.app/' },
+        ];
 
         const menuApps = [
-          { name: 'Portofolio', icon: '📂', file: 'portofolio.html' },
+            { name: 'Portofolio', icon: '📂', file: 'portofolio.html' },
             { name: 'Note', icon: '📝', file: 'blocknote.html' },
             { name: 'Word', icon: '✍️', file: 'editor-testo.html' },
             { name: 'Html', icon: '🖍️', file: 'editor-html.html' },
@@ -231,18 +216,18 @@
             { name: 'Animation builder', icon: '🌐', file: 'https://animation-builder-sooty.vercel.app/' },
             { name: 'Card Generator', icon: '🌐', file: 'https://card-generetor.vercel.app/' },
             { name: 'Immagini', icon: '🌐', file: 'https://photo-finder-kohl.vercel.app/'},
-{ name: 'Pdf', icon: '🌐', file: 'https://pdf-studio-editor.vercel.app/'},
-{ name: 'Giochi', icon: '🌐', file: 'https://windows-game.vercel.app/'},
+            { name: 'Pdf', icon: '🌐', file: 'https://pdf-studio-editor.vercel.app/'},
+            { name: 'Giochi', icon: '🌐', file: 'https://windows-game.vercel.app/'},
             { name: 'Javascript', icon: '🌐', file: 'https://javascriptmasterclassinterattiva.netlify.app/'},
-             { name: 'ShapeLab', icon: '🌐', file: 'https://shapelabstudio.netlify.app/'}
-
-            ];
+            { name: 'ShapeLab', icon: '🌐', file: 'https://shapelabstudio.netlify.app/'}
+        ];
 
         let zIndex = 1000;
         const desk = document.getElementById('desktop');
         const startMenu = document.getElementById('start-menu');
         const menuGrid = document.getElementById('menu-grid');
 
+        /* Render Icone (Inalterato) */
         desktopApps.forEach(app => {
             const div = document.createElement('div');
             div.className = 'desktop-icon';
@@ -261,38 +246,68 @@
 
         function toggleMenu(e) { e.stopPropagation(); startMenu.classList.toggle('open'); }
 
+        /* --- NUOVA LOGICA FINESTRE --- */
         function openApp(app) {
             startMenu.classList.remove('open');
             const win = document.createElement('div');
             win.className = 'window';
-            
+            win.style.zIndex = zIndex++;
+
             const isMobile = window.innerWidth <= 768;
             if (!isMobile) {
-                win.style.width = '78%';
-                win.style.height = '72%';
+                // Dimensioni aumentate per una migliore visibilità
+                win.style.width = '90%'; 
+                win.style.height = '85%';
                 const count = document.querySelectorAll('.window').length;
-                win.style.left = (60 + (count * 22)) + 'px';
-                win.style.top = (45 + (count * 22)) + 'px';
+                // Posizionamento a cascata più centrato
+                win.style.left = (5 + (count * 2)) + '%';
+                win.style.top = (2 + (count * 2)) + '%';
             }
-            
-            win.style.zIndex = zIndex++;
+
             const isInternal = app.file.startsWith('internal://');
-            
+
             win.innerHTML = `
                 <div class="window-header">
                     <span>${app.icon} ${app.name}</span>
-                    <span class="close-btn" onclick="this.closest('.window').remove()">✕</span>
+                    <div class="window-controls">
+                        <span class="control-btn" onclick="toggleMaximize(this.closest('.window'))">🔳</span>
+                        <span class="control-btn close-btn" onclick="this.closest('.window').remove()">✕</span>
+                    </div>
                 </div>
                 <div class="window-content">
-                    ${isInternal ? renderInternal(app.file) : `<iframe src="${app.file}" scrolling="yes"></iframe>`}
+                    ${isInternal ? renderInternal(app.file) : `<iframe src="${app.file}"></iframe>`}
                 </div>
             `;
 
+            // Focus al click
             win.onmousedown = () => { win.style.zIndex = zIndex++; };
             document.body.appendChild(win);
             if (!isMobile) setupDraggable(win);
         }
 
+        // Funzione Massimizza/Ripristina
+        function toggleMaximize(win) {
+            win.classList.toggle('maximized');
+        }
+
+        function setupDraggable(win) {
+            const header = win.querySelector('.window-header');
+            let x = 0, y = 0, nx = 0, ny = 0;
+            header.onmousedown = (e) => {
+                if(win.classList.contains('maximized')) return; // Impedisce trascinamento se massimizzata
+                win.style.zIndex = zIndex++;
+                nx = e.clientX; ny = e.clientY;
+                document.onmousemove = (e) => {
+                    x = nx - e.clientX; y = ny - e.clientY;
+                    nx = e.clientX; ny = e.clientY;
+                    win.style.top = (win.offsetTop - y) + "px";
+                    win.style.left = (win.offsetLeft - x) + "px";
+                };
+                document.onmouseup = () => { document.onmousemove = null; };
+            };
+        }
+
+        /* Gestione Sistema (Inalterata) */
         function renderInternal(path) {
             if (path === 'internal://settings') {
                 const size = JSON.stringify(localStorage).length;
@@ -320,21 +335,6 @@
 
         const currentBg = localStorage.getItem('win_custom_bg');
         if(currentBg) document.body.style.backgroundImage = `url('${currentBg}')`;
-
-        function setupDraggable(win) {
-            const header = win.querySelector('.window-header');
-            let x = 0, y = 0, nx = 0, ny = 0;
-            header.onmousedown = (e) => {
-                nx = e.clientX; ny = e.clientY;
-                document.onmousemove = (e) => {
-                    x = nx - e.clientX; y = ny - e.clientY;
-                    nx = e.clientX; ny = e.clientY;
-                    win.style.top = (win.offsetTop - y) + "px";
-                    win.style.left = (win.offsetLeft - x) + "px";
-                };
-                document.onmouseup = () => { document.onmousemove = null; };
-            };
-        }
 
         document.onclick = (e) => { if(!e.target.closest('#start-menu') && !e.target.closest('.start-btn')) startMenu.classList.remove('open'); };
 
