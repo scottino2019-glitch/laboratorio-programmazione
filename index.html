@@ -215,4 +215,54 @@
 
             win.innerHTML = `
                 <div class="window-header">
-                    <
+                    <span>${app.icon} ${app.name}</span>
+                    <span class="close-btn" onclick="this.closest('.window').remove()">✕</span>
+                </div>
+                <div class="window-content">
+                    ${isInternal ? renderInternal(app.file) : `<iframe src="${app.file}"></iframe>`}
+                </div>
+            `;
+
+            win.onmousedown = () => { win.style.zIndex = zIndex++; };
+            document.body.appendChild(win);
+            
+            if (window.innerWidth > 768) {
+                setupDraggable(win);
+                // Posizionamento leggermente sfalsato per il multitasking
+                const count = document.querySelectorAll('.window').length;
+                win.style.left = (4 + (count * 1.5)) + '%';
+                win.style.top = (2 + (count * 1.5)) + '%';
+            }
+        }
+
+        function setupDraggable(win) {
+            const header = win.querySelector('.window-header');
+            let x = 0, y = 0, nx = 0, ny = 0;
+            header.onmousedown = (e) => {
+                nx = e.clientX; ny = e.clientY;
+                document.onmousemove = (ev) => {
+                    x = nx - ev.clientX; y = ny - ev.clientY;
+                    nx = ev.clientX; ny = ev.clientY;
+                    win.style.top = (win.offsetTop - y) + "px";
+                    win.style.left = (win.offsetLeft - x) + "px";
+                };
+                document.onmouseup = () => { document.onmousemove = null; };
+            };
+        }
+
+        function renderInternal(path) {
+            if (path === 'internal://settings') return `<div style="padding:20px;"><h3>⚙️ Impostazioni</h3><p>Frame ottimizzato per schermi grandi.</p></div>`;
+            return 'App non trovata';
+        }
+
+        document.onclick = (e) => { if(!e.target.closest('#start-menu') && !e.target.closest('.start-btn')) startMenu.classList.remove('open'); };
+
+        function updateClock() {
+            const now = new Date();
+            document.getElementById('clock').innerText = now.getHours().toString().padStart(2,'0') + ":" + now.getMinutes().toString().padStart(2,'0');
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+    </script>
+</body>
+</html>
