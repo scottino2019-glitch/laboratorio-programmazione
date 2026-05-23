@@ -6,7 +6,7 @@
     <title>Windows 11 XL Workspace</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        /* --- DESIGN SISTEMA (ORIGINALE RIPRISTINATO) --- */
+        /* --- DESIGN SISTEMA ORIGINALE --- */
         * { box-sizing: border-box; margin: 0; padding: 0; }
 
         body, html { 
@@ -28,6 +28,7 @@
             grid-auto-flow: column;
             gap: 15px;
             z-index: 5;
+            overflow-x: auto;
         }
 
         .desktop-icon {
@@ -53,7 +54,6 @@
         }
 
         .start-btn { font-size: 42px; color: #0078d4; cursor: pointer; transition: transform 0.2s ease; }
-        .start-btn:hover { transform: scale(1.1); }
         #clock { font-size: 1.25rem; font-weight: 600; color: #000; }
 
         #start-menu {
@@ -70,9 +70,7 @@
             transition: bottom 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.1);
             z-index: 9999;
             border: 1px solid rgba(255, 255, 255, 0.3);
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
+            display: flex; flex-direction: column; overflow: hidden;
         }
         #start-menu.open { bottom: 85px; }
 
@@ -86,7 +84,7 @@
         }
         .app-item:hover { background: #fff; transform: translateY(-2px); }
 
-        /* --- FINESTRE (OTTIMIZZATE MA STILE ORIGINALE) --- */
+        /* --- FINESTRE (OTTIMIZZATE) --- */
         .window {
             position: absolute;
             background: #fff;
@@ -95,8 +93,7 @@
             display: flex; flex-direction: column;
             overflow: hidden;
             z-index: 1000;
-            /* Dimensione iniziale ottimizzata */
-            width: 90%; 
+            width: 85%; /* Più grandi */
             height: 80%;
         }
 
@@ -106,24 +103,15 @@
             cursor: move;
             display: flex; justify-content: space-between; align-items: center;
             font-weight: 700; border-bottom: 1px solid #eee;
-            user-select: none;
         }
 
         .close-btn { color: #ff5f56; font-size: 22px; cursor: pointer; width: 34px; height: 34px; display: flex; align-items: center; justify-content: center; }
-
         .window-content { flex: 1; position: relative; overflow: hidden; }
         iframe { width: 100%; height: 100%; border: none; display: block; }
 
-        /* --- LOGICA MOBILE (ADATTAMENTO FRAME) --- */
         @media (max-width: 768px) {
-            .window { 
-                top: 0 !important; 
-                left: 0 !important; 
-                width: 100% !important; 
-                height: calc(100% - 70px) !important; 
-                border-radius: 0;
-            }
-            #start-menu { width: 100%; border-radius: 25px 25px 0 0; bottom: -100%; }
+            .window { top: 0 !important; left: 0 !important; width: 100% !important; height: calc(100% - 70px) !important; border-radius: 0; }
+            #start-menu { width: 100%; border-radius: 25px 25px 0 0; }
             #start-menu.open { bottom: 70px; }
             .app-grid { grid-template-columns: 1fr; }
         }
@@ -150,7 +138,6 @@
     </div>
 
     <script>
-        // Liste App (Inalterate)
         const desktopApps = [
             { name: 'Card Lab', icon: '🎴', file: 'cardLab.html' },
             { name: 'BG Creator', icon: '🖼️', file: 'backgroud-creator.html' },
@@ -179,116 +166,4 @@
         const menuApps = [
             { name: 'Portofolio', icon: '📂', file: 'portofolio.html' },
             { name: 'Note', icon: '📝', file: 'blocknote.html' },
-            { name: 'Word', icon: '✍️', file: 'editor-testo.html' },
-            { name: 'Html', icon: '🖍️', file: 'editor-html.html' },
-            { name: 'Ide', icon: '💻', file: 'miniide.html' },
-            { name: 'Gestione Sistema', icon: '⚙️', file: 'internal://settings' },
-            { name: 'Web Designer', icon: '🌐', file: 'https://scottino2019-glitch.github.io/web-designer/' },
-            { name: 'Animation builder', icon: '🌐', file: 'https://animation-builder-sooty.vercel.app/' },
-            { name: 'Card Generator', icon: '🌐', file: 'https://card-generetor.vercel.app/' },
-            { name: 'Immagini', icon: '🌐', file: 'https://photo-finder-kohl.vercel.app/'},
-            { name: 'Pdf', icon: '🌐', file: 'https://pdf-studio-editor.vercel.app/'},
-            { name: 'Giochi', icon: '🌐', file: 'https://windows-game.vercel.app/'},
-            { name: 'Javascript', icon: '🌐', file: 'https://javascriptmasterclassinterattiva.netlify.app/'},
-            { name: 'ShapeLab', icon: '🌐', file: 'https://shapelabstudio.netlify.app/'}
-        ];
-
-        let zIndex = 1000;
-        const desk = document.getElementById('desktop');
-        const startMenu = document.getElementById('start-menu');
-        const menuGrid = document.getElementById('menu-grid');
-
-        // Generazione icone (Inalterata)
-        desktopApps.forEach(app => {
-            const div = document.createElement('div');
-            div.className = 'desktop-icon';
-            div.innerHTML = `<div class="icon-visual">${app.icon}</div><div class="icon-label">${app.name}</div>`;
-            div.onclick = () => openApp(app);
-            desk.appendChild(div);
-        });
-
-        menuApps.forEach(app => {
-            const div = document.createElement('div');
-            div.className = 'app-item';
-            div.innerHTML = `<span>${app.icon}</span> ${app.name}`;
-            div.onclick = () => openApp(app);
-            menuGrid.appendChild(div);
-        });
-
-        function toggleMenu(e) { e.stopPropagation(); startMenu.classList.toggle('open'); }
-
-        // --- APERTURA APP OTTIMIZZATA ---
-        function openApp(app) {
-            startMenu.classList.remove('open');
-            const win = document.createElement('div');
-            win.className = 'window';
-
-            const isMobile = window.innerWidth <= 768;
-            if (!isMobile) {
-                // Imposta una dimensione generosa ma lascia vedere il desktop ai bordi
-                win.style.width = '85%';
-                win.style.height = '80%';
-                const count = document.querySelectorAll('.window').length;
-                // Posizionamento a cascata
-                win.style.left = (5 + (count * 2)) + '%';
-                win.style.top = (5 + (count * 2)) + '%';
-            }
-
-            win.style.zIndex = zIndex++;
-            const isInternal = app.file.startsWith('internal://');
-
-            win.innerHTML = `
-                <div class="window-header" onmousedown="bringToFront(this.closest('.window'))">
-                    <span>${app.icon} ${app.name}</span>
-                    <span class="close-btn" onclick="this.closest('.window').remove()">✕</span>
-                </div>
-                <div class="window-content">
-                    ${isInternal ? renderInternal(app.file) : `<iframe src="${app.file}"></iframe>`}
-                </div>
-            `;
-
-            // Porta in primo piano al click
-            win.onmousedown = () => { bringToFront(win); };
-            document.body.appendChild(win);
-            if (!isMobile) setupDraggable(win);
-        }
-
-        function bringToFront(win) {
-            zIndex++;
-            win.style.zIndex = zIndex;
-        }
-
-        function setupDraggable(win) {
-            const header = win.querySelector('.window-header');
-            let x = 0, y = 0, nx = 0, ny = 0;
-            header.onmousedown = (e) => {
-                bringToFront(win);
-                nx = e.clientX; ny = e.clientY;
-                document.onmousemove = (e) => {
-                    x = nx - e.clientX; y = ny - e.clientY;
-                    nx = e.clientX; ny = e.clientY;
-                    win.style.top = (win.offsetTop - y) + "px";
-                    win.style.left = (win.offsetLeft - x) + "px";
-                };
-                document.onmouseup = () => { document.onmousemove = null; };
-            };
-        }
-
-        function renderInternal(path) {
-            if (path === 'internal://settings') {
-                return `<div style="padding:20px;"><h3>⚙️ Impostazioni Sistema</h3><p>Ottimizzazione Frame Attiva.</p></div>`;
-            }
-            return 'App non trovata';
-        }
-
-        document.onclick = (e) => { if(!e.target.closest('#start-menu') && !e.target.closest('.start-btn')) startMenu.classList.remove('open'); };
-
-        function updateClock() {
-            const now = new Date();
-            document.getElementById('clock').innerText = now.getHours().toString().padStart(2,'0') + ":" + now.getMinutes().toString().padStart(2,'0');
-        }
-        setInterval(updateClock, 1000);
-        updateClock();
-    </script>
-</body>
-</html>
+            { na
