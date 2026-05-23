@@ -6,7 +6,7 @@
     <title>Windows 11 XL Workspace</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        /* --- DESIGN SISTEMA --- */
+        /* --- DESIGN SISTEMA (ORIGINALE RIPRISTINATO) --- */
         * { box-sizing: border-box; margin: 0; padding: 0; }
 
         body, html { 
@@ -15,116 +15,117 @@
             font-family: 'Segoe UI', 'Segoe UI Variable', sans-serif;
             background: url('https://images.wallpapersden.com/image/download/windows-11-stock-official_bWdpZ26UmZqaraWkpJRmbmdlrWZnZWU.jpg') no-repeat center center fixed;
             background-size: cover;
+            transition: background 0.6s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        /* GRIGLIA DESKTOP OTTIMIZZATA */
         #desktop {
             position: absolute;
             top: 0; left: 0; width: 100%; height: calc(100% - 70px);
-            padding: 20px;
+            padding: 25px;
             display: grid;
-            grid-template-columns: repeat(auto-fill, 100px);
-            grid-template-rows: repeat(auto-fill, 110px);
-            grid-auto-flow: row; /* Cambiato per permettere lo scroll verticale se troppe app */
+            grid-template-columns: repeat(auto-fill, 105px);
+            grid-template-rows: repeat(auto-fill, 115px);
+            grid-auto-flow: column;
             gap: 15px;
             z-index: 5;
-            overflow-y: auto; /* Permette di scorrere le icone su mobile */
         }
 
         .desktop-icon {
-            width: 90px; height: 100px;
+            width: 100px; height: 110px;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
             text-align: center; cursor: pointer; border-radius: 12px;
             transition: all 0.2s;
             user-select: none;
         }
         .desktop-icon:hover { background: rgba(255, 255, 255, 0.15); backdrop-filter: blur(8px); }
-        .icon-visual { font-size: 40px; margin-bottom: 5px; filter: drop-shadow(0 3px 5px rgba(0,0,0,0.3)); }
-        .icon-label { color: white; font-size: 11px; font-weight: 500; text-shadow: 1px 1px 4px rgba(0,0,0,0.9); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; width: 100%; }
+        .icon-visual { font-size: 42px; margin-bottom: 8px; filter: drop-shadow(0 3px 5px rgba(0,0,0,0.3)); }
+        .icon-label { color: white; font-size: 11.5px; font-weight: 500; text-shadow: 1px 1px 4px rgba(0,0,0,0.9); }
 
-        /* TASKBAR */
         #taskbar {
             position: fixed;
-            bottom: 0; left: 0; width: 100%; height: 60px; 
-            background: rgba(255, 255, 255, 0.25);
+            bottom: 0; left: 0; width: 100%; height: 70px; 
+            background: rgba(255, 255, 255, 0.2);
             backdrop-filter: blur(25px) saturate(180%);
             display: flex; align-items: center; justify-content: space-between;
-            padding: 0 20px;
+            padding: 0 25px;
             z-index: 10000;
             border-top: 1px solid rgba(255, 255, 255, 0.2);
         }
 
-        .start-btn { font-size: 35px; color: #0078d4; cursor: pointer; transition: transform 0.2s ease; }
-        #clock { font-size: 1rem; font-weight: 600; color: #000; }
+        .start-btn { font-size: 42px; color: #0078d4; cursor: pointer; transition: transform 0.2s ease; }
+        .start-btn:hover { transform: scale(1.1); }
+        #clock { font-size: 1.25rem; font-weight: 600; color: #000; }
 
-        /* MENU START */
         #start-menu {
             position: fixed;
             bottom: -1000px; 
             left: 50%;
             transform: translateX(-50%);
-            width: 95%; /* Quasi tutta la larghezza su mobile */
-            max-width: 600px; 
-            max-height: 75vh; 
-            background: rgba(255, 255, 255, 0.9);
-            backdrop-filter: blur(35px);
-            border-radius: 20px;
+            width: 600px; 
+            max-height: 80vh; 
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(35px) saturate(150%);
+            border-radius: 24px;
             box-shadow: 0 20px 60px rgba(0,0,0,0.4);
-            transition: bottom 0.4s cubic-bezier(0.1, 0.9, 0.2, 1);
+            transition: bottom 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.1);
             z-index: 9999;
-            display: flex; flex-direction: column; overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
         }
-        #start-menu.open { bottom: 70px; }
+        #start-menu.open { bottom: 85px; }
 
-        .start-content { flex: 1; overflow-y: auto; padding: 20px; }
-        .app-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .start-content { flex: 1; overflow-y: auto; padding: 25px 30px 30px 30px; }
+        .app-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
         .app-item {
-            padding: 15px; background: rgba(255, 255, 255, 0.7); border-radius: 12px;
-            cursor: pointer; display: flex; align-items: center; gap: 12px; font-weight: 600;
+            padding: 18px; background: rgba(255, 255, 255, 0.6); border-radius: 15px;
+            cursor: pointer; border: 1px solid rgba(255, 255, 255, 0.5);
+            display: flex; align-items: center; gap: 15px; font-weight: 600;
+            transition: all 0.2s;
         }
+        .app-item:hover { background: #fff; transform: translateY(-2px); }
 
-        /* FINESTRE */
+        /* --- FINESTRE (OTTIMIZZATE MA STILE ORIGINALE) --- */
         .window {
             position: absolute;
             background: #fff;
-            border-radius: 12px;
-            box-shadow: 0 10px 50px rgba(0,0,0,0.3);
+            border-radius: 16px;
+            box-shadow: 0 25px 80px rgba(0,0,0,0.35);
             display: flex; flex-direction: column;
             overflow: hidden;
             z-index: 1000;
-            transition: width 0.3s, height 0.3s, top 0.3s, left 0.3s;
+            /* Dimensione iniziale ottimizzata */
+            width: 90%; 
+            height: 80%;
         }
 
         .window-header {
-            padding: 10px 15px;
-            background: #f3f3f3;
+            padding: 12px 20px;
+            background: #f8f8f8;
             cursor: move;
             display: flex; justify-content: space-between; align-items: center;
-            font-weight: 600; border-bottom: 1px solid #ddd;
+            font-weight: 700; border-bottom: 1px solid #eee;
+            user-select: none;
         }
 
-        .window-controls { display: flex; gap: 8px; }
-        .control-btn { width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; cursor: pointer; border-radius: 4px; }
-        .close-btn:hover { background: #e81123; color: #fff; }
+        .close-btn { color: #ff5f56; font-size: 22px; cursor: pointer; width: 34px; height: 34px; display: flex; align-items: center; justify-content: center; }
 
-        .window-content { flex: 1; overflow: hidden; background: #fff; }
-        iframe { width: 100%; height: 100%; border: none; }
+        .window-content { flex: 1; position: relative; overflow: hidden; }
+        iframe { width: 100%; height: 100%; border: none; display: block; }
 
-        /* LOGICA MOBILE SPECIFICA */
+        /* --- LOGICA MOBILE (ADATTAMENTO FRAME) --- */
         @media (max-width: 768px) {
-            #taskbar { height: 55px; padding: 0 15px; }
-            #clock { display: none; } /* Nasconde orologio su mobile per spazio */
-            .app-grid { grid-template-columns: 1fr; } /* Una colonna nel menu start */
-            
-            /* Le finestre su mobile diventano full screen */
             .window { 
                 top: 0 !important; 
                 left: 0 !important; 
                 width: 100% !important; 
-                height: calc(100% - 55px) !important; 
-                border-radius: 0; 
+                height: calc(100% - 70px) !important; 
+                border-radius: 0;
             }
-            .window-header { padding: 8px 12px; }
+            #start-menu { width: 100%; border-radius: 25px 25px 0 0; bottom: -100%; }
+            #start-menu.open { bottom: 70px; }
+            .app-grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
@@ -134,10 +135,10 @@
 
     <div id="start-menu">
         <div class="start-content">
-            <h2 style="text-align:center; margin-bottom:20px; font-size: 1.2rem;">Applicazioni</h2>
+            <h2 style="text-align:center; margin-bottom:25px;">Menu Start</h2>
             <div class="app-grid" id="menu-grid"></div>
-            <div style="margin-top: 25px; text-align: center; padding-bottom: 15px;">
-                 <button onclick="location.reload()" style="padding: 10px 20px; border-radius: 8px; border:none; background:rgba(0,0,0,0.05); font-weight:bold;">🔄 Riavvia</button>
+            <div style="margin-top: 35px; text-align: center; padding-bottom: 20px;">
+                 <button onclick="location.reload()" style="padding: 12px 25px; border-radius: 10px; border:none; background:rgba(0,0,0,0.05); font-weight:bold; cursor:pointer;">🔄 Riavvia PC</button>
             </div>
         </div>
     </div>
@@ -149,6 +150,7 @@
     </div>
 
     <script>
+        // Liste App (Inalterate)
         const desktopApps = [
             { name: 'Card Lab', icon: '🎴', file: 'cardLab.html' },
             { name: 'BG Creator', icon: '🖼️', file: 'backgroud-creator.html' },
@@ -175,17 +177,20 @@
         ];
 
         const menuApps = [
-            { name: 'Portfolio', icon: '📂', file: 'portofolio.html' },
+            { name: 'Portofolio', icon: '📂', file: 'portofolio.html' },
             { name: 'Note', icon: '📝', file: 'blocknote.html' },
             { name: 'Word', icon: '✍️', file: 'editor-testo.html' },
             { name: 'Html', icon: '🖍️', file: 'editor-html.html' },
             { name: 'Ide', icon: '💻', file: 'miniide.html' },
-            { name: 'Immagini', icon: '🌐', file: 'https://photo-finder-kohl.vercel.app/'},
-            { name: 'Gestione', icon: '⚙️', file: 'internal://settings' },
+            { name: 'Gestione Sistema', icon: '⚙️', file: 'internal://settings' },
             { name: 'Web Designer', icon: '🌐', file: 'https://scottino2019-glitch.github.io/web-designer/' },
-            { name: 'Pdf Studio', icon: '📄', file: 'https://pdf-studio-editor.vercel.app/'},
-            { name: 'Giochi', icon: '🎮', file: 'https://windows-game.vercel.app/'},
-            { name: 'ShapeLab', icon: '🎨', file: 'https://shapelabstudio.netlify.app/'}
+            { name: 'Animation builder', icon: '🌐', file: 'https://animation-builder-sooty.vercel.app/' },
+            { name: 'Card Generator', icon: '🌐', file: 'https://card-generetor.vercel.app/' },
+            { name: 'Immagini', icon: '🌐', file: 'https://photo-finder-kohl.vercel.app/'},
+            { name: 'Pdf', icon: '🌐', file: 'https://pdf-studio-editor.vercel.app/'},
+            { name: 'Giochi', icon: '🌐', file: 'https://windows-game.vercel.app/'},
+            { name: 'Javascript', icon: '🌐', file: 'https://javascriptmasterclassinterattiva.netlify.app/'},
+            { name: 'ShapeLab', icon: '🌐', file: 'https://shapelabstudio.netlify.app/'}
         ];
 
         let zIndex = 1000;
@@ -193,7 +198,7 @@
         const startMenu = document.getElementById('start-menu');
         const menuGrid = document.getElementById('menu-grid');
 
-        // Render icone desktop
+        // Generazione icone (Inalterata)
         desktopApps.forEach(app => {
             const div = document.createElement('div');
             div.className = 'desktop-icon';
@@ -202,7 +207,6 @@
             desk.appendChild(div);
         });
 
-        // Render app menu start
         menuApps.forEach(app => {
             const div = document.createElement('div');
             div.className = 'app-item';
@@ -213,46 +217,52 @@
 
         function toggleMenu(e) { e.stopPropagation(); startMenu.classList.toggle('open'); }
 
+        // --- APERTURA APP OTTIMIZZATA ---
         function openApp(app) {
             startMenu.classList.remove('open');
             const win = document.createElement('div');
             win.className = 'window';
-            win.style.zIndex = zIndex++;
 
             const isMobile = window.innerWidth <= 768;
             if (!isMobile) {
-                // Desktop: Finestre grandi al 90%
-                win.style.width = '90%'; win.style.height = '82%';
+                // Imposta una dimensione generosa ma lascia vedere il desktop ai bordi
+                win.style.width = '85%';
+                win.style.height = '80%';
                 const count = document.querySelectorAll('.window').length;
-                win.style.left = (4 + (count * 2)) + '%';
-                win.style.top = (2 + (count * 2)) + '%';
+                // Posizionamento a cascata
+                win.style.left = (5 + (count * 2)) + '%';
+                win.style.top = (5 + (count * 2)) + '%';
             }
 
+            win.style.zIndex = zIndex++;
             const isInternal = app.file.startsWith('internal://');
 
             win.innerHTML = `
-                <div class="window-header">
+                <div class="window-header" onmousedown="bringToFront(this.closest('.window'))">
                     <span>${app.icon} ${app.name}</span>
-                    <div class="window-controls">
-                        ${!isMobile ? `<span class="control-btn" onclick="this.closest('.window').classList.toggle('maximized')">🔳</span>` : ''}
-                        <span class="control-btn close-btn" onclick="this.closest('.window').remove()">✕</span>
-                    </div>
+                    <span class="close-btn" onclick="this.closest('.window').remove()">✕</span>
                 </div>
                 <div class="window-content">
                     ${isInternal ? renderInternal(app.file) : `<iframe src="${app.file}"></iframe>`}
                 </div>
             `;
 
-            win.onmousedown = () => { win.style.zIndex = zIndex++; };
+            // Porta in primo piano al click
+            win.onmousedown = () => { bringToFront(win); };
             document.body.appendChild(win);
             if (!isMobile) setupDraggable(win);
+        }
+
+        function bringToFront(win) {
+            zIndex++;
+            win.style.zIndex = zIndex;
         }
 
         function setupDraggable(win) {
             const header = win.querySelector('.window-header');
             let x = 0, y = 0, nx = 0, ny = 0;
             header.onmousedown = (e) => {
-                if(win.classList.contains('maximized')) return;
+                bringToFront(win);
                 nx = e.clientX; ny = e.clientY;
                 document.onmousemove = (e) => {
                     x = nx - e.clientX; y = ny - e.clientY;
@@ -266,7 +276,7 @@
 
         function renderInternal(path) {
             if (path === 'internal://settings') {
-                return `<div style="padding:20px;"><h3>⚙️ Impostazioni</h3><p>Versione Sistema: 2.1 Mobile Ready</p><button onclick="localStorage.clear();location.reload();" style="margin-top:10px; padding:10px; background:red; color:white; border:none; border-radius:5px;">Reset Sistema</button></div>`;
+                return `<div style="padding:20px;"><h3>⚙️ Impostazioni Sistema</h3><p>Ottimizzazione Frame Attiva.</p></div>`;
             }
             return 'App non trovata';
         }
@@ -275,10 +285,10 @@
 
         function updateClock() {
             const now = new Date();
-            const clockEl = document.getElementById('clock');
-            if(clockEl) clockEl.innerText = now.getHours().toString().padStart(2,'0') + ":" + now.getMinutes().toString().padStart(2,'0');
+            document.getElementById('clock').innerText = now.getHours().toString().padStart(2,'0') + ":" + now.getMinutes().toString().padStart(2,'0');
         }
-        setInterval(updateClock, 1000); updateClock();
+        setInterval(updateClock, 1000);
+        updateClock();
     </script>
 </body>
 </html>
