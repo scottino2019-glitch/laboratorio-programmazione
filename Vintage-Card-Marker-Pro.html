@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Vintage Card Maker Pro</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Special+Elite&family=IBM+Plex+Mono:wght@400;500&family=Patrick+Hand&family=Playfair+Display:wght@500;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/html-to-image@1.11.11/dist/html-to-image.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+  <style>
+    :root {
+      --bg: #22324a;
+      --panel: #efe7d7;
+      --panel-2: #f7f1e3;
+      --ink: #5f3a11;
+      --muted: #9b7a43;
+      --line: #d4c36b;
+      --accent: #e6d876;
+      --stamp: #a93a2b;
+      --shadow: 0 18px 50px rgba(13, 16, 23, 0.28);
+      --font-title: 'Special Elite', monospace;
+      --font-body: 'IBM Plex Mono', monospace;
+      --font-script: 'Instrument Serif', serif;
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; min-height: 100%; }
+    body {
+      font-family: var(--font-body);
+      background:
+        radial-gradient(circle at top left, rgba(255,255,255,.08), transparent 30%),
+        linear-gradient(180deg, #2c425f 0%, #1c2737 100%);
+      color: #1a1a1a;
+    }
+    .app {
+      display: grid;
+      grid-template-columns: 390px 1fr;
+      min-height: 100vh;
+    }
+    .sidebar {
+      background: rgba(11, 15, 21, .76);
+      color: #f4ead7;
+      padding: 24px;
+      border-right: 1px solid rgba(255,255,255,.08);
+      backdrop-filter: blur(14px);
+      overflow-y: auto;
+    }
+    .brand { display:flex; align-items:center; gap:12px; margin-bottom:22px; }
+    .logo {
+      width: 42px; height: 42px; border: 1px solid rgba(244,234,215,.38); border-radius: 12px;
+      display:grid; place-items:center; color:#f7e4aa;
+      background: linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.02));
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.15);
+    }
+    h1 { font-size: 1.2rem; margin: 0; letter-spacing: .04em; }
+    .sub { margin: 4px 0 0; color: rgba(244,234,215,.72); font-size: .86rem; line-height: 1.5; }
+    .panel-group { margin-top:22px; border-top:1px solid rgba(255,255,255,.08); padding-top:18px; }
+    .panel-group h2 { margin:0 0 14px; font-size:.85rem; letter-spacing:.18em; text-transform:uppercase; color:#f7e4aa; }
+    .field { display:grid; gap:8px; margin-bottom:14px; }
+    label { font-size:.79rem; color:rgba(244,234,215,.82); letter-spacing:.04em; }
+    input, select, textarea {
+      width:100%; border:1px solid rgba(255,255,255,.12); background:rgba(255,255,255,.06);
+      color:#fff7e8; padding:12px 13px; border-radius:12px; outline:none; font:inherit;
+    }
+    input[type="color"] { padding:6px; height:46px; }
+    input[type="file"] { padding:10px; }
+    textarea { resize:vertical; min-height:88px; }
+    .grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+    .checks { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+    .check {
+      display:flex; align-items:center; gap:10px; font-size:.84rem; padding:10px 12px;
+      border-radius:12px; border:1px solid rgba(255,255,255,.08); background:rgba(255,255,255,.04);
+    }
+    .check input { width:auto; margin:0; }
+    .actions { display:grid; gap:10px; margin-top:22px; }
+    .inline-actions { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+    button {
+      appearance:none; border:0; border-radius:14px; padding:13px 16px; font:inherit; cursor:pointer;
+      transition: transform .18s ease, opacity .18s ease, box-shadow .18s ease;
+    }
+    button:hover { transform: translateY(-1px); }
+    .primary { background: linear-gradient(180deg, #f4df95, #d6b95a); color:#35250f; box-shadow:0 10px 24px rgba(214,185,90,.22); }
+    .secondary { background:rgba(255,255,255,.08); color:#f6eddb; border:1px solid rgba(255,255,255,.12); }
+    .danger { background:rgba(169,58,43,.16); color:#ffd7ca; border:1px solid rgba(255,255,255,.08); }
+    .workspace { padding:26px; display:grid; place-items:center; }
+    .stage {
+      width:min(100%, 1100px); min-height:740px; border-radius:28px; padding:36px 28px; background:rgba(255,255,255,.06);
+      border:1px solid rgba(255,255,255,.08); box-shadow:inset 0 1px 0 rgba(255,255,255,.08); display:grid; gap:20px; place-items:center;
+      overflow:auto;
+    }
+    .texture-preview {
+      width:min(100%,540px); min-height:50px; padding:10px 12px; border-radius:12px; color:rgba(255,255,255,.72);
+      font-size:.78rem; border:1px dashed rgba(255,255,255,.16); background:rgba(255,255,255,.03);
+    }
+    .batch-list { display:grid; gap:10px; max-height:180px; overflow:auto; }
+    .batch-item {
+      display:grid; gap:6px; padding:12px; border-radius:12px; background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.08);
+    }
+    .batch-item strong { color:#fff1c6; }
+    .batch-item small { color:rgba(244,234,215,.66); }
+    .card {
+      position:relative; width:min(100%,540px); aspect-ratio:10/7; background:var(--panel); color:var(--ink);
+      border:2px solid color-mix(in srgb, var(--ink) 60%, transparent); box-shadow:var(--shadow); overflow:hidden;
+      margin:18px auto;
+      background-image: var(--texture-image), radial-gradient(circle at 20% 18%, rgba(255,255,255,.28), transparent 22%), radial-gradient(circle at 80% 72%, rgba(80,50,25,.08), transparent 20%), repeating-linear-gradient(0deg, rgba(60,35,15,.018) 0 1px, transparent 1px 3px);
+      background-size: cover, auto, auto, auto;
+      background-position: center;
+      background-blend-mode: multiply, normal, normal, normal;
+    }
+    .card-inner { position:relative; z-index:1; height:100%; padding:28px 28px 22px; display:flex; flex-direction:column; gap:16px; }
+    .header-strip { margin:-28px -28px 6px; padding:13px 28px; background:var(--accent); border-bottom:2px solid color-mix(in srgb, var(--ink) 55%, transparent); text-transform:uppercase; letter-spacing:.12em; font-size:.95rem; }
+    .telegraph .header-strip { background:#cf0505; color:#fff2d6; font-weight:700; letter-spacing:.08em; }
+    .title { font-family:var(--font-title); font-size:clamp(1.9rem, 4vw, 2.7rem); line-height:1.05; letter-spacing:.02em; text-transform:uppercase; margin-top:4px; }
+    .script-title { font-family:var(--font-script); font-style:italic; text-transform:none; letter-spacing:0; }
+    .body { font-family:var(--font-body); font-size:clamp(1.02rem, 2.2vw, 1.35rem); line-height:1.72; color:color-mix(in srgb, var(--ink) 84%, #000 0%); min-height:90px; white-space:pre-line; }
+    .meta { display:flex; justify-content:space-between; gap:16px; align-items:center; margin-top:auto; font-size:1rem; color:var(--muted); letter-spacing:.08em; text-transform:uppercase; }
+    .rule { height:2px; background:color-mix(in srgb, var(--line) 90%, white 10%); opacity:.9; }
+    .postcard-layout { display:grid; grid-template-columns:1.5fr .75fr; gap:20px; flex:1; }
+    .stamp-box { height:110px; border:5px double color-mix(in srgb, var(--muted) 45%, white 30%); display:grid; place-items:center; color:color-mix(in srgb, var(--muted) 70%, white 20%); text-transform:uppercase; font-size:.95rem; text-align:center; padding:10px; }
+    .post-lines { display:grid; gap:16px; align-content:start; }
+    .telegram-meta { font-size:1rem; line-height:1.65; color:var(--muted); text-transform:uppercase; letter-spacing:.08em; }
+    .punched-row { display:grid; grid-template-columns:repeat(8,1fr); gap:18px; margin:8px 0 4px; min-height:120px; }
+    .punch-col { display:grid; grid-template-rows:repeat(5,14px); gap:10px; justify-items:center; align-content:start; }
+    .dot { width:14px; height:14px; border-radius:50%; border:2px solid rgba(69,79,105,.18); background:transparent; }
+    .dot.fill { background:#1c2d56; border-color:rgba(28,45,86,.35); }
+    .top-holes { display:flex; gap:10px; margin-top:-6px; margin-bottom:8px; }
+    .top-holes span { width:18px; height:18px; border-radius:50%; background:#cfd3dc; box-shadow:inset 0 -1px 0 rgba(0,0,0,.1); }
+    .stamp { position:absolute; top:16px; right:18px; padding:12px 16px; border:3px double color-mix(in srgb, var(--stamp) 70%, white 12%); color:color-mix(in srgb, var(--stamp) 85%, white 0%); transform:rotate(12deg); text-transform:uppercase; font-size:.95rem; letter-spacing:.12em; background:color-mix(in srgb, var(--panel) 84%, transparent); display:none; opacity:.9; z-index:3; }
+    .corner-fold { position:absolute; top:0; right:0; width:92px; height:92px; background:linear-gradient(135deg, rgba(255,255,255,.72) 0 49%, rgba(0,0,0,.08) 50% 52%, transparent 53% 100%); clip-path:polygon(100% 0, 0 0, 100% 100%); display:none; z-index:3; opacity:.9; }
+    .stain { position:absolute; inset:auto auto 42px 34px; width:140px; height:90px; background:radial-gradient(circle at 35% 40%, rgba(110,48,22,.18), transparent 28%), radial-gradient(circle at 58% 48%, rgba(110,48,22,.14), transparent 30%), radial-gradient(circle at 72% 60%, rgba(110,48,22,.12), transparent 22%); filter:blur(6px); opacity:0; pointer-events:none; z-index:0; }
+    .perforation { position:absolute; inset:0 auto 0 0; width:18px; display:none; background:radial-gradient(circle at left center, transparent 0 7px, rgba(0,0,0,.22) 7px 8px, transparent 8px 100%); background-size:18px 26px; background-repeat:repeat-y; opacity:.33; }
+    .card.show-stamp .stamp, .card.show-fold .corner-fold, .card.show-perf .perforation { display:block; }
+    .card.show-stain .stain { opacity:1; }
+    .footer-note { position:absolute; bottom:14px; right:18px; font-size:.74rem; color:color-mix(in srgb, var(--muted) 78%, white 10%); letter-spacing:.12em; text-transform:uppercase; opacity:.8; }
+    .hint { margin-top:14px; color:rgba(244,234,215,.68); font-size:.78rem; line-height:1.55; }
+    .status { margin-top:10px; color:#f7e4aa; font-size:.8rem; min-height:1.2em; }
+    @media (max-width: 1080px) { .app { grid-template-columns: 1fr; } .workspace { padding:18px; } .stage { min-height:auto; padding:14px; } }
+    @media (max-width: 620px) {
+      .sidebar { padding:18px; } .checks, .grid-2, .inline-actions, .postcard-layout { grid-template-columns:1fr; }
+      .workspace { padding:12px; } .stage { min-height:auto; padding:18px 12px; }
+      .card { width:100%; margin:10px auto; }
+      .card-inner { padding:22px 20px 20px; } .header-strip { margin:-22px -20px 2px; padding:12px 20px; } .stamp-box { height:92px; }
+      .punched-row { gap:10px; } .top-holes span { width:15px; height:15px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="logo" aria-hidden="true">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M4 5.5h16v13H4z"></path><path d="M7 9h10M7 13h6"></path></svg>
+        </div>
+        <div>
+          <h1>Vintage Card Maker Pro</h1>
+          <p class="sub">Preset salvabili, texture carta personalizzabili e export multiplo ZIP in HTML + PNG.</p>
+        </div>
+      </div>
+
+      <section class="panel-group">
+        <h2>Template</h2>
+        <div class="field">
+          <label for="template">Tipo card</label>
+          <select id="template">
+            <option value="catalogo">Indice catalogo</option>
+            <option value="cartolina">Cartolina</option>
+            <option value="perforata">Scheda perforata</option>
+            <option value="telegramma">Telegramma urgente</option>
+          </select>
+        </div>
+      </section>
+
+      <section class="panel-group">
+        <h2>Testi</h2>
+        <div class="field"><label for="topLabel">Etichetta superiore</label><input id="topLabel" value="TIPOGRAFIA MECCANICA" /></div>
+        <div class="field"><label for="title">Titolo</label><input id="title" value="TITOLO" /></div>
+        <div class="field"><label for="body">Testo principale</label><textarea id="body">Scrivi il tuo testo qui...</textarea></div>
+        <div class="grid-2">
+          <div class="field"><label for="metaLeft">Meta sinistra</label><input id="metaLeft" value="N." /></div>
+          <div class="field"><label for="metaRight">Meta destra</label><input id="metaRight" value="ISIG78A0" /></div>
+        </div>
+      </section>
+
+      <section class="panel-group">
+        <h2>Stile</h2>
+        <div class="grid-2">
+          <div class="field"><label for="titleFont">Font titolo</label><select id="titleFont"><option value="special">Typewriter</option><option value="playfair">Editoriale</option><option value="script">Corsivo</option><option value="plex">Mono pulito</option></select></div>
+          <div class="field"><label for="bodyFont">Font testo</label><select id="bodyFont"><option value="plex">Mono pulito</option><option value="special">Typewriter</option><option value="hand">A mano</option><option value="script">Corsivo</option></select></div>
+        </div>
+        <div class="field"><label for="cardSize">Dimensione card</label><select id="cardSize"><option value="sm">Piccola</option><option value="md" selected>Media</option><option value="lg">Grande</option></select></div>
+        <label class="check" style="margin-bottom:14px;"><input type="checkbox" id="autoFit" checked> Adatta automaticamente il testo</label>
+        <div class="grid-2">
+          <div class="field"><label for="panelColor">Sfondo card</label><input type="color" id="panelColor" value="#efe7d7" /></div>
+          <div class="field"><label for="accentColor">Header / accento</label><input type="color" id="accentColor" value="#e7d978" /></div>
+        </div>
+        <div class="grid-2">
+          <div class="field"><label for="inkColor">Colore testo</label><input type="color" id="inkColor" value="#5f3a11" /></div>
+          <div class="field"><label for="lineColor">Linee</label><input type="color" id="lineColor" value="#d9ca69" /></div>
+        </div>
+      </section>
+
+      <section class="panel-group">
+        <h2>Accessori</h2>
+        <div class="checks">
+          <label class="check"><input type="checkbox" id="accStamp"> Timbro</label>
+          <label class="check"><input type="checkbox" id="accPerf"> Perforazione</label>
+          <label class="check"><input type="checkbox" id="accStain"> Macchia</label>
+          <label class="check"><input type="checkbox" id="accFold"> Angolo piegato</label>
+        </div>
+      </section>
+
+      <section class="panel-group">
+        <h2>Texture carta</h2>
+        <div class="field">
+          <label for="textureUpload">Carica immagine texture</label>
+          <input type="file" id="textureUpload" accept="image/*" />
+        </div>
+        <div class="inline-actions">
+          <button class="secondary" id="clearTexture">Rimuovi texture</button>
+          <button class="secondary" id="sampleTexture">Texture demo</button>
+        </div>
+        <div class="texture-preview" id="textureInfo">Nessuna texture caricata.</div>
+      </section>
+
+      <section class="panel-group">
+        <h2>Preset</h2>
+        <div class="field"><label for="presetName">Nome preset</label><input id="presetName" placeholder="Es. Archivio ocra" /></div>
+        <div class="inline-actions">
+          <button class="primary" id="savePreset">Salva preset</button>
+          <button class="secondary" id="exportPresets">Esporta preset JSON</button>
+        </div>
+        <div class="field" style="margin-top:10px;"><label for="importPresets">Importa preset JSON</label><input type="file" id="importPresets" accept="application/json,.json" /></div>
+        <div class="batch-list" id="presetList"></div>
+      </section>
+
+      <section class="panel-group">
+        <h2>Batch export</h2>
+        <div class="inline-actions">
+          <button class="secondary" id="addToBatch">Aggiungi alla coda</button>
+          <button class="danger" id="clearBatch">Svuota coda</button>
+        </div>
+        <div class="actions" style="margin-top:10px;">
+          <button class="primary" id="downloadBatch">Scarica ZIP HTML + PNG</button>
+        </div>
+        <div class="batch-list" id="batchList"></div>
+      </section>
+
+      <section class="panel-group">
+        <h2>Esporta singola</h2>
+        <div class="actions">
+          <button class="primary" id="downloadPng">Scarica PNG</button>
+          <button class="secondary" id="downloadHtml">Scarica HTML della card</button>
+          <button class="secondary" id="resetDefaults">Ripristina preset</button>
+        </div>
+        <p class="hint">I preset e la batch queue restano in memoria finché la pagina resta aperta. Puoi esportare i preset in JSON per riutilizzarli in seguito.</p>
+        <div class="status" id="status"></div>
+      </section>
+    </aside>
+
+    <main class="workspace">
+      <div class="stage">
+        <article class="card" id="cardPreview">
+          <div class="perforation"></div>
+          <div class="corner-fold"></div>
+          <div class="stain"></div>
+          <div class="stamp">Archivio</div>
+          <div class="card-inner" id="cardInner"></div>
+          <div class="footer-note">Vintage Card Maker Pro</div>
+        </article>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    const presets = {
+      catalogo: { topLabel:'INDICE CATALOGO', title:'Voce Catalogo', body:'Descrizione della voce...', metaLeft:'', metaRight:'', titleFont:'playfair', bodyFont:'plex', panelColor:'#ece6d8', accentColor:'#e9df88', inkColor:'#6b3c08', lineColor:'#ddd05a', accStamp:false, accPerf:false, accStain:false, accFold:false, cardSize:'md', autoFit:true },
+      cartolina: { topLabel:'Cartolina', title:'Cartolina', body:'Il tuo messaggio...', metaLeft:'', metaRight:'ISIG78A0', titleFont:'script', bodyFont:'script', panelColor:'#f2f2f4', accentColor:'#f2f2f4', inkColor:'#444e63', lineColor:'#cfd5d8', accStamp:false, accPerf:false, accStain:false, accFold:false, cardSize:'md', autoFit:true },
+      perforata: { topLabel:'PROGRAMMA', title:'PROGRAMMA', body:'Codice perforato...', metaLeft:'', metaRight:'', titleFont:'plex', bodyFont:'plex', panelColor:'#f0efe5', accentColor:'#e9e8de', inkColor:'#1a2742', lineColor:'#bfc4ca', accStamp:false, accPerf:false, accStain:false, accFold:false, cardSize:'md', autoFit:true },
+      telegramma: { topLabel:'⚡ TELEGRAMMA URGENTE', title:'MESSAGGIO', body:'TESTO DEL TELEGRAMMA...', metaLeft:'MITTENTE SCONOSCIUTO', metaRight:'DESTINATARIO', titleFont:'special', bodyFont:'plex', panelColor:'#f4f0df', accentColor:'#cf0505', inkColor:'#77420b', lineColor:'#ddc85b', accStamp:false, accPerf:false, accStain:false, accFold:false, cardSize:'md', autoFit:true }
+    };
+    const fontMap = {
+      special:"'Special Elite', monospace", playfair:"'Playfair Display', serif", script:"'Instrument Serif', serif", plex:"'IBM Plex Mono', monospace", hand:"'Patrick Hand', cursive"
+    };
+    const ids = ['template','topLabel','title','body','metaLeft','metaRight','titleFont','bodyFont','cardSize','autoFit','panelColor','accentColor','inkColor','lineColor','accStamp','accPerf','accStain','accFold'];
+    const els = Object.fromEntries(ids.map(id => [id, document.getElementById(id)]));
+    const card = document.getElementById('cardPreview');
+    const cardInner = document.getElementById('cardInner');
+    const statusEl = document.getElementById('status');
+    const textureInfo = document.getElementById('textureInfo');
+    const presetList = document.getElementById('presetList');
+    const batchList = document.getElementById('batchList');
+    const state = { textureData:'', textureName:'', customPresets:[], batchQueue:[] };
+
+    function setStatus(msg){ statusEl.textContent = msg; setTimeout(() => { if(statusEl.textContent===msg) statusEl.textContent=''; }, 2400); }
+    function escapeHtml(str){ return String(str).replace(/[&<>"]/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[s])); }
+    function slugify(str){ return (str || 'card').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'').slice(0,40) || 'card'; }
+
+    function currentData(){
+      const data = {};
+      ids.forEach(id => data[id] = els[id].type === 'checkbox' ? els[id].checked : els[id].value);
+      data.textureData = state.textureData || '';
+      data.textureName = state.textureName || '';
+      return data;
+    }
+
+    function createPunchedPattern(seedText){
+      const chars = (seedText || 'PROGRAMMA').slice(0,8).padEnd(8,'0').split('');
+      return chars.map(ch => {
+        const code = ch.charCodeAt(0);
+        const filled = [0,1,2,3,4].map(i => ((code >> i) & 1) === 1);
+        return `<div class="punch-col">${filled.map(v => `<span class="dot ${v ? 'fill' : ''}"></span>`).join('')}</div>`;
+      }).join('');
+    }
+
+    function updateTextureInfo(){
+      textureInfo.textContent = state.textureData ? `Texture attiva: ${state.textureName || 'custom'} ` : 'Nessuna texture caricata.';
+      textureInfo.style.backgroundImage = state.textureData ? `linear-gradient(rgba(14,17,23,.45), rgba(14,17,23,.45)), url(${state.textureData})` : 'none';
+      textureInfo.style.backgroundSize = 'cover';
+      textureInfo.style.backgroundPosition = 'center';
+    }
+
+    function autoFitText(){
+      const enabled = els.autoFit.checked;
+      cardInner.querySelectorAll('.fit-target').forEach(el => { el.style.fontSize = ''; el.style.lineHeight = ''; });
+      if (!enabled) return;
+      requestAnimationFrame(() => {
+        const candidates = cardInner.querySelectorAll('.fit-target');
+        candidates.forEach(el => {
+          let size = parseFloat(getComputedStyle(el).fontSize);
+          while (el.scrollHeight > el.clientHeight && size > 10) {
+            size -= 0.8;
+            el.style.fontSize = size + 'px';
+            el.style.lineHeight = Math.max(size * 1.18, 12) + 'px';
+          }
+        });
+      });
+    }
+
+    function renderCard(data = currentData()){
+      card.style.setProperty('--panel', data.panelColor);
+      card.style.setProperty('--accent', data.accentColor);
+      card.style.setProperty('--ink', data.inkColor);
+      card.style.setProperty('--line', data.lineColor);
+      card.style.setProperty('--muted', data.inkColor + 'cc');
+      card.style.setProperty('--stamp', data.inkColor);
+      card.style.setProperty('--font-title', fontMap[data.titleFont]);
+      card.style.setProperty('--font-body', fontMap[data.bodyFont]);
+      card.style.setProperty('--texture-image', data.textureData ? `url(${data.textureData})` : 'none');
+      card.style.width = data.cardSize === 'sm' ? 'min(100%, 460px)' : data.cardSize === 'lg' ? 'min(100%, 620px)' : 'min(100%, 540px)';
+      card.classList.toggle('show-stamp', !!data.accStamp);
+      card.classList.toggle('show-perf', !!data.accPerf);
+      card.classList.toggle('show-stain', !!data.accStain);
+      card.classList.toggle('show-fold', !!data.accFold);
+      card.classList.toggle('telegraph', data.template === 'telegramma');
+      const isScriptTitle = data.titleFont === 'script';
+      const titleClass = `title ${isScriptTitle ? 'script-title' : ''}`;
+      let html = '';
+      if (data.template === 'catalogo') {
+        html = `<div class="header-strip">${escapeHtml(data.topLabel)}</div><div class="${titleClass} fit-target">${escapeHtml(data.title)}</div><div class="body fit-target">${escapeHtml(data.body)}</div><div class="rule"></div><div class="meta"><span>${escapeHtml(data.metaLeft)}</span><span>${escapeHtml(data.metaRight)}</span></div>`;
+      }
+      if (data.template === 'cartolina') {
+        html = `<div class="postcard-layout"><div class="post-lines"><div class="title script-title fit-target" style="text-transform:none;">${escapeHtml(data.topLabel)}</div><div class="rule"></div><div class="body fit-target" style="font-family:${fontMap[data.bodyFont]}; min-height:64px;">${escapeHtml(data.body)}</div><div class="rule"></div><div class="meta" style="justify-content:flex-start; gap:8px;"><span>${escapeHtml(data.metaRight)}</span></div></div><div><div class="stamp-box">Francobollo</div></div></div>`;
+      }
+      if (data.template === 'perforata') {
+        html = `<div class="top-holes"><span></span><span></span><span></span><span></span><span></span></div><div class="rule" style="margin:0 -28px 6px;"></div><div class="punched-row">${createPunchedPattern(data.body)}</div><div class="title fit-target" style="font-family:${fontMap[data.titleFont]}; font-size:2.1rem;">${escapeHtml(data.title)}</div><div class="body fit-target" style="min-height:40px;">${escapeHtml(data.body)}</div>`;
+      }
+      if (data.template === 'telegramma') {
+        html = `<div class="header-strip">${escapeHtml(data.topLabel)}</div><div style="text-align:center; font-size:1.8rem; color:#ffdf7f; margin-top:2px;">⚡</div><div class="telegram-meta">Da: ${escapeHtml(data.metaLeft || 'MITTENTE SCONOSCIUTO')}<br>A: ${escapeHtml(data.metaRight || 'DESTINATARIO')}</div><div class="rule"></div><div class="title fit-target">${escapeHtml(data.title)}</div><div class="body fit-target">${escapeHtml(data.body)}</div><div class="rule"></div><div class="meta"><span>N.</span><span>${escapeHtml((data.metaRight && data.metaRight !== 'DESTINATARIO') ? data.metaRight : 'ISIG78A0')}</span></div>`;
+      }
+      cardInner.innerHTML = html;
+      updateTextureInfo();
+      autoFitText();
+    }
+
+    function applyData(data){
+      ids.forEach(id => {
+        const el = els[id];
+        if (!el || data[id] === undefined) return;
+        if (el.type === 'checkbox') el.checked = !!data[id]; else el.value = data[id];
+      });
+      state.textureData = data.textureData || '';
+      state.textureName = data.textureName || '';
+      if (data.cardSize) els.cardSize.value = data.cardSize;
+      renderCard();
+    }
+
+    function applyPreset(name){ applyData({ ...presets[name], template:name, textureData:'', textureName:'' }); }
+
+    function getInlineCardDocument(data = currentData()){
+      const temp = document.createElement('article');
+      temp.className = `card ${data.template==='telegramma' ? 'telegraph' : ''} ${data.accStamp?'show-stamp':''} ${data.accPerf?'show-perf':''} ${data.accStain?'show-stain':''} ${data.accFold?'show-fold':''}`.trim();
+      temp.style.cssText = `--panel:${data.panelColor};--accent:${data.accentColor};--ink:${data.inkColor};--line:${data.lineColor};--muted:${data.inkColor}cc;--stamp:${data.inkColor};--font-title:${fontMap[data.titleFont]};--font-body:${fontMap[data.bodyFont]};--texture-image:${data.textureData ? `url(${data.textureData})` : 'none'};`;
+      renderCard(data);
+      return `<!DOCTYPE html><html lang="it"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>${escapeHtml(data.title || 'card-export')}</title><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Special+Elite&family=IBM+Plex+Mono:wght@400;500&family=Patrick+Hand&family=Playfair+Display:wght@500;700&display=swap" rel="stylesheet"><style>body{margin:0;min-height:100vh;display:grid;place-items:center;background:#1f2e44;padding:24px;font-family:'IBM Plex Mono',monospace}.card{position:relative;width:min(100%,540px);aspect-ratio:10/7;background:var(--panel);color:var(--ink);border:2px solid color-mix(in srgb,var(--ink) 60%,transparent);box-shadow:0 18px 50px rgba(13,16,23,.28);overflow:hidden;background-image:var(--texture-image),radial-gradient(circle at 20% 18%, rgba(255,255,255,.28), transparent 22%),radial-gradient(circle at 80% 72%, rgba(80,50,25,.08), transparent 20%),repeating-linear-gradient(0deg, rgba(60,35,15,.018) 0 1px, transparent 1px 3px);background-size:cover,auto,auto,auto;background-position:center;background-blend-mode:multiply,normal,normal,normal}.card-inner{position:relative;z-index:1;height:100%;padding:28px 28px 22px;display:flex;flex-direction:column;gap:16px}.header-strip{margin:-28px -28px 6px;padding:13px 28px;background:var(--accent);border-bottom:2px solid color-mix(in srgb,var(--ink) 55%,transparent);text-transform:uppercase;letter-spacing:.12em;font-size:.95rem}.telegraph .header-strip{background:#cf0505;color:#fff2d6;font-weight:700;letter-spacing:.08em}.title{font-family:var(--font-title);font-size:clamp(1.9rem,4vw,2.7rem);line-height:1.05;letter-spacing:.02em;text-transform:uppercase;margin-top:4px}.script-title{font-family:'Instrument Serif',serif;font-style:italic;text-transform:none;letter-spacing:0}.body{font-family:var(--font-body);font-size:clamp(1.02rem,2.2vw,1.35rem);line-height:1.72;color:color-mix(in srgb,var(--ink) 84%, #000 0%);min-height:90px;white-space:pre-line}.meta{display:flex;justify-content:space-between;gap:16px;align-items:center;margin-top:auto;font-size:1rem;color:var(--muted);letter-spacing:.08em;text-transform:uppercase}.rule{height:2px;background:color-mix(in srgb,var(--line) 90%, white 10%);opacity:.9}.postcard-layout{display:grid;grid-template-columns:1.5fr .75fr;gap:20px;flex:1}.stamp-box{height:110px;border:5px double color-mix(in srgb,var(--muted) 45%, white 30%);display:grid;place-items:center;color:color-mix(in srgb,var(--muted) 70%, white 20%);text-transform:uppercase;font-size:.95rem;text-align:center;padding:10px}.post-lines{display:grid;gap:16px;align-content:start}.telegram-meta{font-size:1rem;line-height:1.65;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}.punched-row{display:grid;grid-template-columns:repeat(8,1fr);gap:18px;margin:8px 0 4px;min-height:120px}.punch-col{display:grid;grid-template-rows:repeat(5,14px);gap:10px;justify-items:center;align-content:start}.dot{width:14px;height:14px;border-radius:50%;border:2px solid rgba(69,79,105,.18);background:transparent}.dot.fill{background:#1c2d56;border-color:rgba(28,45,86,.35)}.top-holes{display:flex;gap:10px;margin-top:-6px;margin-bottom:8px}.top-holes span{width:18px;height:18px;border-radius:50%;background:#cfd3dc;box-shadow:inset 0 -1px 0 rgba(0,0,0,.1)}.stamp{position:absolute;top:16px;right:18px;padding:12px 16px;border:3px double color-mix(in srgb,var(--stamp) 70%, white 12%);color:color-mix(in srgb,var(--stamp) 85%, white 0%);transform:rotate(12deg);text-transform:uppercase;font-size:.95rem;letter-spacing:.12em;background:color-mix(in srgb,var(--panel) 84%, transparent);display:none;opacity:.9;z-index:3}.corner-fold{position:absolute;top:0;right:0;width:92px;height:92px;background:linear-gradient(135deg, rgba(255,255,255,.72) 0 49%, rgba(0,0,0,.08) 50% 52%, transparent 53% 100%);clip-path:polygon(100% 0,0 0,100% 100%);display:none;z-index:3;opacity:.9}.stain{position:absolute;inset:auto auto 42px 34px;width:140px;height:90px;background:radial-gradient(circle at 35% 40%, rgba(110,48,22,.18), transparent 28%),radial-gradient(circle at 58% 48%, rgba(110,48,22,.14), transparent 30%),radial-gradient(circle at 72% 60%, rgba(110,48,22,.12), transparent 22%);filter:blur(6px);opacity:0;pointer-events:none;z-index:0}.perforation{position:absolute;inset:0 auto 0 0;width:18px;display:none;background:radial-gradient(circle at left center, transparent 0 7px, rgba(0,0,0,.22) 7px 8px, transparent 8px 100%);background-size:18px 26px;background-repeat:repeat-y;opacity:.33}.card.show-stamp .stamp,.card.show-fold .corner-fold,.card.show-perf .perforation{display:block}.card.show-stain .stain{opacity:1}.footer-note{position:absolute;bottom:14px;right:18px;font-size:.74rem;color:color-mix(in srgb,var(--muted) 78%, white 10%);letter-spacing:.12em;text-transform:uppercase;opacity:.8}</style></head><body><article class="${temp.className}" style="${temp.style.cssText}"><div class="perforation"></div><div class="corner-fold"></div><div class="stain"></div><div class="stamp">Archivio</div><div class="card-inner">${cardInner.innerHTML}</div><div class="footer-note">Vintage Card Maker Pro</div></article></body></html>`;
+    }
+
+    async function pngDataUrlFor(data = currentData()){
+      const prev = currentData();
+      renderCard(data);
+      const url = await htmlToImage.toPng(card, { pixelRatio:2, cacheBust:true, backgroundColor:data.panelColor || '#efe7d7' });
+      renderCard(prev);
+      return url;
+    }
+
+    function downloadBlob(content, filename, type){
+      const blob = content instanceof Blob ? content : new Blob([content], { type });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = filename;
+      a.click();
+      setTimeout(() => URL.revokeObjectURL(a.href), 1200);
+    }
+
+    async function downloadPNG(){ downloadBlob(await (await fetch(await pngDataUrlFor())).blob(), `card-${slugify(els.template.value)}.png`, 'image/png'); }
+    function downloadHTML(){ downloadBlob(getInlineCardDocument(), `card-${slugify(els.template.value)}.html`, 'text/html;charset=utf-8'); }
+
+    function renderPresetList(){
+      if (!state.customPresets.length) { presetList.innerHTML = '<div class="batch-item"><small>Nessun preset personalizzato salvato.</small></div>'; return; }
+      presetList.innerHTML = state.customPresets.map((item, i) => `<div class="batch-item"><strong>${escapeHtml(item.name)}</strong><small>${escapeHtml(item.data.template)} · ${escapeHtml(item.data.title || 'senza titolo')}</small><div class="inline-actions"><button class="secondary" data-load-preset="${i}">Carica</button><button class="danger" data-delete-preset="${i}">Elimina</button></div></div>`).join('');
+      presetList.querySelectorAll('[data-load-preset]').forEach(btn => btn.onclick = () => { const idx = +btn.dataset.loadPreset; applyData(state.customPresets[idx].data); setStatus('Preset caricato.'); });
+      presetList.querySelectorAll('[data-delete-preset]').forEach(btn => btn.onclick = () => { state.customPresets.splice(+btn.dataset.deletePreset,1); renderPresetList(); setStatus('Preset eliminato.'); });
+    }
+
+    function renderBatchList(){
+      if (!state.batchQueue.length) { batchList.innerHTML = '<div class="batch-item"><small>Nessuna card in coda per il batch export.</small></div>'; return; }
+      batchList.innerHTML = state.batchQueue.map((item, i) => `<div class="batch-item"><strong>${escapeHtml(item.name)}</strong><small>${escapeHtml(item.data.template)} · ${escapeHtml(item.data.title || 'senza titolo')}</small><div class="inline-actions"><button class="secondary" data-preview-batch="${i}">Anteprima</button><button class="danger" data-remove-batch="${i}">Rimuovi</button></div></div>`).join('');
+      batchList.querySelectorAll('[data-preview-batch]').forEach(btn => btn.onclick = () => { const idx = +btn.dataset.previewBatch; applyData(state.batchQueue[idx].data); setStatus('Elemento batch caricato in anteprima.'); });
+      batchList.querySelectorAll('[data-remove-batch]').forEach(btn => btn.onclick = () => { state.batchQueue.splice(+btn.dataset.removeBatch,1); renderBatchList(); setStatus('Elemento rimosso dalla coda.'); });
+    }
+
+    function savePreset(){
+      const name = document.getElementById('presetName').value.trim() || `Preset ${state.customPresets.length + 1}`;
+      state.customPresets.push({ name, data: currentData() });
+      renderPresetList();
+      setStatus('Preset salvato nella sessione.');
+    }
+
+    function exportPresets(){ downloadBlob(JSON.stringify(state.customPresets, null, 2), 'vintage-card-presets.json', 'application/json'); }
+
+    async function addToBatch(){
+      const baseName = document.getElementById('presetName').value.trim() || currentData().title || `Card ${state.batchQueue.length + 1}`;
+      state.batchQueue.push({ name: baseName, data: currentData() });
+      renderBatchList();
+      setStatus('Card aggiunta alla coda batch.');
+    }
+
+    async function downloadBatch(){
+      if (!state.batchQueue.length) { setStatus('Aggiungi almeno una card alla coda.'); return; }
+      setStatus('Sto preparando lo ZIP...');
+      const zip = new JSZip();
+      const folderHtml = zip.folder('html');
+      const folderPng = zip.folder('png');
+      for (let i = 0; i < state.batchQueue.length; i++) {
+        const item = state.batchQueue[i];
+        const base = `${String(i+1).padStart(2,'0')}-${slugify(item.name)}`;
+        renderCard(item.data);
+        folderHtml.file(`${base}.html`, getInlineCardDocument(item.data));
+        const pngUrl = await pngDataUrlFor(item.data);
+        const blob = await (await fetch(pngUrl)).blob();
+        folderPng.file(`${base}.png`, blob);
+      }
+      renderCard(currentData());
+      const zipBlob = await zip.generateAsync({ type:'blob' });
+      downloadBlob(zipBlob, 'vintage-card-batch.zip', 'application/zip');
+      setStatus('ZIP creato con HTML e PNG.');
+    }
+
+    ids.forEach(id => els[id].addEventListener(els[id].type === 'checkbox' ? 'change' : 'input', () => renderCard()));
+    els.template.addEventListener('change', e => applyPreset(e.target.value));
+    document.getElementById('downloadPng').addEventListener('click', downloadPNG);
+    document.getElementById('downloadHtml').addEventListener('click', downloadHTML);
+    document.getElementById('resetDefaults').addEventListener('click', () => applyPreset(els.template.value));
+    document.getElementById('savePreset').addEventListener('click', savePreset);
+    document.getElementById('exportPresets').addEventListener('click', exportPresets);
+    document.getElementById('addToBatch').addEventListener('click', addToBatch);
+    document.getElementById('downloadBatch').addEventListener('click', downloadBatch);
+    document.getElementById('clearBatch').addEventListener('click', () => { state.batchQueue = []; renderBatchList(); setStatus('Coda batch svuotata.'); });
+    document.getElementById('clearTexture').addEventListener('click', () => { state.textureData=''; state.textureName=''; renderCard(); setStatus('Texture rimossa.'); });
+    document.getElementById('sampleTexture').addEventListener('click', () => {
+      state.textureName = 'texture-demo';
+      state.textureData = 'data:image/svg+xml;utf8,' + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="800" height="560" viewBox="0 0 800 560"><rect width="800" height="560" fill="#d9c8a3"/><filter id="n"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" stitchTiles="stitch"/></filter><rect width="800" height="560" filter="url(%23n)" opacity="0.18"/><g opacity="0.12"><circle cx="120" cy="90" r="42" fill="#8f6a39"/><circle cx="610" cy="430" r="58" fill="#734d20"/><circle cx="390" cy="180" r="26" fill="#a37a4d"/></g></svg>`);
+      renderCard();
+      setStatus('Texture demo applicata.');
+    });
+
+    document.getElementById('textureUpload').addEventListener('change', e => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = () => { state.textureData = reader.result; state.textureName = file.name; renderCard(); setStatus('Texture caricata.'); };
+      reader.readAsDataURL(file);
+    });
+
+    document.getElementById('importPresets').addEventListener('change', e => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        try {
+          const parsed = JSON.parse(reader.result);
+          if (!Array.isArray(parsed)) throw new Error('Formato non valido');
+          state.customPresets = parsed.filter(item => item && item.name && item.data);
+          renderPresetList();
+          setStatus('Preset importati.');
+        } catch {
+          setStatus('JSON preset non valido.');
+        }
+      };
+      reader.readAsText(file);
+    });
+
+    applyPreset('catalogo');
+    renderPresetList();
+    renderBatchList();
+  </script>
+</body>
+</html>
