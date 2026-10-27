@@ -1,0 +1,3017 @@
+<!DOCTYPE html>
+<html lang="it"><head>
+  <script type="module" src="/@vite/client"></script>
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Laboratorio JavaScript - Guida ed Esercizi Interattivi</title>
+  <meta name="description" content="Applicazione HTML completa per imparare JavaScript: guida passo-passo per principianti, 16 esempi interattivi corretti, esercizi pratici ed editor di codice integrato.">
+  <meta property="og:title" content="Laboratorio JavaScript - Guida ed Esercizi Interattivi">
+  <meta property="og:description" content="Impara JavaScript da zero: guida per principianti, esercizi interattivi, editor con anteprima e console in un unico file HTML.">
+  <meta property="og:type" content="website">
+  <meta name="twitter:card" content="summary_large_image">
+
+  <style>
+    /* ==========================================================================
+       TEMA E VARIABILI CSS (SUPPORTO SOFT-DARK E HIGH-CONTRAST LIGHT)
+       ========================================================================== */
+    :root {
+      --bg-body: #0f172a;
+      --bg-header: #1e293b;
+      --bg-card: #1e293b;
+      --bg-card-hover: #283548;
+      --bg-editor: #090d16;
+      --bg-preview: #f8fafc;
+      --text-preview: #0f172a;
+      --text-main: #f1f5f9;
+      --text-muted: #94a3b8;
+      --border-color: #334155;
+      --accent: #38bdf8;
+      --accent-hover: #0ea5e9;
+      --accent-text: #0369a1;
+      --accent-bg: rgba(56, 189, 248, 0.12);
+      --success: #10b981;
+      --success-bg: rgba(16, 185, 129, 0.15);
+      --danger: #ef4444;
+      --danger-bg: rgba(239, 68, 68, 0.15);
+      --warning: #f59e0b;
+      --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Fira Code", monospace;
+    }
+
+    [data-theme="light"] {
+      --bg-body: #f1f5f9;
+      --bg-header: #ffffff;
+      --bg-card: #ffffff;
+      --bg-card-hover: #f8fafc;
+      --bg-editor: #ffffff;
+      --bg-preview: #ffffff;
+      --text-preview: #0f172a;
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      --border-color: #cbd5e1;
+      --accent: #2563eb;
+      --accent-hover: #1d4ed8;
+      --accent-text: #1d4ed8;
+      --accent-bg: rgba(37, 99, 235, 0.1);
+      --success: #059669;
+      --success-bg: rgba(5, 150, 105, 0.12);
+      --danger: #dc2626;
+      --danger-bg: rgba(220, 38, 38, 0.1);
+      --warning: #d97706;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: var(--font-sans);
+      background-color: var(--bg-body);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ==========================================================================
+       HEADER & NAVIGAZIONE
+       ========================================================================== */
+    header {
+      background-color: var(--bg-header);
+      border-bottom: 1px solid var(--border-color);
+      padding: 10px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 10px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+    }
+
+    .brand-badge {
+      background: #f7df1e;
+      color: #000000;
+      font-weight: 900;
+      font-size: 13px;
+      padding: 4px 8px;
+      border-radius: 6px;
+      letter-spacing: -0.5px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    }
+
+    .brand-title {
+      font-size: 17px;
+      font-weight: 800;
+      letter-spacing: -0.3px;
+    }
+
+    .nav-tabs {
+      display: flex;
+      background: rgba(0, 0, 0, 0.2);
+      padding: 4px;
+      border-radius: 10px;
+      gap: 4px;
+      border: 1px solid var(--border-color);
+    }
+
+    .nav-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      font-size: 13px;
+      font-weight: 700;
+      padding: 8px 14px;
+      border-radius: 7px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+    }
+
+    .nav-btn:hover {
+      color: var(--text-main);
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    .nav-btn.active {
+      background: var(--accent);
+      color: #0f172a;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    }
+    [data-theme="light"] .nav-btn.active {
+      color: #ffffff;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .icon-btn {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      padding: 8px 12px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.15s ease;
+    }
+
+    .icon-btn:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .btn-download {
+      background: var(--accent);
+      color: #0f172a;
+      border: none;
+      font-weight: 800;
+    }
+    [data-theme="light"] .btn-download {
+      color: #ffffff;
+    }
+    .btn-download:hover {
+      background: var(--accent-hover);
+      color: #ffffff;
+    }
+
+    /* ==========================================================================
+       CONTENITORI DELLE VISTE (PAGINE)
+       ========================================================================== */
+    main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+
+    .page-view {
+      display: none;
+      flex-direction: column;
+      flex: 1;
+      animation: fadeIn 0.2s ease-out;
+    }
+
+    .page-view.active {
+      display: flex;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ==========================================================================
+       VISTA 1: GUIDA PER PRINCIPIANTI
+       ========================================================================== */
+    .guide-container {
+      max-width: 1000px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 24px 16px 60px;
+    }
+
+    .guide-hero {
+      background: linear-gradient(135deg, var(--bg-card) 0%, rgba(56, 189, 248, 0.08) 100%);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 28px;
+      margin-bottom: 24px;
+      position: relative;
+    }
+
+    .guide-hero h1 {
+      font-size: 26px;
+      font-weight: 900;
+      margin-bottom: 10px;
+      color: var(--text-main);
+    }
+
+    .guide-hero p {
+      color: var(--text-muted);
+      font-size: 15px;
+      max-width: 800px;
+      margin-bottom: 16px;
+    }
+
+    .hero-badges {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .badge-pill {
+      background: var(--accent-bg);
+      color: var(--accent);
+      border: 1px solid var(--border-color);
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .step-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 24px;
+      margin-bottom: 20px;
+      transition: border-color 0.2s;
+    }
+
+    .step-card:hover {
+      border-color: rgba(56, 189, 248, 0.4);
+    }
+
+    .step-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 14px;
+      flex-wrap: wrap;
+    }
+
+    .step-num {
+      background: var(--accent);
+      color: #0f172a;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 900;
+      font-size: 14px;
+    }
+    [data-theme="light"] .step-num {
+      color: #ffffff;
+    }
+
+    .step-title-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex: 1;
+    }
+
+    .step-title {
+      font-size: 18px;
+      font-weight: 800;
+    }
+
+    .step-card p {
+      font-size: 14px;
+      color: var(--text-muted);
+      margin-bottom: 14px;
+      line-height: 1.6;
+    }
+
+    .step-card ul {
+      margin-left: 20px;
+      margin-bottom: 16px;
+      color: var(--text-muted);
+      font-size: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .step-card li strong {
+      color: var(--text-main);
+    }
+
+    .code-snippet-box {
+      background: var(--bg-editor);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 14px;
+      margin-bottom: 16px;
+      font-family: var(--font-mono);
+      font-size: 13px;
+      color: #38bdf8;
+      overflow-x: auto;
+      white-space: pre;
+    }
+    [data-theme="light"] .code-snippet-box {
+      color: #0369a1;
+      background: #f8fafc;
+    }
+
+    .step-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+    }
+
+    .btn-try-step {
+      background: var(--accent);
+      color: #0f172a;
+      border: none;
+      padding: 9px 18px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 800;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.15s;
+    }
+    [data-theme="light"] .btn-try-step {
+      color: #ffffff;
+    }
+
+    .btn-try-step:hover {
+      background: var(--accent-hover);
+      transform: translateY(-1px);
+    }
+
+    /* ==========================================================================
+       VISTA 2: LABORATORIO INTERATTIVO (PLAYGROUND COMPLETO)
+       ========================================================================== */
+    .lab-container {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      height: calc(100vh - 61px);
+      overflow: hidden;
+    }
+
+    /* BARRA SUPERIORE DEI TEMPLATE E MODALITA */
+    .lab-toolbar {
+      background: var(--bg-header);
+      border-bottom: 1px solid var(--border-color);
+      padding: 8px 12px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      overflow-x: auto;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .lab-toolbar::-webkit-scrollbar {
+      height: 4px;
+    }
+    .lab-toolbar::-webkit-scrollbar-thumb {
+      background: var(--border-color);
+      border-radius: 2px;
+    }
+
+    .toolbar-label {
+      font-size: 11px;
+      font-weight: 800;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-right: 2px;
+    }
+
+    .template-btn {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      padding: 6px 12px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.15s;
+      flex-shrink: 0;
+    }
+
+    .template-btn:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .template-btn.active {
+      background: var(--accent);
+      color: #0f172a;
+      border-color: var(--accent);
+    }
+    [data-theme="light"] .template-btn.active {
+      color: #ffffff;
+    }
+
+    /* BARRA SIMBOLI RAPIDI */
+    .quick-symbols-bar {
+      background: var(--bg-card);
+      border-bottom: 1px solid var(--border-color);
+      padding: 4px 8px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      overflow-x: auto;
+      flex-shrink: 0;
+    }
+
+    .quick-sym-btn {
+      background: var(--bg-editor);
+      border: 1px solid var(--border-color);
+      color: var(--accent);
+      font-family: var(--font-mono);
+      font-weight: 700;
+      font-size: 13px;
+      padding: 4px 8px;
+      border-radius: 5px;
+      cursor: pointer;
+      min-width: 28px;
+      text-align: center;
+      transition: background 0.1s;
+      flex-shrink: 0;
+    }
+
+    .quick-sym-btn:hover {
+      background: var(--accent);
+      color: #0f172a;
+    }
+    [data-theme="light"] .quick-sym-btn:hover {
+      color: #ffffff;
+    }
+
+    /* AREA DI LAVORO (SPLIT EDITOR / ANTEPRIMA) */
+    .lab-workspace {
+      display: flex;
+      flex: 1;
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* PANNELLO SINISTRO: EDITOR */
+    .editor-pane {
+      width: 50%;
+      display: flex;
+      flex-direction: column;
+      border-right: 1px solid var(--border-color);
+      background: var(--bg-editor);
+      position: relative;
+    }
+
+    .pane-header {
+      background: var(--bg-header);
+      border-bottom: 1px solid var(--border-color);
+      padding: 8px 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+
+    .pane-title {
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .pane-controls {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn-action {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      padding: 5px 10px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .btn-action:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .btn-run-code {
+      background: var(--success);
+      color: #ffffff;
+      border: none;
+      padding: 6px 14px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 900;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      box-shadow: 0 2px 6px rgba(16, 185, 129, 0.3);
+      transition: all 0.15s;
+    }
+
+    .btn-run-code:hover {
+      filter: brightness(1.1);
+      transform: translateY(-1px);
+    }
+
+    .btn-run-code:active {
+      transform: scale(0.97);
+    }
+
+    /* CONTENITORE DEGLI EDITOR (SINGOLO O DOPPIO HTML+JS) */
+    .editors-wrapper {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .editor-section {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .editor-section:last-child {
+      border-bottom: none;
+    }
+
+    .section-label {
+      background: rgba(0, 0, 0, 0.2);
+      padding: 4px 10px;
+      font-size: 11px;
+      font-family: var(--font-mono);
+      font-weight: 700;
+      color: var(--accent);
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      justify-content: space-between;
+    }
+    [data-theme="light"] .section-label {
+      background: #e2e8f0;
+      color: #0369a1;
+    }
+
+    textarea.code-editor {
+      flex: 1;
+      width: 100%;
+      background: var(--bg-editor);
+      color: var(--text-main);
+      border: none;
+      outline: none;
+      padding: 14px;
+      font-family: var(--font-mono);
+      font-size: 15px;
+      line-height: 1.6;
+      resize: none;
+      caret-color: var(--accent);
+      white-space: pre;
+      tab-size: 2;
+    }
+
+    /* PANNELLO DESTRO: RISULTATO & CONSOLE */
+    .preview-pane {
+      width: 50%;
+      display: flex;
+      flex-direction: column;
+      background: var(--bg-preview);
+      color: var(--text-preview);
+      overflow: hidden;
+    }
+
+    .preview-body {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px;
+      position: relative;
+      background: #f8fafc;
+    }
+
+    /* IFRAME PER MODALITÀ HTML+JS */
+    iframe#iframe-preview {
+      width: 100%;
+      height: 100%;
+      border: none;
+      background: #ffffff;
+      display: none;
+    }
+
+    /* CONTENITORE OUTPUT PER MODALITÀ DIRETTA JS */
+    #direct-output {
+      min-height: 100%;
+      font-family: var(--font-sans);
+      color: #0f172a;
+    }
+
+    /* BOX ERRORE COMPRENSIBILE */
+    .error-banner {
+      display: none;
+      background: #fef2f2;
+      border-left: 4px solid #ef4444;
+      padding: 14px;
+      border-radius: 8px;
+      margin-bottom: 14px;
+      box-shadow: 0 2px 6px rgba(239, 68, 68, 0.1);
+      color: #991b1b;
+      font-size: 13px;
+    }
+
+    .error-banner strong {
+      font-size: 14px;
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .error-banner code {
+      font-family: var(--font-mono);
+      background: rgba(239, 68, 68, 0.1);
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-weight: 700;
+    }
+
+    /* DRAWER CONSOLE */
+    .console-drawer {
+      height: 130px;
+      background: #090d16;
+      border-top: 1px solid #334155;
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+      color: #cbd5e1;
+      font-family: var(--font-mono);
+      font-size: 12px;
+    }
+
+    .console-header {
+      background: #111827;
+      padding: 6px 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid #1f2937;
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .console-logs {
+      flex: 1;
+      overflow-y: auto;
+      padding: 8px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .log-entry {
+      display: flex;
+      gap: 8px;
+      word-break: break-all;
+    }
+
+    .log-time {
+      color: #64748b;
+      font-size: 10px;
+      user-select: none;
+    }
+
+    .log-text { color: #f8fafc; }
+    .log-text.warn { color: #fbbf24; }
+    .log-text.error { color: #f87171; }
+    .log-text.info { color: #38bdf8; }
+
+    /* MOBILE TABS SWITCHER (SOLO SOTTO 850px) */
+    .mobile-tab-bar {
+      display: none;
+      height: 52px;
+      background: var(--bg-header);
+      border-top: 1px solid var(--border-color);
+      flex-shrink: 0;
+    }
+
+    .mobile-tab-btn {
+      flex: 1;
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      font-weight: 800;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .mobile-tab-btn.active {
+      color: var(--accent);
+      border-top: 3px solid var(--accent);
+      background: rgba(56, 189, 248, 0.05);
+    }
+
+    /* ==========================================================================
+       VISTA 3: SFIDE & ESERCIZI INTERATTIVI
+       ========================================================================== */
+    .challenges-container {
+      max-width: 1000px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 24px 16px 60px;
+    }
+
+    .challenge-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 22px;
+      margin-bottom: 24px;
+      position: relative;
+    }
+
+    .challenge-card.completed {
+      border-color: var(--success);
+      background: linear-gradient(135deg, var(--bg-card) 0%, var(--success-bg) 100%);
+    }
+
+    .challenge-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+    }
+
+    .challenge-badge {
+      background: var(--accent-bg);
+      color: var(--accent);
+      border: 1px solid var(--border-color);
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+
+    .challenge-card.completed .challenge-badge {
+      background: var(--success-bg);
+      color: var(--success);
+      border-color: var(--success);
+    }
+
+    .challenge-editor {
+      width: 100%;
+      height: 120px;
+      background: var(--bg-editor);
+      color: var(--text-main);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 12px;
+      font-family: var(--font-mono);
+      font-size: 14px;
+      line-height: 1.5;
+      resize: vertical;
+      margin: 12px 0;
+      outline: none;
+    }
+
+    .challenge-feedback {
+      display: none;
+      padding: 12px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 12px;
+    }
+
+    .challenge-feedback.success {
+      display: block;
+      background: var(--success-bg);
+      color: var(--success);
+      border: 1px solid var(--success);
+    }
+
+    .challenge-feedback.error {
+      display: block;
+      background: var(--danger-bg);
+      color: var(--danger);
+      border: 1px solid var(--danger);
+    }
+
+    .challenge-actions {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .btn-verify {
+      background: var(--accent);
+      color: #0f172a;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+    [data-theme="light"] .btn-verify {
+      color: #ffffff;
+    }
+
+    .btn-hint {
+      background: transparent;
+      border: 1px solid var(--border-color);
+      color: var(--text-muted);
+      padding: 7px 12px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .hint-box {
+      display: none;
+      background: rgba(245, 158, 11, 0.1);
+      border: 1px solid rgba(245, 158, 11, 0.3);
+      color: var(--warning);
+      padding: 10px 14px;
+      border-radius: 8px;
+      font-size: 13px;
+      margin-top: 10px;
+    }
+
+    /* ==========================================================================
+       STILI COMUNI PER GLI ESEMPI NELL'ANTEPRIMA (CARD, BOTTONI, FLASHCARD)
+       ========================================================================== */
+    .app-card-preview {
+      background: #ffffff;
+      border-radius: 14px;
+      padding: 20px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+      border: 1px solid #e2e8f0;
+      margin-bottom: 14px;
+      color: #0f172a;
+    }
+
+    .btn-preview {
+      background: #2563eb;
+      color: #ffffff;
+      border: none;
+      padding: 12px 20px;
+      border-radius: 10px;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .btn-preview:hover {
+      background: #1d4ed8;
+    }
+
+    .input-preview {
+      width: 100%;
+      padding: 12px;
+      border: 2px solid #cbd5e1;
+      border-radius: 10px;
+      font-size: 16px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .input-preview:focus {
+      border-color: #2563eb;
+    }
+
+    /* 3D FLASHCARD (DAL FILE LOGICLAB) */
+    .flashcard {
+      perspective: 1000px;
+      width: 100%;
+      height: 200px;
+      cursor: pointer;
+      margin: 10px 0;
+    }
+
+    .flashcard-inner {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+      transform-style: preserve-3d;
+    }
+
+    .flashcard.flipped .flashcard-inner {
+      transform: rotateY(180deg);
+    }
+
+    .card-front, .card-back {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      backface-visibility: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 16px;
+      padding: 20px;
+      text-align: center;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      font-size: 1.15rem;
+      font-weight: 700;
+    }
+
+    .card-front {
+      background: #ffffff;
+      border: 2px solid #e2e8f0;
+      color: #0369a1;
+    }
+
+    .card-back {
+      transform: rotateY(180deg);
+      background: linear-gradient(135deg, #0ea5e9, #2563eb);
+      color: #ffffff;
+    }
+
+    /* FLOATING TOAST */
+    .lab-toast {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #0f172a;
+      color: #ffffff;
+      padding: 12px 24px;
+      border-radius: 12px;
+      font-weight: 700;
+      font-size: 14px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+      z-index: 1000;
+      animation: popIn 0.2s ease-out;
+      border: 1px solid #334155;
+    }
+
+    @keyframes popIn {
+      from { transform: translate(-50%, 10px); opacity: 0; }
+      to { transform: translate(-50%, 0); opacity: 1; }
+    }
+
+    /* ==========================================================================
+       RESPONSIVE DESIGN (TABLET & MOBILE)
+       ========================================================================== */
+    @media (max-width: 850px) {
+      .lab-workspace {
+        flex-direction: column;
+      }
+      .editor-pane {
+        width: 100%;
+        height: 100%;
+        border-right: none;
+      }
+      .preview-pane {
+        width: 100%;
+        height: 100%;
+        display: none;
+      }
+      .mobile-tab-bar {
+        display: flex;
+      }
+      .editor-pane.mobile-hidden {
+        display: none;
+      }
+      .preview-pane.mobile-visible {
+        display: flex;
+      }
+      .header-actions .btn-download span {
+        display: none;
+      }
+      .brand-title {
+        font-size: 15px;
+      }
+    }
+  </style>
+<script src="/_aistudio-iframe.js?v=1f94f900"></script><script src="https://cdn.jsdelivr.net/npm/html2canvas-pro@2.0.4"></script><style>.aistudio-hover-highlight { box-shadow: inset 0 0 0 0.5px white, inset 0 0 0 1.5px rgba(128,128,128,0.6) !important; }.aistudio-active-highlight { outline: 2px solid #87a9ff !important; outline-offset: -2px !important; box-shadow: 0 0 0 0.5px rgba(0,0,0,0.3), inset 0 0 0 0.5px rgba(0,0,0,0.3) !important; }.aistudio-generating-blur { filter: blur(5px) grayscale(100%) brightness(28%) !important; transition: filter 0.3s ease; }#aistudio-focus-mode-tag { position: absolute; display: none; align-items: center; gap: 4px; background: #87a9ff; border-radius: 12px; z-index: 10000; padding: 8px; color: #32302c; font-family: Inter, sans-serif; font-size: 14px; font-style: normal; font-weight: 500; line-height: 21px; pointer-events: none; }#aistudio-hover-mode-tag { position: absolute; display: none; align-items: center; gap: 4px; background: rgba(128,128,128,0.6); border-radius: 12px; z-index: 10000; padding: 8px; color: white; font-family: Inter, sans-serif; font-size: 14px; font-style: normal; font-weight: 500; line-height: 21px; pointer-events: none; }.aistudio-img-icon { display: none; vertical-align: middle; pointer-events: auto; cursor: pointer; }.aistudio-img-icon.visible { display: inline-flex; }#aistudio-focus-mode-tag .aistudio-img-icon { position: relative; width: 26px; height: 26px; background: #32302c; border-radius: 6px; margin: -4px -4px -4px 0; }#aistudio-focus-mode-tag .aistudio-img-icon::before { content: ""; position: absolute; top: 4px; left: 4px; width: 18px; height: 18px; background-color: white; -webkit-mask-image: url("https://fonts.gstatic.com/s/i/short-term/release/googlesymbols/edit_fix_auto/default/24px.svg"); -webkit-mask-size: contain; -webkit-mask-repeat: no-repeat; mask-image: url("https://fonts.gstatic.com/s/i/short-term/release/googlesymbols/edit_fix_auto/default/24px.svg"); mask-size: contain; mask-repeat: no-repeat; }#aistudio-hover-mode-tag .aistudio-img-icon { position: relative; width: 18px; height: 18px; margin-left: 4px; }#aistudio-hover-mode-tag .aistudio-img-icon::before { content: ""; position: absolute; top: 0; left: 0; width: 18px; height: 18px; background-color: white; -webkit-mask-image: url("https://fonts.gstatic.com/s/i/short-term/release/googlesymbols/edit_fix_auto/default/24px.svg"); -webkit-mask-size: contain; -webkit-mask-repeat: no-repeat; mask-image: url("https://fonts.gstatic.com/s/i/short-term/release/googlesymbols/edit_fix_auto/default/24px.svg"); mask-size: contain; mask-repeat: no-repeat; }#aistudio-focus-mode-tag .aistudio-img-icon:hover, #aistudio-hover-mode-tag .aistudio-img-icon:hover { background: #424242 !important; }#aistudio-focus-mode-tag .aistudio-img-icon:active, #aistudio-hover-mode-tag .aistudio-img-icon:active { background: #393f51 !important; }</style><style>@font-face {
+              font-family: 'Open Sans Regular';
+              font-style: normal;
+              font-weight: 400;
+              src: url('chrome-extension://gkkdmjjodidppndkbkhhknakbeflbomf/fonts/open_sans/open-sans-v18-latin-regular.woff');
+          }</style><style>@font-face {
+              font-family: 'Open Sans Bold';
+              font-style: normal;
+              font-weight: 800;
+              src: url('chrome-extension://gkkdmjjodidppndkbkhhknakbeflbomf/fonts/open_sans/OpenSans-Bold.woff');
+          }</style><style>@font-face {
+              font-family: 'Open Sans ExtraBold';
+              font-style: normal;
+              font-weight: 800;
+              src: url('chrome-extension://gkkdmjjodidppndkbkhhknakbeflbomf/fonts/open_sans/open-sans-v18-latin-800.woff');
+          }</style></head>
+<body>
+
+  <!-- ==========================================================================
+       INTESTAZIONE PRINCIPALE
+       ========================================================================== -->
+  <header>
+    <div class="brand" onclick="switchNav('guide')">
+      <span class="brand-badge">JS</span>
+      <span class="brand-title">Laboratorio JavaScript</span>
+    </div>
+
+    <!-- Navigazione Sezioni -->
+    <div class="nav-tabs">
+      <button class="nav-btn active" id="tab-nav-guide" onclick="switchNav('guide')">
+        📖 Guida Base
+      </button>
+      <button class="nav-btn" id="tab-nav-lab" onclick="switchNav('lab')">
+        ⚡ Laboratorio
+      </button>
+      <button class="nav-btn" id="tab-nav-challenges" onclick="switchNav('challenges')">
+        🎯 Esercizi
+      </button>
+    </div>
+
+    <!-- Azioni Top: Tema e Download HTML -->
+    <div class="header-actions">
+      <button class="icon-btn" onclick="toggleTheme()" title="Cambia tema chiaro/scuro">
+        <span id="theme-icon">🌙</span> <span id="theme-label" style="font-size:12px;">Scuro</span>
+      </button>
+      <button class="icon-btn btn-download" onclick="downloadSingleFileHtml()" title="Scarica l'intera app come unico file .html autonomo">
+        💾 <span>Scarica HTML</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- ==========================================================================
+       CORPO PRINCIPALE DELL'APPLICAZIONE
+       ========================================================================== -->
+  <main>
+
+    <!-- ======================================================================
+         SEZIONE 1: GUIDA PASSO DOPO PASSO PER PRINCIPIANTI
+         ====================================================================== -->
+    <section id="view-guide" class="page-view active">
+      <div class="guide-container">
+        
+        <div class="guide-hero">
+          <h1>Benvenuto nel Laboratorio JavaScript per Principianti! 👋</h1>
+          <p>
+            Questa guida è pensata per spiegarti i concetti fondamentali di JavaScript partendo da zero.
+            Ogni lezione affronta un solo concetto chiave, con codice reale e commentato che puoi provare subito
+            con un click nel Laboratorio interattivo.
+          </p>
+          <div class="hero-badges">
+            <span class="badge-pill">✓ 100% Interattivo</span>
+            <span class="badge-pill">✓ Nessun programma da installare</span>
+            <span class="badge-pill">✓ Funziona su PC, Tablet e Smartphone</span>
+            <span class="badge-pill">✓ Salvataggio locale</span>
+          </div>
+        </div>
+
+        <!-- PASSO 1 -->
+        <div class="step-card">
+          <div class="step-header">
+            <div class="step-title-group">
+              <div class="step-num">1</div>
+              <h2 class="step-title">Le Basi: Variabili e Testo Dinamico</h2>
+            </div>
+            <span class="badge-pill">Variabili &amp; Template Literals</span>
+          </div>
+          <p>
+            Una <strong>variabile</strong> è come una scatola con un'etichetta dove puoi conservare informazioni
+            (numeri, parole, dati). In JavaScript moderno usiamo <code>let</code> se il valore può cambiare,
+            o <code>const</code> se il valore rimane fisso.
+          </p>
+          <ul>
+            <li><strong>const</strong>: Valore costante che non cambia nel tempo.</li>
+            <li><strong>let</strong>: Valore che può essere riassegnato (es. un contatore).</li>
+            <li><strong>Template Literals (`...${}`)</strong>: Ti permettono di inserire variabili direttamente nel testo usando i caratteri di accento grave backtick.</li>
+          </ul>
+          <div class="code-snippet-box">const nomeUtente = "Marco";
+const messaggio = `Ciao ${nomeUtente}! Benvenuto in JavaScript.`;
+output.innerHTML = `&lt;h1&gt;${messaggio}&lt;/h1&gt;`;</div>
+          <div class="step-actions">
+            <button class="btn-try-step" onclick="loadTemplateAndSwitch('saluto')">
+              Prova nel Laboratorio ▶
+            </button>
+          </div>
+        </div>
+
+        <!-- PASSO 2 -->
+        <div class="step-card">
+          <div class="step-header">
+            <div class="step-title-group">
+              <div class="step-num">2</div>
+              <h2 class="step-title">Il DOM: Scrivere e Cambiare la Pagina</h2>
+            </div>
+            <span class="badge-pill">DOM &amp; Stili</span>
+          </div>
+          <p>
+            Il <strong>DOM (Document Object Model)</strong> è il ponte tra JavaScript e l'HTML. Permette a JavaScript
+            di leggere, modificare o aggiungere elementi e colori alla pagina in tempo reale.
+          </p>
+          <ul>
+            <li><code>document.getElementById("mioId")</code>: Trova un elemento nella pagina usando il suo attributo <code>id</code>.</li>
+            <li><code>elemento.innerHTML</code>: Sostituisce il contenuto HTML all'interno dell'elemento.</li>
+            <li><code>elemento.style.background</code>: Modifica lo stile CSS al volo!</li>
+          </ul>
+          <div class="code-snippet-box">const scatola = document.getElementById("box");
+scatola.style.background = "#38bdf8";
+scatola.innerHTML = "&lt;p&gt;Colore cambiato con successo!&lt;/p&gt;";</div>
+          <div class="step-actions">
+            <button class="btn-try-step" onclick="loadTemplateAndSwitch('colore')">
+              Prova nel Laboratorio ▶
+            </button>
+          </div>
+        </div>
+
+        <!-- PASSO 3 -->
+        <div class="step-card">
+          <div class="step-header">
+            <div class="step-title-group">
+              <div class="step-num">3</div>
+              <h2 class="step-title">Gli Eventi: Rispondere ai Click dell'Utente</h2>
+            </div>
+            <span class="badge-pill">Eventi &amp; Interattività</span>
+          </div>
+          <p>
+            I programmi prendono vita quando rispondono alle azioni dell'utente: click, digitazione sulla tastiera,
+            o passaggio del mouse. Usiamo <code>addEventListener("click", funzione)</code> o <code>bottone.onclick</code>.
+          </p>
+          <ul>
+            <li>Un <strong>contatore</strong> tiene traccia dei click aumentando una variabile numerica ad ogni tocco.</li>
+            <li>La funzione viene eseguita <em>solo quando</em> il pulsante viene cliccato.</li>
+          </ul>
+          <div class="code-snippet-box">let conteggio = 0;
+const bottone = document.getElementById("mioBottone");
+
+bottone.onclick = function() {
+  conteggio = conteggio + 1;
+  document.getElementById("display").innerText = conteggio;
+};</div>
+          <div class="step-actions">
+            <button class="btn-try-step" onclick="loadTemplateAndSwitch('contatore')">
+              Prova nel Laboratorio ▶
+            </button>
+          </div>
+        </div>
+
+        <!-- PASSO 4 -->
+        <div class="step-card">
+          <div class="step-header">
+            <div class="step-title-group">
+              <div class="step-num">4</div>
+              <h2 class="step-title">Array e Oggetti: Organizzare Dati e Liste</h2>
+            </div>
+            <span class="badge-pill">Array &amp; JSON</span>
+          </div>
+          <p>
+            Un <strong>Array</strong> <code>[...]</code> è una lista ordinata di elementi. Gli <strong>Oggetti</strong> <code>{...}</code>
+            contengono coppie di proprietà con chiavi e valori (come una scheda anagrafica).
+          </p>
+          <ul>
+            <li><code>array.forEach(...)</code>: Scorre ogni elemento della lista uno per volta.</li>
+            <li><code>document.createElement("div")</code>: Crea un nuovo elemento HTML direttamente dal codice.</li>
+          </ul>
+          <div class="code-snippet-box">const frutti = ["Mela", "Banana", "Arancia"];
+
+frutti.forEach(frutto =&gt; {
+  const riga = document.createElement("li");
+  riga.textContent = `Frutto: ${frutto}`;
+  lista.appendChild(riga);
+});</div>
+          <div class="step-actions">
+            <button class="btn-try-step" onclick="loadTemplateAndSwitch('cards')">
+              Prova nel Laboratorio ▶
+            </button>
+          </div>
+        </div>
+
+        <!-- PASSO 5 -->
+        <div class="step-card">
+          <div class="step-header">
+            <div class="step-title-group">
+              <div class="step-num">5</div>
+              <h2 class="step-title">Filtri e Ricerca: Trovare Elementi al Volo</h2>
+            </div>
+            <span class="badge-pill">Metodo .filter()</span>
+          </div>
+          <p>
+            Nei siti web moderni, come i motori di ricerca o i negozi online, vogliamo mostrare solo i risultati
+            che corrispondono a ciò che l'utente scrive. Usiamo <code>.filter()</code> combinato con <code>.includes()</code>
+            e l'evento <code>input</code>.
+          </p>
+          <div class="code-snippet-box">const parole = ["Gatto", "Cane", "Casa", "Albero"];
+
+// Filtra le parole che contengono il testo cercato
+const risultato = parole.filter(p =&gt; p.toLowerCase().includes("ca"));
+// risultato contiene: ["Cane", "Casa"]</div>
+          <div class="step-actions">
+            <button class="btn-try-step" onclick="loadTemplateAndSwitch('vocabolario')">
+              Prova nel Laboratorio ▶
+            </button>
+          </div>
+        </div>
+
+        <!-- PASSO 6 -->
+        <div class="step-card">
+          <div class="step-header">
+            <div class="step-title-group">
+              <div class="step-num">6</div>
+              <h2 class="step-title">LocalStorage e JSON: Salvare i Dati nel Browser</h2>
+            </div>
+            <span class="badge-pill">Persistenza dei Dati</span>
+          </div>
+          <p>
+            Quando chiudi o ricarichi una scheda normale, le variabili JavaScript vengono resettate.
+            Con <strong>localStorage</strong> puoi salvare note, task e impostazioni nel browser dell'utente
+            così rimangono memorizzate per sempre!
+          </p>
+          <ul>
+            <li><code>localStorage.setItem("chiave", testo)</code>: Salva un dato.</li>
+            <li><code>localStorage.getItem("chiave")</code>: Recupera il dato salvato.</li>
+            <li><code>JSON.stringify(array)</code>: Trasforma un array o oggetto in una stringa di testo.</li>
+            <li><code>JSON.parse(stringa)</code>: Ritrasforma la stringa nel formato originale (array o oggetto).</li>
+          </ul>
+          <div class="code-snippet-box">// Salvataggio
+const spesa = ["Latte", "Pane"];
+localStorage.setItem("lista", JSON.stringify(spesa));
+
+// Recupero
+const recuperata = JSON.parse(localStorage.getItem("lista") || "[]");</div>
+          <div class="step-actions">
+            <button class="btn-try-step" onclick="loadTemplateAndSwitch('jsonStorage')">
+              Prova nel Laboratorio ▶
+            </button>
+          </div>
+        </div>
+
+        <!-- PASSO 7 -->
+        <div class="step-card">
+          <div class="step-header">
+            <div class="step-title-group">
+              <div class="step-num">7</div>
+              <h2 class="step-title">Logica, Quiz e Animazioni Fluide</h2>
+            </div>
+            <span class="badge-pill">Condizioni &amp; Animazioni</span>
+          </div>
+          <p>
+            Usa gli operatori di confronto (come <code>===</code> per il confronto stretto) per verificare le risposte nei quiz,
+            e <code>requestAnimationFrame()</code> per creare animazioni fluide a 60 fotogrammi al secondo senza rallentare il dispositivo.
+          </p>
+          <div class="code-snippet-box">if (rispostaUtente === 42) {
+  mostraMessaggio("Esatto! 🎉");
+} else {
+  mostraMessaggio("Riprova! ❌");
+}</div>
+          <div class="step-actions">
+            <button class="btn-try-step" onclick="loadTemplateAndSwitch('animazione')">
+              Prova nel Laboratorio ▶
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ======================================================================
+         SEZIONE 2: LABORATORIO INTERATTIVO (PLAYGROUND COMPLETO)
+         ====================================================================== -->
+    <section id="view-lab" class="page-view">
+      <div class="lab-container">
+        
+        <!-- TOOLBAR DEI TEMPLATE -->
+        <div class="lab-toolbar">
+          <span class="toolbar-label">Esempi:</span>
+
+          <!-- Basi -->
+          <button class="template-btn active" id="btn-tpl-saluto" onclick="loadTemplate('saluto')">👋 Saluto</button>
+          <button class="template-btn" id="btn-tpl-contatore" onclick="loadTemplate('contatore')">🔢 Contatore</button>
+          <button class="template-btn" id="btn-tpl-colore" onclick="loadTemplate('colore')">🎨 Colore</button>
+          
+          <!-- Liste & Dati -->
+          <button class="template-btn" id="btn-tpl-lista" onclick="loadTemplate('lista')">🍎 Lista Array</button>
+          <button class="template-btn" id="btn-tpl-cards" onclick="loadTemplate('cards')">🗂️ Card JSON</button>
+          <button class="template-btn" id="btn-tpl-cardFlip" onclick="loadTemplate('cardFlip')">🃏 Flashcard Bilingue</button>
+          <button class="template-btn" id="btn-tpl-card3D" onclick="loadTemplate('card3D')">🎴 Flashcard 3D</button>
+          
+          <!-- Ricerca & Filtri -->
+          <button class="template-btn" id="btn-tpl-vocabolario" onclick="loadTemplate('vocabolario')">🔍 Vocabolario</button>
+          <button class="template-btn" id="btn-tpl-searchTech" onclick="loadTemplate('searchTech')">⚡ Filtro Tech</button>
+          
+          <!-- Quiz & Logica -->
+          <button class="template-btn" id="btn-tpl-quizMath" onclick="loadTemplate('quizMath')">❓ Quiz Calcolo</button>
+          <button class="template-btn" id="btn-tpl-quizInglese" onclick="loadTemplate('quizInglese')">🇬🇧 Quiz Inglese</button>
+          <button class="template-btn" id="btn-tpl-quizLogica" onclick="loadTemplate('quizLogica')">⚖️ Operatori == vs ===</button>
+          
+          <!-- Memoria Browser -->
+          <button class="template-btn" id="btn-tpl-storage" onclick="loadTemplate('storage')">💾 Salva Nota</button>
+          <button class="template-btn" id="btn-tpl-jsonStorage" onclick="loadTemplate('jsonStorage')">🛒 Lista Spesa JSON</button>
+          <button class="template-btn" id="btn-tpl-taskList" onclick="loadTemplate('taskList')">📋 Task List</button>
+          
+          <!-- Animazione -->
+          <button class="template-btn" id="btn-tpl-animazione" onclick="loadTemplate('animazione')">⚽ Animazione</button>
+        </div>
+
+        <!-- BARRA SIMBOLI RAPIDI PER PRINCIPIANTI E MOBILE -->
+        <div class="quick-symbols-bar" id="quick-symbols-bar">
+          <span style="font-size:11px; font-weight:800; color:var(--text-muted); padding:0 4px;">Simboli:</span>
+          <button type="button" class="quick-sym-btn" data-sym="{">{</button>
+          <button type="button" class="quick-sym-btn" data-sym="}">}</button>
+          <button type="button" class="quick-sym-btn" data-sym="(">(</button>
+          <button type="button" class="quick-sym-btn" data-sym=")">)</button>
+          <button type="button" class="quick-sym-btn" data-sym="[">[</button>
+          <button type="button" class="quick-sym-btn" data-sym="]">]</button>
+          <button type="button" class="quick-sym-btn" data-sym=";">;</button>
+          <button type="button" class="quick-sym-btn" data-sym="=">=</button>
+          <button type="button" class="quick-sym-btn" data-sym="===">===</button>
+          <button type="button" class="quick-sym-btn" data-sym="=&gt;">=&gt;</button>
+          <button type="button" class="quick-sym-btn" data-sym="'">'</button>
+          <button type="button" class="quick-sym-btn" data-sym="`">`</button>
+          <button type="button" class="quick-sym-btn" data-sym="&quot;" style="cursor:pointer;">"</button>
+          <button type="button" class="quick-sym-btn" data-sym=" &gt; ">&gt;</button>
+          <button type="button" class="quick-sym-btn" data-sym=" &lt; ">&lt;</button>
+          <button type="button" class="quick-sym-btn" data-sym="+">+</button>
+          <button type="button" class="quick-sym-btn" data-sym="!">!</button>
+          <button type="button" class="quick-sym-btn" data-sym="?">?</button>
+        </div>
+
+        <!-- WORKSPACE: CODICE A SINISTRA / ANTEPRIMA A DESTRA -->
+        <div class="lab-workspace">
+          
+          <!-- PANNELLO EDITOR -->
+          <div class="editor-pane mobile-hidden" id="editor-pane">
+            <div class="pane-header">
+              <div class="pane-title">
+                <span>💻</span>
+                <span id="editor-mode-label">Editor JavaScript</span>
+              </div>
+              <div class="pane-controls">
+                <button class="btn-action" onclick="toggleEditorMode()" id="btn-toggle-mode" title="Passa tra modalità JS rapida e modalità completa HTML+JS">
+                  ⇄ HTML + JS
+                </button>
+                <button class="btn-action" onclick="resetCurrentTemplate()" title="Ripristina il codice originale dell'esempio">
+                  🔄 Reset
+                </button>
+                <button class="btn-action" onclick="clearEditor()" title="Svuota l'editor per scrivere codice libero">
+                  🧹 Svuota
+                </button>
+                <button class="btn-run-code" onclick="executeCurrentCode()">
+                  ▶ ESEGUI
+                </button>
+              </div>
+            </div>
+
+            <!-- CONTENITORE DEGLI EDITOR -->
+            <div class="editors-wrapper">
+              <!-- Sezione HTML/CSS (visibile solo in modalità doppio editor) -->
+              <div class="editor-section" id="section-html-editor" style="display:none;">
+                <div class="section-label">
+                  <span>HTML / CSS</span>
+                  <span style="font-size:10px; opacity:0.8;">Struttura e Stile</span>
+                </div>
+                <textarea id="editor-html" class="code-editor" spellcheck="false" placeholder="&lt;!-- Inserisci qui l'HTML e i tag &lt;style&gt; --&gt;"></textarea>
+              </div>
+
+              <!-- Sezione JavaScript (sempre visibile) -->
+              <div class="editor-section" id="section-js-editor">
+                <div class="section-label" id="label-js-section" style="display:none;">
+                  <span>JAVASCRIPT</span>
+                  <span style="font-size:10px; opacity:0.8;">Logica e Funzioni</span>
+                </div>
+                <textarea id="editor-js" class="code-editor" spellcheck="false" placeholder="// Scrivi qui il tuo codice JavaScript..."></textarea>
+              </div>
+            </div>
+          </div>
+
+          <!-- PANNELLO ANTEPRIMA & CONSOLE -->
+          <div class="preview-pane mobile-visible" id="preview-pane">
+            <div class="pane-header" style="background:#ffffff; border-bottom: 1px solid #cbd5e1; color:#0f172a;">
+              <div class="pane-title" style="color:#0f172a;">
+                <span>📱</span>
+                <span>Risultato in Tempo Reale</span>
+              </div>
+              <div class="pane-controls">
+                <span id="preview-status-badge" style="font-size:11px; font-weight:700; color:#059669; background:#d1fae5; padding:2px 8px; border-radius:6px;">
+                  ● Attivo
+                </span>
+              </div>
+            </div>
+
+            <!-- CORPO ANTEPRIMA -->
+            <div class="preview-body" id="preview-body">
+              
+              <!-- Box Errore Dinamico -->
+              <div class="error-banner" id="error-banner" style="display: none;">
+                <strong>⚠️ Attenzione nel tuo codice:</strong>
+                <span id="error-message"></span>
+                <div style="margin-top:6px; font-size:11px; opacity:0.9;">
+                  💡 <em>Suggerimento: controlla se hai chiuso tutte le parentesi, virgolette o se hai scritto correttamente i nomi delle variabili.</em>
+                </div>
+              </div>
+
+              <!-- Output JavaScript Diretto -->
+              <div id="direct-output" style="display: block;">
+  <div class="app-card-preview text-center" style="padding: 30px; text-align: center;">
+    <h1 style="font-size: 28px; color: #2563eb; margin-bottom: 10px;">Ciao Silvia! 👋</h1>
+    <p style="font-size: 16px; color: #64748b; margin-bottom: 20px;">
+      Questo contenuto è stato creato dinamicamente con JavaScript.
+    </p>
+    <div style="display: inline-block; padding: 8px 16px; background: #e0f2fe; color: #0369a1; border-radius: 20px; font-weight: bold; font-size: 14px;">
+      ⏰ Orario attuale: 18:26:53
+    </div>
+  </div>
+</div>
+
+              <!-- Iframe per modalità HTML+JS -->
+              <iframe id="iframe-preview" sandbox="allow-scripts allow-modals" style="display: none;"></iframe>
+            </div>
+
+            <!-- DRAWER CONSOLE DI DEBUG -->
+            <div class="console-drawer" id="console-drawer">
+              <div class="console-header">
+                <span>Console di Debug (console.log)</span>
+                <button class="btn-action" style="padding:2px 6px; font-size:10px;" onclick="clearConsole()">
+                  Pulisci
+                </button>
+              </div>
+              <div class="console-logs" id="console-logs">
+                <div class="log-entry">
+                  <span class="log-time">[Avvio]</span>
+                  <span class="log-text info">Console pronta per i tuoi output. Usa console.log("...") per stampare qui i valori.</span>
+                </div>
+              <div class="log-entry">
+        <span class="log-time">[18:26:53]</span>
+        <span class="log-text text">Saluto generato con successo per: Silvia</span>
+      </div></div>
+            </div>
+
+          </div>
+
+        </div>
+
+        <!-- BARRA NAVIGAZIONE MOBILE (CODICE / RISULTATO) -->
+        <div class="mobile-tab-bar">
+          <button class="mobile-tab-btn" id="btn-mobile-code" onclick="switchMobileTab('code')">
+            💻 Codice
+          </button>
+          <button class="mobile-tab-btn active" id="btn-mobile-preview" onclick="switchMobileTab('preview')">
+            📱 Risultato
+          </button>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ======================================================================
+         SEZIONE 3: SFIDE ED ESERCIZI PRATICI
+         ====================================================================== -->
+    <section id="view-challenges" class="page-view">
+      <div class="challenges-container">
+        
+        <div class="guide-hero" style="margin-bottom: 24px;">
+          <h1>Sfide Interattive per Principianti 🎯</h1>
+          <p>
+            Metti alla prova quello che hai imparato! Modifica il codice negli editor sottostanti
+            e clicca su <strong>"Verifica Esercizio"</strong>. Il sistema controllerà automaticamente
+            se la tua soluzione è corretta e salverà i tuoi progressi.
+          </p>
+        </div>
+
+        <!-- ESERCIZIO 1 -->
+        <div class="challenge-card" id="card-challenge-1">
+          <div class="challenge-header">
+            <div style="display:flex; align-items:center; gap:8px;">
+              <span class="step-num" style="width:28px; height:28px; font-size:12px;">1</span>
+              <h3 style="font-size:17px; font-weight:800;">Calcola il Totale della Spesa</h3>
+            </div>
+            <span class="challenge-badge" id="badge-ch-1">Da Completare</span>
+          </div>
+          <p style="font-size:14px; color:var(--text-muted);">
+            Hai un array di prezzi: <code>[12, 5, 23, 8]</code>.
+            Usa una variabile <code>totale</code> e un ciclo <code>for</code> oppure <code>forEach</code>
+            per calcolare la somma esatta di tutti i prezzi e salvarla nella variabile <code>totale</code>.
+          </p>
+          <textarea class="challenge-editor" id="code-ch-1" spellcheck="false">const prezzi = [12, 5, 23, 8];
+let totale = 0;
+
+// SCRIVI IL TUO CODICE QUI SOTTO:
+prezzi.forEach(prezzo =&gt; {
+  totale += prezzo;
+});
+</textarea>
+          <div class="challenge-feedback" id="feedback-ch-1"></div>
+          <div class="challenge-actions">
+            <button class="btn-hint" onclick="toggleHint(1)">💡 Suggerimento</button>
+            <button class="btn-verify" onclick="verifyChallenge1()">Verifica Esercizio ▶</button>
+          </div>
+          <div class="hint-box" id="hint-ch-1">
+            💡 Suggerimento: puoi usare <code>totale = totale + prezzo;</code> oppure <code>totale += prezzo;</code> all'interno del ciclo <code>forEach</code>.
+          </div>
+        </div>
+
+        <!-- ESERCIZIO 2 -->
+        <div class="challenge-card" id="card-challenge-2">
+          <div class="challenge-header">
+            <div style="display:flex; align-items:center; gap:8px;">
+              <span class="step-num" style="width:28px; height:28px; font-size:12px;">2</span>
+              <h3 style="font-size:17px; font-weight:800;">Verificatore di Età (Maggiorenne)</h3>
+            </div>
+            <span class="challenge-badge" id="badge-ch-2">Da Completare</span>
+          </div>
+          <p style="font-size:14px; color:var(--text-muted);">
+            Data una variabile <code>eta = 20</code>, scrivi una condizione <code>if / else</code>:
+            se <code>eta &gt;= 18</code> assegna alla variabile <code>stato</code> la parola <code>"Maggiorenne"</code>,
+            altrimenti assegna <code>"Minorenne"</code>.
+          </p>
+          <textarea class="challenge-editor" id="code-ch-2" spellcheck="false">const eta = 20;
+let stato = "";
+
+// SCRIVI IL TUO CODICE QUI:
+if (eta &gt;= 18) {
+  stato = "Maggiorenne";
+} else {
+  stato = "Minorenne";
+}
+</textarea>
+          <div class="challenge-feedback" id="feedback-ch-2"></div>
+          <div class="challenge-actions">
+            <button class="btn-hint" onclick="toggleHint(2)">💡 Suggerimento</button>
+            <button class="btn-verify" onclick="verifyChallenge2()">Verifica Esercizio ▶</button>
+          </div>
+          <div class="hint-box" id="hint-ch-2">
+            💡 Suggerimento: ricorda la sintassi <code>if (condizione) { ... } else { ... }</code> e rispetta le maiuscole: "Maggiorenne" e "Minorenne".
+          </div>
+        </div>
+
+        <!-- ESERCIZIO 3 -->
+        <div class="challenge-card" id="card-challenge-3">
+          <div class="challenge-header">
+            <div style="display:flex; align-items:center; gap:8px;">
+              <span class="step-num" style="width:28px; height:28px; font-size:12px;">3</span>
+              <h3 style="font-size:17px; font-weight:800;">Filtro delle Parole Lunghe</h3>
+            </div>
+            <span class="challenge-badge" id="badge-ch-3">Da Completare</span>
+          </div>
+          <p style="font-size:14px; color:var(--text-muted);">
+            Dato l'array <code>parole = ["sole", "computer", "via", "javascript", "mare"]</code>,
+            usa il metodo <code>.filter()</code> per creare un nuovo array chiamato <code>paroleLunghe</code>
+            contenente solo le parole che hanno più di 4 lettere (cioè <code>parola.length &gt; 4</code>).
+          </p>
+          <textarea class="challenge-editor" id="code-ch-3" spellcheck="false">const parole = ["sole", "computer", "via", "javascript", "mare"];
+
+// SCRIVI QUI IL TUO FILTRO:
+const paroleLunghe = parole.filter(p =&gt; p.length &gt; 4);
+</textarea>
+          <div class="challenge-feedback" id="feedback-ch-3"></div>
+          <div class="challenge-actions">
+            <button class="btn-hint" onclick="toggleHint(3)">💡 Suggerimento</button>
+            <button class="btn-verify" onclick="verifyChallenge3()">Verifica Esercizio ▶</button>
+          </div>
+          <div class="hint-box" id="hint-ch-3">
+            💡 Suggerimento: la proprietà <code>.length</code> restituisce il numero di caratteri di una parola. Il metodo <code>parole.filter(p =&gt; p.length &gt; 4)</code> restituisce un nuovo array filtrato.
+          </div>
+        </div>
+
+        <!-- ESERCIZIO 4 -->
+        <div class="challenge-card completed" id="card-challenge-4">
+          <div class="challenge-header">
+            <div style="display:flex; align-items:center; gap:8px;">
+              <span class="step-num" style="width:28px; height:28px; font-size:12px;">4</span>
+              <h3 style="font-size:17px; font-weight:800;">Salvataggio Oggetto in LocalStorage</h3>
+            </div>
+            <span class="challenge-badge" id="badge-ch-4" style="color: var(--success);">Completato! ✓</span>
+          </div>
+          <p style="font-size:14px; color:var(--text-muted);">
+            Hai un oggetto profilo: <code>const profilo = { nome: "Silvia", livello: 1 };</code>.
+            Salvalo in <code>localStorage</code> sotto la chiave <code>"profilo_utente"</code> usando <code>JSON.stringify</code>.
+          </p>
+          <textarea class="challenge-editor" id="code-ch-4" spellcheck="false">const profilo = { nome: "Silvia", livello: 1 };
+
+// SALVA L'OGGETTO COME STRINGA IN LOCALSTORAGE:
+localStorage.setItem("profilo_utente", JSON.stringify(profilo));
+</textarea>
+          <div class="challenge-feedback" id="feedback-ch-4"></div>
+          <div class="challenge-actions">
+            <button class="btn-hint" onclick="toggleHint(4)">💡 Suggerimento</button>
+            <button class="btn-verify" onclick="verifyChallenge4()">Verifica Esercizio ▶</button>
+          </div>
+          <div class="hint-box" id="hint-ch-4">
+            💡 Suggerimento: <code>localStorage.setItem("chiave", JSON.stringify(tuoOggetto))</code> permette di convertire l'oggetto in testo memorizzabile nel browser.
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ==========================================================================
+       SCRIPT APPLICATIVO: GESTIONE TEMI, TEMPLATE, ESECUZIONE E CONSOLE
+       ========================================================================== -->
+  <script>
+    /* ==========================================================================
+       1. DATABASE DEGLI ESEMPI (TUTTI E 16 ESEMPI CORRETTI E POTENZIATI)
+       ========================================================================== */
+    const templates = {
+      
+      // 1. Saluto Semplice (da lista.html)
+      saluto: {
+        mode: "direct",
+        title: "Saluto Semplice",
+        html: "",
+        js: `// Esempio 1: Messaggio Semplice con Template Literals
+const utente = "Silvia";
+const orario = new Date().toLocaleTimeString();
+
+output.innerHTML = \`
+  <div class="app-card-preview text-center" style="padding: 30px; text-align: center;">
+    <h1 style="font-size: 28px; color: #2563eb; margin-bottom: 10px;">Ciao \${utente}! 👋</h1>
+    <p style="font-size: 16px; color: #64748b; margin-bottom: 20px;">
+      Questo contenuto è stato creato dinamicamente con JavaScript.
+    </p>
+    <div style="display: inline-block; padding: 8px 16px; background: #e0f2fe; color: #0369a1; border-radius: 20px; font-weight: bold; font-size: 14px;">
+      ⏰ Orario attuale: \${orario}
+    </div>
+  </div>
+\`;
+
+console.log("Saluto generato con successo per: " + utente);`
+      },
+
+      // 2. Contatore Interattivo (da lista.html)
+      contatore: {
+        mode: "direct",
+        title: "Contatore Interattivo",
+        html: "",
+        js: `// Esempio 2: Un Contatore con Aumenta, Diminuisci e Reset
+let click = 0;
+
+function aggiornaInterfaccia() {
+  output.innerHTML = \`
+    <div class="app-card-preview" style="text-align: center; padding: 30px;">
+      <h2 style="font-size: 20px; margin-bottom: 10px;">Contatore con Click</h2>
+      <div id="cifra" style="font-size: 64px; font-weight: 900; color: #2563eb; margin: 15px 0;">\${click}</div>
+      <div style="display: flex; justify-content: center; gap: 10px; flex-wrap: wrap;">
+        <button id="btn-meno" class="btn-preview" style="background: #ef4444; min-width: 60px;">- 1</button>
+        <button id="btn-reset" class="btn-preview" style="background: #64748b;">Azzera</button>
+        <button id="btn-piu" class="btn-preview" style="background: #10b981; min-width: 60px;">+ 1</button>
+      </div>
+    </div>
+  \`;
+
+  document.getElementById('btn-piu').onclick = () => {
+    click++;
+    aggiornaInterfaccia();
+    console.log("Contatore aumentato a: " + click);
+  };
+
+  document.getElementById('btn-meno').onclick = () => {
+    click--;
+    aggiornaInterfaccia();
+    console.log("Contatore diminuito a: " + click);
+  };
+
+  document.getElementById('btn-reset').onclick = () => {
+    click = 0;
+    aggiornaInterfaccia();
+    console.log("Contatore azzerato!");
+  };
+}
+
+aggiornaInterfaccia();`
+      },
+
+      // 3. Cambia Colore Casuale (da lista.html)
+      colore: {
+        mode: "direct",
+        title: "Cambia Colore Casuale",
+        html: "",
+        js: `// Esempio 3: Generazione di colori esadecimali casuali
+output.innerHTML = \`
+  <div class="app-card-preview" style="text-align: center;">
+    <h3 style="margin-bottom: 15px;">Generatore di Sfondi Casuali</h3>
+    <div id="box-colore" style="height: 180px; border-radius: 14px; background: #38bdf8; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: background 0.4s ease; color: #ffffff; text-shadow: 0 1px 3px rgba(0,0,0,0.4); margin-bottom: 20px;">
+      <span style="font-size: 14px; font-weight: 700; text-transform: uppercase;">Colore Corrente:</span>
+      <span id="testo-colore" style="font-size: 26px; font-family: monospace; font-weight: 900;">#38BDF8</span>
+    </div>
+    <button id="btn-cambia" class="btn-preview" style="width: 100%;">
+      🎨 Genera Nuovo Colore
+    </button>
+  </div>
+\`;
+
+document.getElementById('btn-cambia').onclick = () => {
+  // Genera un colore HEX a 6 cifre
+  const nuovoColore = '#' + Math.floor(Math.random() * 16777215).toString(16).padStart(6, '0');
+  
+  const box = document.getElementById('box-colore');
+  const testo = document.getElementById('testo-colore');
+  
+  box.style.background = nuovoColore;
+  testo.textContent = nuovoColore.toUpperCase();
+  
+  console.log("Nuovo colore generato: " + nuovoColore);
+};`
+      },
+
+      // 4. Lista da Array (da lista.html)
+      lista: {
+        mode: "direct",
+        title: "Lista Frutti con forEach",
+        html: "",
+        js: `// Esempio 4: Generare una lista HTML da un Array
+const frutti = [
+  { nome: "Mela Rossa", emoji: "🍎", calorie: 52 },
+  { nome: "Banana Matura", emoji: "🍌", calorie: 89 },
+  { nome: "Arancia Dolce", emoji: "🍊", calorie: 47 },
+  { nome: "Kiwi Verde", emoji: "🥝", calorie: 61 }
+];
+
+let itemsHtml = "";
+frutti.forEach(frutto => {
+  itemsHtml += \`
+    <li style="display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; margin-bottom: 8px;">
+      <span style="font-size: 18px; font-weight: bold;">\${frutto.emoji} \${frutto.nome}</span>
+      <span style="font-size: 13px; color: #0284c7; background: #e0f2fe; padding: 4px 10px; border-radius: 20px; font-weight: 600;">\${frutto.calorie} kcal</span>
+    </li>
+  \`;
+});
+
+output.innerHTML = \`
+  <div class="app-card-preview">
+    <h3 style="font-size: 20px; font-weight: bold; margin-bottom: 16px;">La Mia Lista della Spesa</h3>
+    <ul style="list-style: none; padding: 0;">\${itemsHtml}</ul>
+  </div>
+\`;
+
+console.log("Elementi renderizzati:", frutti.length);`
+      },
+
+      // 5. Card JSON con Tag (da lab-javascript.html)
+      cards: {
+        mode: "direct",
+        title: "Card Generate da Array JSON",
+        html: "",
+        js: `// Esempio 5: Generazione dinamica di card da array di oggetti
+const progetti = [
+  { titolo: "Progetto Alpha", desc: "Sistema di automazione domotica con sensori", tag: "AI", coloreTag: "#0284c7" },
+  { titolo: "Web App Beta", desc: "Dashboard gestionale con grafici in tempo reale", tag: "Cloud", coloreTag: "#7c3aed" },
+  { titolo: "Mobile Gamma", desc: "Applicazione per tracciare allenamenti e salute", tag: "App", coloreTag: "#059669" }
+];
+
+output.innerHTML = \`
+  <div class="app-card-preview">
+    <h2 style="font-size: 22px; font-weight: 800; margin-bottom: 16px;">I Miei Progetti (JSON)</h2>
+    <div id="contenitore-card" style="display: flex; flex-direction: column; gap: 12px;"></div>
+  </div>
+\`;
+
+const container = document.getElementById('contenitore-card');
+
+progetti.forEach(item => {
+  const card = document.createElement('div');
+  card.style.cssText = "background: #f8fafc; padding: 18px; border-radius: 12px; border-left: 6px solid " + item.coloreTag + "; border-top: 1px solid #e2e8f0; border-right: 1px solid #e2e8f0; border-bottom: 1px solid #e2e8f0;";
+  
+  card.innerHTML = \`
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+      <span style="font-size: 11px; font-weight: 800; color: #ffffff; background: \${item.coloreTag}; padding: 3px 10px; border-radius: 20px; text-transform: uppercase;">
+        \${item.tag}
+      </span>
+    </div>
+    <h3 style="font-size: 18px; font-weight: 800; margin-top: 8px; color: #0f172a;">\${item.titolo}</h3>
+    <p style="color: #64748b; font-size: 14px; margin-top: 6px;">\${item.desc}</p>
+  \`;
+  container.appendChild(card);
+});
+
+console.log("Card JSON create:", progetti.length);`
+      },
+
+      // 6. Flashcard Traduzione Bilingue (da jsLab.html)
+      cardFlip: {
+        mode: "direct",
+        title: "Flashcard Bilingue",
+        html: "",
+        js: `// Esempio 6: Flashcard bilingue con giro e cambio parola
+const vocaboli = [
+  { it: "Mela", en: "Apple", esempio: "I eat an apple" },
+  { it: "Cane", en: "Dog", esempio: "The dog is barking" },
+  { it: "Libro", en: "Book", esempio: "I love reading books" },
+  { it: "Finestra", en: "Window", esempio: "Open the window" }
+];
+
+let indice = 0;
+let mostraInglese = false;
+
+function renderFlashcard() {
+  const parola = vocaboli[indice];
+  const testo = mostraInglese ? parola.en : parola.it;
+  const lingua = mostraInglese ? "🇬🇧 INGLESE" : "🇮🇹 ITALIANO";
+  const bgColore = mostraInglese ? "#e0f2fe" : "#ffffff";
+
+  output.innerHTML = \`
+    <div class="app-card-preview" style="text-align: center;">
+      <h3 style="margin-bottom: 8px; font-size: 20px;">Flashcard Vocabolario</h3>
+      <p style="color: #64748b; font-size: 13px; margin-bottom: 16px;">Tocca la carta per girarla tra italiano e inglese</p>
+      
+      <div id="carta-flip" style="background: \${bgColore}; border: 3px solid #0284c7; border-radius: 16px; padding: 36px 20px; margin-bottom: 20px; cursor: pointer; transition: all 0.2s ease; box-shadow: 0 4px 10px rgba(2,132,199,0.15);">
+        <span style="font-size: 12px; font-weight: 800; color: #0284c7; display: block; margin-bottom: 8px;">\${lingua}</span>
+        <h1 style="font-size: 38px; font-weight: 900; color: #0f172a; margin: 0;">\${testo}</h1>
+        <p style="font-size: 13px; color: #64748b; margin-top: 10px; font-style: italic;">\${parola.esempio}</p>
+      </div>
+
+      <div style="display: flex; gap: 10px; justify-content: center;">
+        <button id="btn-precedente" class="btn-preview" style="background: #64748b; flex: 1;">⬅ Precedente</button>
+        <button id="btn-successiva" class="btn-preview" style="flex: 2;">Prossima Parola ➡</button>
+      </div>
+      <div style="margin-top: 12px; font-size: 12px; font-weight: bold; color: #64748b;">
+        Carta \${indice + 1} di \${vocaboli.length}
+      </div>
+    </div>
+  \`;
+
+  document.getElementById('carta-flip').onclick = () => {
+    mostraInglese = !mostraInglese;
+    renderFlashcard();
+  };
+
+  document.getElementById('btn-successiva').onclick = () => {
+    indice = (indice + 1) % vocaboli.length;
+    mostraInglese = false;
+    renderFlashcard();
+  };
+
+  document.getElementById('btn-precedente').onclick = () => {
+    indice = (indice - 1 + vocaboli.length) % vocaboli.length;
+    mostraInglese = false;
+    renderFlashcard();
+  };
+}
+
+renderFlashcard();`
+      },
+
+      // 7. Flashcard 3D Animata (da logicLab.html)
+      card3D: {
+        mode: "direct",
+        title: "Flashcard 3D con Effetto CSS",
+        html: "",
+        js: `// Esempio 7: Flashcard 3D realistica con rotazione a 180 gradi
+output.innerHTML = \`
+  <div class="app-card-preview" style="text-align: center;">
+    <h3 style="font-size: 20px; font-weight: bold; margin-bottom: 6px;">Flashcard 3D Interattiva</h3>
+    <p style="color: #64748b; font-size: 13px; margin-bottom: 16px;">Clicca o tocca la carta per girarla!</p>
+
+    <div class="flashcard" id="card3d" onclick="this.classList.toggle('flipped')">
+      <div class="flashcard-inner">
+        <div class="card-front">
+          <div>
+            <span style="font-size: 12px; font-weight: 800; color: #0284c7; text-transform: uppercase; display: block; margin-bottom: 6px;">DOMANDA</span>
+            <div style="font-size: 22px; color: #0f172a;">Cos'è una variabile in JavaScript?</div>
+            <div style="font-size: 12px; color: #94a3b8; margin-top: 12px;">👉 Tocca per vedere la risposta</div>
+          </div>
+        </div>
+        <div class="card-back">
+          <div>
+            <span style="font-size: 12px; font-weight: 800; color: #ffffff; text-transform: uppercase; display: block; margin-bottom: 6px;">RISPOSTA</span>
+            <div style="font-size: 20px;">Un contenitore con un nome che conserva dati per usarli nel programma!</div>
+            <div style="font-size: 12px; opacity: 0.8; margin-top: 12px;">Tocca di nuovo per tornare indietro ↺</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+\`;
+
+console.log("Carta 3D pronta all'interazione.");`
+      },
+
+      // 8. Vocabolario Bilingue con Ricerca in Tempo Reale (da jsLab.html)
+      vocabolario: {
+        mode: "direct",
+        title: "Ricerca nel Vocabolario",
+        html: "",
+        js: `// Esempio 8: Ricerca dinamica con .filter() e input in tempo reale
+const dizionario = [
+  { it: "Gatto", en: "Cat", desc: "Animale domestico felino" },
+  { it: "Casa", en: "House", desc: "Luogo in cui si abita" },
+  { it: "Albero", en: "Tree", desc: "Pianta con tronco e foglie" },
+  { it: "Tavolo", en: "Table", desc: "Mobile con piano d'appoggio" },
+  { it: "Sole", en: "Sun", desc: "La stella al centro del sistema solare" },
+  { it: "Acqua", en: "Water", desc: "Elemento fondamentale per la vita" }
+];
+
+output.innerHTML = \`
+  <div class="app-card-preview">
+    <h3 style="font-size: 20px; font-weight: 800; margin-bottom: 6px;">Cerca nel Vocabolario</h3>
+    <p style="color: #64748b; font-size: 13px; margin-bottom: 14px;">Digita una parola in italiano o in inglese:</p>
+    
+    <input type="text" id="barra-ricerca" class="input-preview" placeholder="Es. Gatto o House...">
+
+    <div style="margin-top: 16px;">
+      <ul id="lista-risultati" style="list-style: none; padding: 0;"></ul>
+    </div>
+  </div>
+\`;
+
+const input = document.getElementById("barra-ricerca");
+const lista = document.getElementById("lista-risultati");
+
+function mostraParole(elenco) {
+  lista.innerHTML = "";
+  if (elenco.length === 0) {
+    lista.innerHTML = '<li style="padding: 16px; text-align: center; color: #94a3b8; font-style: italic;">Nessuna parola trovata 🔍</li>';
+    return;
+  }
+  
+  elenco.forEach(item => {
+    const li = document.createElement("li");
+    li.style.cssText = "padding: 12px 14px; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center;";
+    li.innerHTML = \`
+      <div>
+        <strong style="font-size: 16px; color: #0f172a;">\${item.it}</strong>
+        <span style="color: #64748b; font-size: 13px; display: block;">\${item.desc}</span>
+      </div>
+      <span style="background: #e0f2fe; color: #0284c7; padding: 4px 10px; border-radius: 8px; font-weight: 800;">\${item.en}</span>
+    \`;
+    lista.appendChild(li);
+  });
+}
+
+input.addEventListener("input", () => {
+  const query = input.value.trim().toLowerCase();
+  const filtrate = dizionario.filter(p => 
+    p.it.toLowerCase().includes(query) || p.en.toLowerCase().includes(query)
+  );
+  mostraParole(filtrate);
+  console.log("Ricerca: '" + query + "' - Trovati: " + filtrate.length);
+});
+
+// Mostra tutto all'avvio
+mostraParole(dizionario);`
+      },
+
+      // 9. Filtro Tecnologie con Tag (da logicLab.html)
+      searchTech: {
+        mode: "direct",
+        title: "Filtro Tecnologie con Tag",
+        html: "",
+        js: `// Esempio 9: Filtro di tag con array di stringhe
+const tecnologie = ["JavaScript", "HTML5", "CSS3", "React", "Node.js", "Python", "TypeScript", "Tailwind CSS"];
+
+output.innerHTML = \`
+  <div class="app-card-preview">
+    <h3 style="font-size: 20px; font-weight: bold; margin-bottom: 12px;">Filtro Rapido di Tecnologie</h3>
+    <input id="search-box" class="input-preview" placeholder="Filtra (es. Script, CSS, React)...">
+    
+    <div id="tech-tags" style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px;"></div>
+  </div>
+\`;
+
+const box = document.getElementById('search-box');
+const container = document.getElementById('tech-tags');
+
+function visualizzaTags(filtro = "") {
+  const corrispondenti = tecnologie.filter(t => t.toLowerCase().includes(filtro.toLowerCase()));
+  
+  if (corrispondenti.length === 0) {
+    container.innerHTML = '<span style="color: #94a3b8; font-style: italic;">Nessuna tecnologia trovata.</span>';
+    return;
+  }
+
+  container.innerHTML = corrispondenti.map(item => \`
+    <span style="background: #e0f2fe; color: #0369a1; padding: 6px 14px; border-radius: 20px; font-size: 14px; font-weight: 700; border: 1px solid #bae6fd;">
+      ⚡ \${item}
+    </span>
+  \`).join('');
+}
+
+box.oninput = (e) => visualizzaTags(e.target.value);
+visualizzaTags();`
+      },
+
+      // 10. Quiz Calcolo Matematico Dinamico (da lab-javascript.html)
+      quizMath: {
+        mode: "direct",
+        title: "Quiz Matematico Dinamico",
+        html: "",
+        js: `// Esempio 10: Quiz matematico casuale con controllo risposta
+function generaNuovoQuiz() {
+  const num1 = Math.floor(Math.random() * 12) + 1;
+  const num2 = Math.floor(Math.random() * 12) + 1;
+  const soluzione = num1 + num2;
+
+  output.innerHTML = \`
+    <div class="app-card-preview" style="text-align: center; padding: 30px 20px;">
+      <span style="font-size: 12px; font-weight: 800; color: #64748b; text-transform: uppercase;">Esercizio di Calcolo Rapido</span>
+      <h2 style="font-size: 52px; font-weight: 900; color: #0f172a; margin: 15px 0;">\${num1} + \${num2} = ?</h2>
+      
+      <input type="number" id="input-risposta" class="input-preview" style="max-width: 200px; text-align: center; font-size: 32px; font-weight: 800; margin: 0 auto 16px; display: block;" placeholder="?">
+      
+      <button id="btn-verifica" class="btn-preview" style="width: 100%; max-width: 250px; background: #10b981; font-size: 18px;">
+        Verifica Risposta ✓
+      </button>
+
+      <div id="feedback-box" style="margin-top: 16px; font-size: 18px; font-weight: 800; min-height: 28px;"></div>
+    </div>
+  \`;
+
+  const inputRisp = document.getElementById('input-risposta');
+  const feedback = document.getElementById('feedback-box');
+  inputRisp.focus();
+
+  document.getElementById('btn-verifica').onclick = () => {
+    const valore = parseInt(inputRisp.value);
+    if (valore === soluzione) {
+      feedback.style.color = "#059669";
+      feedback.innerHTML = "ESATTO! 🎉 Ottimo lavoro!";
+      console.log("Risposta corretta: " + valore);
+      setTimeout(() => generaNuovoQuiz(), 1500);
+    } else {
+      feedback.style.color = "#dc2626";
+      feedback.innerHTML = "SBAGLIATO! ❌ Riprova!";
+      console.log("Risposta errata: " + valore + " (Atteso: " + soluzione + ")");
+      inputRisp.value = "";
+      inputRisp.focus();
+    }
+  };
+
+  inputRisp.onkeydown = (e) => {
+    if (e.key === "Enter") document.getElementById('btn-verifica').click();
+  };
+}
+
+generaNuovoQuiz();`
+      },
+
+      // 11. Quiz Scelta Multipla con Feedback Visivo (da jsLab.html)
+      quizInglese: {
+        mode: "direct",
+        title: "Quiz a Risposta Multipla",
+        html: "",
+        js: `// Esempio 11: Quiz interattivo a risposta multipla con colorazione dei pulsanti
+const quiz = {
+  domanda: "Come si dice 'Acqua' in inglese?",
+  opzioni: ["Fire", "Earth", "Water", "Air"],
+  corretta: "Water"
+};
+
+output.innerHTML = \`
+  <div class="app-card-preview">
+    <span style="font-size: 12px; font-weight: 800; color: #0284c7; text-transform: uppercase;">Quiz di Inglese</span>
+    <h2 style="font-size: 22px; font-weight: 800; margin: 10px 0 16px;">\${quiz.domanda}</h2>
+    <div id="bottoni-opzioni" style="display: flex; flex-direction: column; gap: 10px;"></div>
+    <div id="risultato-quiz" style="margin-top: 16px; font-size: 18px; font-weight: 800; text-align: center;"></div>
+  </div>
+\`;
+
+const boxBottoni = document.getElementById("bottoni-opzioni");
+const risultato = document.getElementById("risultato-quiz");
+
+quiz.opzioni.forEach(opzione => {
+  const btn = document.createElement("button");
+  btn.textContent = opzione;
+  btn.style.cssText = "padding: 14px; font-size: 16px; font-weight: bold; border: 2px solid #cbd5e1; background: #f8fafc; border-radius: 10px; cursor: pointer; text-align: left; transition: all 0.2s;";
+  
+  btn.onmouseover = () => btn.style.borderColor = "#0284c7";
+  btn.onmouseout = () => { if (!btn.disabled) btn.style.borderColor = "#cbd5e1"; };
+
+  btn.onclick = () => {
+    // Disabilita tutti i bottoni dopo la scelta
+    Array.from(boxBottoni.children).forEach(b => b.disabled = true);
+
+    if (opzione === quiz.corretta) {
+      btn.style.background = "#dcfce7";
+      btn.style.borderColor = "#22c55e";
+      btn.style.color = "#15803d";
+      risultato.style.color = "#15803d";
+      risultato.textContent = "ESATTO! 🎉 Complimenti!";
+      console.log("Risposta corretta selezionata: " + opzione);
+    } else {
+      btn.style.background = "#fee2e2";
+      btn.style.borderColor = "#ef4444";
+      btn.style.color = "#b91c1c";
+      risultato.style.color = "#b91c1c";
+      risultato.textContent = "SBAGLIATO! ❌ La risposta corretta era '" + quiz.corretta + "'";
+      console.log("Risposta errata: " + opzione);
+    }
+  };
+
+  boxBottoni.appendChild(btn);
+});`
+      },
+
+      // 12. Operatori == vs === (da logicLab.html)
+      quizLogica: {
+        mode: "direct",
+        title: "Operatori: == vs ===",
+        html: "",
+        js: `// Esempio 12: Capire la differenza tra uguaglianza libera (==) e stretta (===)
+output.innerHTML = \`
+  <div class="app-card-preview">
+    <span style="font-size: 12px; font-weight: 800; color: #7c3aed; text-transform: uppercase;">Logica JavaScript</span>
+    <h3 style="font-size: 20px; font-weight: 800; margin: 10px 0;">Quale operatore serve per il confronto STRETTO (valore + tipo)?</h3>
+    <p style="color: #64748b; font-size: 14px; margin-bottom: 14px;">In JavaScript il confronto stretto non converte automaticamente i tipi di dato.</p>
+    
+    <div style="display: grid; gap: 10px;">
+      <button class="btn-opzione" onclick="rispondi(this, false, '== confronta solo il valore convertendo i tipi (es: 5 == \\'5\\' è vero).')" style="padding: 12px; border: 2px solid #cbd5e1; border-radius: 10px; background: #ffffff; font-weight: bold; font-family: monospace; font-size: 18px; text-align: left; cursor: pointer;">
+        == (Doppio uguale)
+      </button>
+      <button class="btn-opzione" onclick="rispondi(this, true, 'ESATTO! === controlla che sia il valore che il tipo siano identici (5 === \\'5\\' è falso).')" style="padding: 12px; border: 2px solid #cbd5e1; border-radius: 10px; background: #ffffff; font-weight: bold; font-family: monospace; font-size: 18px; text-align: left; cursor: pointer;">
+        === (Triplo uguale)
+      </button>
+      <button class="btn-opzione" onclick="rispondi(this, false, '= è l\\'operatore di assegnazione (serve ad assegnare un valore a una variabile, non a confrontare).')" style="padding: 12px; border: 2px solid #cbd5e1; border-radius: 10px; background: #ffffff; font-weight: bold; font-family: monospace; font-size: 18px; text-align: left; cursor: pointer;">
+        = (Singolo uguale)
+      </button>
+    </div>
+
+    <div id="spiegazione" style="margin-top: 16px; padding: 12px; border-radius: 8px; display: none; font-size: 14px; font-weight: 600;"></div>
+  </div>
+\`;
+
+window.rispondi = (btn, corretto, commento) => {
+  const spiegazione = document.getElementById('spiegazione');
+  spiegazione.style.display = 'block';
+  
+  if (corretto) {
+    spiegazione.style.background = "#dcfce7";
+    spiegazione.style.color = "#15803d";
+    spiegazione.innerHTML = "🎉 " + commento;
+    btn.style.background = "#dcfce7";
+    btn.style.borderColor = "#22c55e";
+  } else {
+    spiegazione.style.background = "#fee2e2";
+    spiegazione.style.color = "#b91c1c";
+    spiegazione.innerHTML = "❌ " + commento;
+    btn.style.background = "#fee2e2";
+    btn.style.borderColor = "#ef4444";
+  }
+};`
+      },
+
+      // 13. Salva Nota LocalStorage (da lab-javascript.html)
+      storage: {
+        mode: "direct",
+        title: "Salva Nota nel Browser",
+        html: "",
+        js: `// Esempio 13: Persistenza semplice con localStorage
+const testoSalvato = localStorage.getItem('mia_nota_personale') || "";
+
+output.innerHTML = \`
+  <div class="app-card-preview">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+      <h3 style="font-size: 20px; font-weight: 800;">Note in LocalStorage</h3>
+      <span style="font-size: 11px; font-weight: 800; background: #e0f2fe; color: #0284c7; padding: 3px 8px; border-radius: 6px;">MEMORIA BROWSER</span>
+    </div>
+    
+    <p style="color: #64748b; font-size: 13px; margin-bottom: 12px;">
+      Scrivi qualcosa qui sotto e premi SALVA: il testo rimarrà salvato anche se ricarichi la pagina!
+    </p>
+
+    <textarea id="testo-nota" class="input-preview" style="height: 120px; resize: vertical; margin-bottom: 12px;" placeholder="Scrivi la tua nota qui...">\${testoSalvato}</textarea>
+    
+    <div style="display: flex; gap: 8px;">
+      <button id="btn-salva-nota" class="btn-preview" style="flex: 2; background: #0284c7;">
+        💾 SALVA NOTA
+      </button>
+      <button id="btn-cancella-nota" class="btn-preview" style="flex: 1; background: #ef4444;">
+        CANCELLA
+      </button>
+    </div>
+
+    <div id="stato-salvataggio" style="margin-top: 12px; text-align: center; font-weight: bold; color: #10b981; display: none;">
+      ✓ Nota salvata con successo!
+    </div>
+  </div>
+\`;
+
+const areaTesto = document.getElementById('testo-nota');
+const stato = document.getElementById('stato-salvataggio');
+
+document.getElementById('btn-salva-nota').onclick = () => {
+  const contenuto = areaTesto.value;
+  localStorage.setItem('mia_nota_personale', contenuto);
+  
+  stato.style.display = 'block';
+  stato.textContent = "✓ Nota salvata nel browser!";
+  stato.style.color = "#10b981";
+  setTimeout(() => stato.style.display = 'none', 2000);
+  console.log("Nota salvata:", contenuto);
+};
+
+document.getElementById('btn-cancella-nota').onclick = () => {
+  localStorage.removeItem('mia_nota_personale');
+  areaTesto.value = "";
+  stato.style.display = 'block';
+  stato.textContent = "Nota cancellata.";
+  stato.style.color = "#ef4444";
+  setTimeout(() => stato.style.display = 'none', 2000);
+  console.log("Nota rimossa dal localStorage.");
+};`
+      },
+
+      // 14. Lista Spesa JSON completa con Rimuovi (da lacalStorage.html)
+      jsonStorage: {
+        mode: "direct",
+        title: "Lista Spesa con JSON.parse e Stringify",
+        html: "",
+        js: `// Esempio 14: Gestione lista con JSON.parse e JSON.stringify
+// 1. Leggiamo dal database locale del browser
+const datiSalvati = localStorage.getItem('lista_spesa_completa');
+
+// 2. Se ci sono dati, li convertiamo da stringa ad Array, altrimenti iniziamo con una lista di prova
+let listaProdotti = datiSalvati ? JSON.parse(datiSalvati) : ["Pane", "Latte", "Caffè"];
+
+function renderListaSpesa() {
+  output.innerHTML = \`
+    <div class="app-card-preview">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+        <h3 style="font-size: 20px; font-weight: 800;">Lista Spesa Persistente (JSON)</h3>
+        <span style="font-size: 11px; background: #e0e7ff; color: #4338ca; padding: 3px 8px; border-radius: 6px; font-weight: 800;">\${listaProdotti.length} elementi</span>
+      </div>
+
+      <div style="display: flex; gap: 8px; margin-bottom: 16px;">
+        <input id="input-nuovo-prodotto" class="input-preview" placeholder="Aggiungi prodotto (es. Mele)...">
+        <button id="btn-aggiungi-prodotto" class="btn-preview" style="padding: 12px 18px; background: #2563eb;">
+          + AGGIUNGI
+        </button>
+      </div>
+
+      <ul id="elenco-prodotti" style="list-style: none; padding: 0; display: flex; flex-direction: column; gap: 8px;">
+        \${listaProdotti.map((prod, indice) => \`
+          <li style="display: flex; justify-content: space-between; align-items: center; padding: 12px 14px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px;">
+            <span style="font-size: 16px; font-weight: 600; color: #0f172a;">\${prod}</span>
+            <button onclick="eliminaProdotto(\${indice})" style="background: #fee2e2; color: #b91c1c; border: 1px solid #fca5a5; padding: 6px 12px; border-radius: 8px; font-size: 12px; font-weight: 800; cursor: pointer;">
+              ELIMINA
+            </button>
+          </li>
+        \`).join('')}
+      </ul>
+    </div>
+  \`;
+
+  const inputProdotto = document.getElementById('input-nuovo-prodotto');
+  const btnAggiungi = document.getElementById('btn-aggiungi-prodotto');
+
+  btnAggiungi.onclick = () => {
+    const nome = inputProdotto.value.trim();
+    if (nome) {
+      listaProdotti.push(nome);
+      // SALVIAMO: convertiamo l'array in stringa JSON
+      localStorage.setItem('lista_spesa_completa', JSON.stringify(listaProdotti));
+      console.log("Prodotto aggiunto: " + nome);
+      renderListaSpesa();
+    }
+  };
+
+  inputProdotto.onkeydown = (e) => {
+    if (e.key === 'Enter') btnAggiungi.click();
+  };
+}
+
+// Funzione per eliminare un elemento per indice
+window.eliminaProdotto = (indice) => {
+  const rimosso = listaProdotti.splice(indice, 1);
+  localStorage.setItem('lista_spesa_completa', JSON.stringify(listaProdotti));
+  console.log("Prodotto eliminato:", rimosso[0]);
+  renderListaSpesa();
+};
+
+renderListaSpesa();`
+      },
+
+      // 15. Task List Dinamica (da lab-javascript.html)
+      taskList: {
+        mode: "direct",
+        title: "Task List Dinamica",
+        html: "",
+        js: `// Esempio 15: Creazione dinamica di nodi DOM e cancellazione con .remove()
+output.innerHTML = \`
+  <div class="app-card-preview">
+    <h3 style="font-size: 20px; font-weight: 800; margin-bottom: 12px;">La Mia Task List Rapida</h3>
+    
+    <div style="display: flex; gap: 8px; margin-bottom: 16px;">
+      <input id="task-input" class="input-preview" placeholder="Cosa devi fare oggi?">
+      <button id="task-add-btn" class="btn-preview" style="font-size: 20px; padding: 10px 20px; background: #0284c7;">+</button>
+    </div>
+
+    <ul id="task-ul" style="list-style: none; padding: 0; display: flex; flex-direction: column; gap: 8px;"></ul>
+  </div>
+\`;
+
+const taskInput = document.getElementById('task-input');
+const taskUl = document.getElementById('task-ul');
+
+function aggiungiNuovoTask(testo) {
+  if (!testo) return;
+  
+  const li = document.createElement('li');
+  li.style.cssText = "display: flex; justify-content: space-between; align-items: center; padding: 12px 14px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; animation: popIn 0.2s;";
+  
+  li.innerHTML = \`
+    <span style="font-size: 15px; font-weight: 600; color: #0f172a;">\${testo}</span>
+    <button style="background: none; border: none; color: #ef4444; font-size: 20px; font-weight: 900; cursor: pointer; padding: 4px 8px;">✕</button>
+  \`;
+
+  // Il pulsante cancella solo questo genitore li
+  li.querySelector('button').onclick = () => {
+    li.remove();
+    console.log("Task rimosso: " + testo);
+  };
+
+  taskUl.appendChild(li);
+  taskInput.value = "";
+  taskInput.focus();
+  console.log("Task aggiunto: " + testo);
+}
+
+document.getElementById('task-add-btn').onclick = () => aggiungiNuovoTask(taskInput.value.trim());
+
+taskInput.onkeydown = (e) => {
+  if (e.key === 'Enter') aggiungiNuovoTask(taskInput.value.trim());
+};
+
+// Inserisci un paio di task di esempio
+aggiungiNuovoTask("Studiare le variabili in JavaScript");
+aggiungiNuovoTask("Fare gli esercizi interattivi");`
+      },
+
+      // 16. Animazione Fluida requestAnimationFrame (da logicLab.html)
+      animazione: {
+        mode: "direct",
+        title: "Animazione con requestAnimationFrame",
+        html: "",
+        js: `// Esempio 16: Animazione fluida a 60 FPS con rimbalzo
+output.innerHTML = \`
+  <div class="app-card-preview" style="text-align: center;">
+    <h3 style="font-size: 20px; font-weight: 800; margin-bottom: 6px;">Animazione Fluida con Rimbalzo</h3>
+    <p style="color: #64748b; font-size: 13px; margin-bottom: 16px;">
+      Usa requestAnimationFrame per calcolare la posizione a ogni fotogramma
+    </p>
+
+    <!-- Pista di scorrimento -->
+    <div id="pista" style="height: 120px; background: #e2e8f0; border-radius: 14px; position: relative; overflow: hidden; border: 2px dashed #94a3b8; display: flex; align-items: center;">
+      <div id="palla" style="width: 50px; height: 50px; background: linear-gradient(135deg, #38bdf8, #2563eb); border-radius: 50%; position: absolute; left: 0; box-shadow: 0 6px 14px rgba(37,99,235,0.4); display: flex; align-items: center; justify-content: center; color: white; font-size: 20px;">
+        ⚽
+      </div>
+    </div>
+
+    <div style="display: flex; gap: 10px; justify-content: center; margin-top: 16px;">
+      <button id="btn-toggle-anim" class="btn-preview" style="background: #2563eb;">Ferma Animazione</button>
+      <button id="btn-velocita" class="btn-preview" style="background: #64748b;">Aumenta Velocità</button>
+    </div>
+  </div>
+\`;
+
+const pista = document.getElementById('pista');
+const palla = document.getElementById('palla');
+const btnToggle = document.getElementById('btn-toggle-anim');
+const btnVelocita = document.getElementById('btn-velocita');
+
+let posizione = 0;
+let direzione = 1;
+let velocita = 3;
+let inEsecuzione = true;
+
+// Ferma animazioni precedenti
+if (window.mioCicloAnimazione) {
+  cancelAnimationFrame(window.mioCicloAnimazione);
+}
+
+function muoviPalla() {
+  if (!inEsecuzione) return;
+
+  const larghezzaPista = pista.clientWidth;
+  const diametroPalla = 50;
+
+  posizione += velocita * direzione;
+  palla.style.left = posizione + "px";
+
+  // Rimbalzo sui bordi
+  if (posizione >= larghezzaPista - diametroPalla) {
+    direzione = -1;
+  } else if (posizione <= 0) {
+    direzione = 1;
+  }
+
+  window.mioCicloAnimazione = requestAnimationFrame(muoviPalla);
+}
+
+btnToggle.onclick = () => {
+  inEsecuzione = !inEsecuzione;
+  if (inEsecuzione) {
+    btnToggle.textContent = "Ferma Animazione";
+    btnToggle.style.background = "#2563eb";
+    muoviPalla();
+  } else {
+    btnToggle.textContent = "Riprendi Animazione";
+    btnToggle.style.background = "#10b981";
+  }
+};
+
+btnVelocita.onclick = () => {
+  velocita = velocita === 3 ? 6 : velocita === 6 ? 10 : 3;
+  btnVelocita.textContent = "Velocità: " + velocita + "x";
+  console.log("Velocità impostata a: " + velocita);
+};
+
+// Avvia animazione
+muoviPalla();
+console.log("Animazione avviata a 60 FPS.");`
+      }
+    };
+
+    /* ==========================================================================
+       2. STATO GLOBALE E RIFERIMENTI DOM
+       ========================================================================== */
+    let currentTemplateKey = "saluto";
+    let isSplitEditorMode = false; // false = solo JS rapido, true = HTML/CSS + JS
+    let currentTheme = localStorage.getItem("jslab_theme") || "dark";
+
+    // Elementi DOM Principali
+    const editorJs = document.getElementById('editor-js');
+    const editorHtml = document.getElementById('editor-html');
+    const sectionHtml = document.getElementById('section-html-editor');
+    const labelJs = document.getElementById('label-js-section');
+    const directOutput = document.getElementById('direct-output');
+    const iframePreview = document.getElementById('iframe-preview');
+    const errorBanner = document.getElementById('error-banner');
+    const errorMessage = document.getElementById('error-message');
+    const consoleLogs = document.getElementById('console-logs');
+
+    /* ==========================================================================
+       3. GESTIONE TEMI (CHIARO / SCURO)
+       ========================================================================== */
+    function applyTheme(theme) {
+      currentTheme = theme;
+      if (theme === 'light') {
+        document.documentElement.setAttribute('data-theme', 'light');
+        document.getElementById('theme-icon').textContent = '☀️';
+        document.getElementById('theme-label').textContent = 'Chiaro';
+      } else {
+        document.documentElement.removeAttribute('data-theme');
+        document.getElementById('theme-icon').textContent = '🌙';
+        document.getElementById('theme-label').textContent = 'Scuro';
+      }
+      localStorage.setItem("jslab_theme", theme);
+    }
+
+    function toggleTheme() {
+      applyTheme(currentTheme === 'dark' ? 'light' : 'dark');
+    }
+
+    // Applica tema memorizzato all'avvio
+    applyTheme(currentTheme);
+
+    /* ==========================================================================
+       4. NAVIGAZIONE PRINCIPALE (GUIDA, LABORATORIO, SFIDE)
+       ========================================================================== */
+    function switchNav(target) {
+      document.querySelectorAll('.page-view').forEach(p => p.classList.remove('active'));
+      document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+
+      document.getElementById('view-' + target).classList.add('active');
+      document.getElementById('tab-nav-' + target).classList.add('active');
+
+      if (target === 'lab') {
+        // Riassegna focus o forza re-render
+        executeCurrentCode();
+      }
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function loadTemplateAndSwitch(key) {
+      loadTemplate(key);
+      switchNav('lab');
+    }
+
+    /* ==========================================================================
+       5. GESTIONE DEI TEMPLATE NEL LABORATORIO
+       ========================================================================== */
+    function loadTemplate(key) {
+      if (!templates[key]) return;
+      currentTemplateKey = key;
+
+      // Aggiorna bottoni toolbar
+      document.querySelectorAll('.template-btn').forEach(b => b.classList.remove('active'));
+      const activeBtn = document.getElementById('btn-tpl-' + key);
+      if (activeBtn) activeBtn.classList.add('active');
+
+      const tpl = templates[key];
+      
+      // Carica codice negli editor
+      editorJs.value = tpl.js;
+      editorHtml.value = tpl.html || "";
+
+      // Se il template richiede HTML, abilita split mode automaticamente
+      if (tpl.mode === "split" && !isSplitEditorMode) {
+        setEditorMode(true);
+      } else if (tpl.mode === "direct" && isSplitEditorMode) {
+        // Possiamo lasciarlo in split se l'utente lo ha scelto esplicitamente
+      }
+
+      executeCurrentCode();
+    }
+
+    function resetCurrentTemplate() {
+      loadTemplate(currentTemplateKey);
+      showToast("Esempio ripristinato allo stato iniziale!");
+    }
+
+    function clearEditor() {
+      editorJs.value = "";
+      editorHtml.value = "";
+      directOutput.innerHTML = '<div style="padding: 20px; text-align: center; color: #94a3b8; font-style: italic;">Editor vuoto. Scrivi il tuo codice e clicca ESEGUI!</div>';
+      clearConsole();
+      showToast("Editor svuotato.");
+    }
+
+    function setEditorMode(split) {
+      isSplitEditorMode = split;
+      const btnToggle = document.getElementById('btn-toggle-mode');
+      const label = document.getElementById('editor-mode-label');
+
+      if (isSplitEditorMode) {
+        sectionHtml.style.display = 'flex';
+        labelJs.style.display = 'flex';
+        btnToggle.textContent = '⇄ Solo JS';
+        label.textContent = 'HTML + JavaScript';
+      } else {
+        sectionHtml.style.display = 'none';
+        labelJs.style.display = 'none';
+        btnToggle.textContent = '⇄ HTML + JS';
+        label.textContent = 'Editor JavaScript';
+      }
+    }
+
+    function toggleEditorMode() {
+      setEditorMode(!isSplitEditorMode);
+      executeCurrentCode();
+    }
+
+    /* ==========================================================================
+       6. INTERCETTORE CONSOLE E GESTIONE ERRORI
+       ========================================================================== */
+    function logToConsole(type, ...args) {
+      const now = new Date();
+      const timeStr = now.toTimeString().split(' ')[0];
+
+      const entry = document.createElement('div');
+      entry.className = 'log-entry';
+
+      const formatted = args.map(arg => {
+        if (typeof arg === 'object' && arg !== null) {
+          try { return JSON.stringify(arg); } catch(e) { return String(arg); }
+        }
+        return String(arg);
+      }).join(' ');
+
+      entry.innerHTML = `
+        <span class="log-time">[${timeStr}]</span>
+        <span class="log-text ${type}">${escapeHtml(formatted)}</span>
+      `;
+
+      consoleLogs.appendChild(entry);
+      consoleLogs.scrollTop = consoleLogs.scrollHeight;
+    }
+
+    function clearConsole() {
+      consoleLogs.innerHTML = '';
+    }
+
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    function showError(err) {
+      errorBanner.style.display = 'block';
+      let msg = err.message || String(err);
+      
+      // Traduzione o arricchimento comprensibile per principianti
+      if (msg.includes("is not defined")) {
+        msg = `La variabile o funzione non esiste: ${msg}`;
+      } else if (msg.includes("Unexpected token")) {
+        msg = `Errore di sintassi (carattere o parentesi inattesa): ${msg}`;
+      } else if (msg.includes("is not a function")) {
+        msg = `Stai provando a chiamare qualcosa che non è una funzione: ${msg}`;
+      }
+
+      errorMessage.textContent = msg;
+      logToConsole('error', 'Errore: ' + msg);
+    }
+
+    function hideError() {
+      errorBanner.style.display = 'none';
+      errorMessage.textContent = '';
+    }
+
+    /* ==========================================================================
+       7. MOTORE DI ESECUZIONE DEL CODICE (SICURO E CORRETTO AL 100%)
+       ========================================================================== */
+    function executeCurrentCode() {
+      hideError();
+
+      // Ferma animazioni pendenti da esecuzioni precedenti
+      if (window.mioCicloAnimazione) {
+        cancelAnimationFrame(window.mioCicloAnimazione);
+        window.mioCicloAnimazione = null;
+      }
+
+      const jsCode = editorJs.value;
+      const htmlCode = editorHtml.value;
+
+      // MODALITÀ DOPPIO EDITOR HTML+JS (Usa Iframe isolato come in jsLab)
+      if (isSplitEditorMode && htmlCode.trim().length > 0) {
+        directOutput.style.display = 'none';
+        iframePreview.style.display = 'block';
+
+        const doc = iframePreview.contentDocument || iframePreview.contentWindow.document;
+        doc.open();
+        doc.write(`
+          <!DOCTYPE html>
+          <html>
+          <head>
+            <meta charset="UTF-8">
+            <style>
+              body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; padding: 16px; margin: 0; color: #0f172a; }
+              * { box-sizing: border-box; }
+            </style>
+          </head>
+          <body>
+            ${htmlCode}
+          </body>
+          </html>
+        `);
+        doc.close();
+
+        // Script di cattura errori nell'iframe
+        const scriptCatch = doc.createElement("script");
+        scriptCatch.textContent = `
+          window.onerror = function(msg, url, line) {
+            parent.postMessage({ type: 'iframe_error', message: msg + ' (riga ' + line + ')' }, '*');
+            return true;
+          };
+          // Reindirizza console.log
+          const origLog = console.log;
+          console.log = function(...args) {
+            parent.postMessage({ type: 'iframe_log', args: args }, '*');
+            origLog.apply(console, args);
+          };
+        `;
+        doc.head.appendChild(scriptCatch);
+
+        // Inietta il JS dell'utente
+        const scriptUser = doc.createElement("script");
+        scriptUser.textContent = `
+          try {
+            ${jsCode}
+          } catch(err) {
+            parent.postMessage({ type: 'iframe_error', message: err.message }, '*');
+          }
+        `;
+        doc.body.appendChild(scriptUser);
+
+      } else {
+        // MODALITÀ DIRETTA JS (Scrive su directOutput con console catturata)
+        iframePreview.style.display = 'none';
+        directOutput.style.display = 'block';
+        directOutput.innerHTML = '';
+
+        try {
+          // Creiamo un wrapper che isola console.log e fornisce output
+          const customConsole = {
+            log: (...args) => logToConsole('text', ...args),
+            warn: (...args) => logToConsole('warn', ...args),
+            error: (...args) => logToConsole('error', ...args),
+            info: (...args) => logToConsole('info', ...args)
+          };
+
+          // Funzione isolata con parametri: output, document, localStorage, console
+          const runner = new Function('output', 'document', 'localStorage', 'console', jsCode);
+          runner(directOutput, document, localStorage, customConsole);
+
+        } catch (err) {
+          showError(err);
+        }
+      }
+
+      // Se siamo su mobile, porta automaticamente l'utente sull'anteprima
+      if (window.innerWidth <= 850) {
+        switchMobileTab('preview');
+      }
+    }
+
+    // Ascolta messaggi dall'iframe
+    window.addEventListener('message', (event) => {
+      if (event.data && event.data.type === 'iframe_error') {
+        showError({ message: event.data.message });
+      } else if (event.data && event.data.type === 'iframe_log') {
+        logToConsole('text', ...event.data.args);
+      }
+    });
+
+    /* ==========================================================================
+       8. BARRA SIMBOLI RAPIDI E SUPPORTO TASTIERA
+       ========================================================================= */
+    function insertSymbol(sym) {
+      const activeEl = document.activeElement;
+      const target = (activeEl && (activeEl.id === 'editor-html' || activeEl.id === 'editor-js' || activeEl.classList.contains('challenge-editor'))) 
+        ? activeEl 
+        : editorJs;
+
+      const start = target.selectionStart;
+      const end = target.selectionEnd;
+      const val = target.value;
+
+      target.value = val.substring(0, start) + sym + val.substring(end);
+      target.focus();
+      target.setSelectionRange(start + sym.length, start + sym.length);
+    }
+
+    // Listener per la barra simboli rapidi tramite data-sym
+    document.getElementById('quick-symbols-bar')?.addEventListener('click', (e) => {
+      const btn = e.target.closest('.quick-sym-btn');
+      if (btn) {
+        const sym = btn.getAttribute('data-sym');
+        if (sym) insertSymbol(sym);
+      }
+    });
+
+    // Scorciatoie da tastiera (Ctrl+Enter / Cmd+Enter per Eseguire)
+    window.addEventListener('keydown', (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+        e.preventDefault();
+        executeCurrentCode();
+      }
+    });
+
+    // Supporto per il tasto TAB negli editor (inserisce 2 spazi anziché perdere il focus)
+    [editorJs, editorHtml].forEach(area => {
+      area.addEventListener('keydown', function(e) {
+        if (e.key === 'Tab') {
+          e.preventDefault();
+          const start = this.selectionStart;
+          const end = this.selectionEnd;
+          this.value = this.value.substring(0, start) + "  " + this.value.substring(end);
+          this.selectionStart = this.selectionEnd = start + 2;
+        }
+      });
+    });
+
+    /* ==========================================================================
+       9. NAVIGAZIONE MOBILE (TAB CODICE / RISULTATO)
+       ========================================================================== */
+    function switchMobileTab(view) {
+      const editorPane = document.getElementById('editor-pane');
+      const previewPane = document.getElementById('preview-pane');
+      const btnCode = document.getElementById('btn-mobile-code');
+      const btnPrev = document.getElementById('btn-mobile-preview');
+
+      if (view === 'code') {
+        editorPane.classList.remove('mobile-hidden');
+        previewPane.classList.remove('mobile-visible');
+        btnCode.classList.add('active');
+        btnPrev.classList.remove('active');
+      } else {
+        editorPane.classList.add('mobile-hidden');
+        previewPane.classList.add('mobile-visible');
+        btnCode.classList.remove('active');
+        btnPrev.classList.add('active');
+      }
+    }
+
+    /* ==========================================================================
+       10. SFIDE INTERATTIVE & VERIFICA SOLUZIONI
+       ========================================================================== */
+    function toggleHint(num) {
+      const box = document.getElementById('hint-ch-' + num);
+      box.style.display = (box.style.display === 'block') ? 'none' : 'block';
+    }
+
+    function markChallengeDone(num, message) {
+      const card = document.getElementById('card-challenge-' + num);
+      const badge = document.getElementById('badge-ch-' + num);
+      const feedback = document.getElementById('feedback-ch-' + num);
+
+      card.classList.add('completed');
+      badge.textContent = "Completato! ✓";
+      badge.style.color = "var(--success)";
+      
+      feedback.className = "challenge-feedback success";
+      feedback.innerHTML = `🎉 <strong>Bravissimo!</strong> ${message}`;
+      feedback.style.display = 'block';
+
+      localStorage.setItem('challenge_' + num + '_done', 'true');
+    }
+
+    function markChallengeFailed(num, message) {
+      const feedback = document.getElementById('feedback-ch-' + num);
+      feedback.className = "challenge-feedback error";
+      feedback.innerHTML = `❌ <strong>Non ancora:</strong> ${message}`;
+      feedback.style.display = 'block';
+    }
+
+    // Verifica Esercizio 1 (Somma prezzi)
+    function verifyChallenge1() {
+      const code = document.getElementById('code-ch-1').value;
+      try {
+        const testFunc = new Function(code + '; return totale;');
+        const res = testFunc();
+        if (res === 48) {
+          markChallengeDone(1, "Hai calcolato correttamente la somma totale di 48!");
+        } else {
+          markChallengeFailed(1, `Il totale calcolato è ${res}, mentre la somma corretta è 48 (12 + 5 + 23 + 8).`);
+        }
+      } catch (err) {
+        markChallengeFailed(1, "Errore nel codice: " + err.message);
+      }
+    }
+
+    // Verifica Esercizio 2 (Maggiorenne)
+    function verifyChallenge2() {
+      const code = document.getElementById('code-ch-2').value;
+      try {
+        const testFunc = new Function(code + '; return stato;');
+        const res = testFunc();
+        if (res === "Maggiorenne") {
+          markChallengeDone(2, "La condizione if/else funziona perfettamente!");
+        } else {
+          markChallengeFailed(2, `La variabile 'stato' vale '${res}', doveva valere 'Maggiorenne'.`);
+        }
+      } catch (err) {
+        markChallengeFailed(2, "Errore nel codice: " + err.message);
+      }
+    }
+
+    // Verifica Esercizio 3 (Filtro parole > 4 lettere)
+    function verifyChallenge3() {
+      const code = document.getElementById('code-ch-3').value;
+      try {
+        const testFunc = new Function(code + '; return paroleLunghe;');
+        const res = testFunc();
+        if (Array.isArray(res) && res.length === 2 && res.includes("computer") && res.includes("javascript")) {
+          markChallengeDone(3, "Ottimo! Hai filtrato esattamente ['computer', 'javascript']!");
+        } else {
+          markChallengeFailed(3, "L'array 'paroleLunghe' deve contenere solo le parole con più di 4 lettere (computer e javascript).");
+        }
+      } catch (err) {
+        markChallengeFailed(3, "Errore nel codice: " + err.message);
+      }
+    }
+
+    // Verifica Esercizio 4 (LocalStorage JSON)
+    function verifyChallenge4() {
+      const code = document.getElementById('code-ch-4').value;
+      try {
+        const testFunc = new Function('localStorage', code);
+        testFunc(localStorage);
+
+        const salvato = localStorage.getItem('profilo_utente');
+        if (!salvato) {
+          markChallengeFailed(4, "Non hai salvato nulla sotto la chiave 'profilo_utente'.");
+          return;
+        }
+
+        const obj = JSON.parse(salvato);
+        if (obj && obj.nome === "Silvia" && obj.livello === 1) {
+          markChallengeDone(4, "Perfetto! Hai salvato l'oggetto serializzato con JSON.stringify!");
+        } else {
+          markChallengeFailed(4, "I dati salvati non corrispondono all'oggetto richiesto.");
+        }
+      } catch (err) {
+        markChallengeFailed(4, "Errore nel codice: " + err.message);
+      }
+    }
+
+    // Carica stato sfide salvato
+    function loadSavedChallenges() {
+      for (let i = 1; i <= 4; i++) {
+        if (localStorage.getItem('challenge_' + i + '_done') === 'true') {
+          const card = document.getElementById('card-challenge-' + i);
+          const badge = document.getElementById('badge-ch-' + i);
+          if (card && badge) {
+            card.classList.add('completed');
+            badge.textContent = "Completato! ✓";
+            badge.style.color = "var(--success)";
+          }
+        }
+      }
+    }
+
+    /* ==========================================================================
+       11. DOWNLOAD STANDALONE HTML FILE
+       ========================================================================== */
+    function downloadSingleFileHtml() {
+      // Clona il documento attuale
+      const htmlContent = "<!DOCTYPE html>\n" + document.documentElement.outerHTML;
+      const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'Laboratorio_JavaScript.html';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+
+      showToast("Download avviato! File HTML standalone pronto all'uso.");
+    }
+
+    function showToast(msg) {
+      const existing = document.querySelector('.lab-toast');
+      if (existing) existing.remove();
+
+      const toast = document.createElement('div');
+      toast.className = 'lab-toast';
+      toast.textContent = msg;
+      document.body.appendChild(toast);
+      setTimeout(() => toast.remove(), 2600);
+    }
+
+    /* ==========================================================================
+       12. AVVIO APPLICAZIONE
+       ========================================================================== */
+    window.addEventListener('DOMContentLoaded', () => {
+      loadSavedChallenges();
+      loadTemplate('saluto');
+    });
+  </script>
+
+
+</body></html>
