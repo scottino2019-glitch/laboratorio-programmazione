@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="it"><head>
+<html lang="it" style="--editor-font-size: 16px;"><head>
   <script type="module" src="/@vite/client"></script>
 
   <meta charset="UTF-8">
@@ -503,6 +503,33 @@
       position: relative;
     }
 
+    /* MODALITÀ DI LAYOUT: DIVISO, SOLO CODICE A SCHERMO INTERO, SOLO ANTEPRIMA */
+    .lab-workspace.layout-split .editor-pane {
+      width: 50%;
+      display: flex !important;
+    }
+    .lab-workspace.layout-split .preview-pane {
+      width: 50%;
+      display: flex !important;
+    }
+
+    .lab-workspace.layout-code-only .editor-pane {
+      width: 100% !important;
+      border-right: none;
+      display: flex !important;
+    }
+    .lab-workspace.layout-code-only .preview-pane {
+      display: none !important;
+    }
+
+    .lab-workspace.layout-preview-only .editor-pane {
+      display: none !important;
+    }
+    .lab-workspace.layout-preview-only .preview-pane {
+      width: 100% !important;
+      display: flex !important;
+    }
+
     /* PANNELLO SINISTRO: EDITOR */
     .editor-pane {
       width: 50%;
@@ -511,23 +538,25 @@
       border-right: 1px solid var(--border-color);
       background: var(--bg-editor);
       position: relative;
+      min-width: 0;
     }
 
     .pane-header {
       background: var(--bg-header);
       border-bottom: 1px solid var(--border-color);
-      padding: 8px 12px;
+      padding: 6px 10px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 8px;
+      gap: 6px;
       flex-shrink: 0;
+      flex-wrap: wrap;
     }
 
     .pane-title {
       font-size: 12px;
       font-weight: 800;
-      letter-spacing: 0.5px;
+      letter-spacing: 0.3px;
       text-transform: uppercase;
       color: var(--text-muted);
       display: flex;
@@ -538,24 +567,37 @@
     .pane-controls {
       display: flex;
       align-items: center;
-      gap: 6px;
+      gap: 5px;
+      flex-wrap: wrap;
     }
 
     .btn-action {
       background: var(--bg-card);
       border: 1px solid var(--border-color);
       color: var(--text-main);
-      padding: 5px 10px;
+      padding: 4px 8px;
       border-radius: 6px;
       font-size: 11px;
       font-weight: 700;
       cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
       transition: all 0.15s;
     }
 
     .btn-action:hover {
       border-color: var(--accent);
       color: var(--accent);
+    }
+
+    .btn-action.active-toggle {
+      background: var(--accent);
+      color: #0f172a;
+      border-color: var(--accent);
+    }
+    [data-theme="light"] .btn-action.active-toggle {
+      color: #ffffff;
     }
 
     .btn-run-code {
@@ -583,6 +625,16 @@
       transform: scale(0.97);
     }
 
+    /* SUB-BARRA PER MODALITA DOPPIO EDITOR (HTML + JS) */
+    .dual-mode-tabs {
+      display: none;
+      background: var(--bg-card);
+      border-bottom: 1px solid var(--border-color);
+      padding: 4px 8px;
+      gap: 6px;
+      flex-shrink: 0;
+    }
+
     /* CONTENITORE DEGLI EDITOR (SINGOLO O DOPPIO HTML+JS) */
     .editors-wrapper {
       flex: 1;
@@ -590,6 +642,7 @@
       flex-direction: column;
       overflow: hidden;
       position: relative;
+      min-height: 0;
     }
 
     .editor-section {
@@ -598,6 +651,8 @@
       flex-direction: column;
       overflow: hidden;
       border-bottom: 1px solid var(--border-color);
+      min-height: 0;
+      position: relative;
     }
 
     .editor-section:last-child {
@@ -605,7 +660,7 @@
     }
 
     .section-label {
-      background: rgba(0, 0, 0, 0.2);
+      background: rgba(0, 0, 0, 0.25);
       padding: 4px 10px;
       font-size: 11px;
       font-family: var(--font-mono);
@@ -614,27 +669,66 @@
       border-bottom: 1px solid var(--border-color);
       display: flex;
       justify-content: space-between;
+      flex-shrink: 0;
     }
     [data-theme="light"] .section-label {
       background: #e2e8f0;
       color: #0369a1;
     }
 
+    /* TEXTAREA EDITOR CON A CAPO AUTOMATICO E PADDING GENEROSO */
     textarea.code-editor {
       flex: 1;
       width: 100%;
+      height: 100%;
       background: var(--bg-editor);
       color: var(--text-main);
       border: none;
       outline: none;
-      padding: 14px;
+      padding: 16px 18px 120px 18px; /* Ampio spazio sotto per digitare comodamente */
       font-family: var(--font-mono);
-      font-size: 15px;
-      line-height: 1.6;
+      font-size: var(--editor-font-size, 16px);
+      line-height: 1.65;
       resize: none;
       caret-color: var(--accent);
-      white-space: pre;
+      white-space: pre-wrap; /* Nessuna riga tagliata all'orizzonte! */
+      word-break: break-word;
+      overflow-wrap: break-word;
+      overflow-y: auto;
+      overflow-x: auto;
       tab-size: 2;
+      box-sizing: border-box;
+    }
+
+    /* Modalità senza a capo (scroll orizzontale facoltativo) */
+    textarea.code-editor.no-wrap {
+      white-space: pre !important;
+      word-break: normal !important;
+      overflow-wrap: normal !important;
+    }
+
+    /* BARRA DI STATO DELL'EDITOR (RIGA, COLONNA, CONTEGGI) */
+    .editor-status-bar {
+      height: 26px;
+      background: var(--bg-header);
+      border-top: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 12px;
+      font-size: 11px;
+      font-family: var(--font-mono);
+      color: var(--text-muted);
+      user-select: none;
+      flex-shrink: 0;
+      overflow-x: auto;
+      white-space: nowrap;
+    }
+
+    .status-left, .status-right {
+      display: flex;
+      align-items: center;
+      gap: 12px;
     }
 
     /* PANNELLO DESTRO: RISULTATO & CONSOLE */
@@ -645,6 +739,7 @@
       background: var(--bg-preview);
       color: var(--text-preview);
       overflow: hidden;
+      min-width: 0;
     }
 
     .preview-body {
@@ -709,6 +804,15 @@
       color: #cbd5e1;
       font-family: var(--font-mono);
       font-size: 12px;
+      transition: height 0.2s ease;
+    }
+
+    .console-drawer.collapsed {
+      height: 32px !important;
+    }
+
+    .console-drawer.collapsed .console-logs {
+      display: none !important;
     }
 
     .console-header {
@@ -1092,10 +1196,10 @@
 
     <!-- Navigazione Sezioni -->
     <div class="nav-tabs">
-      <button class="nav-btn active" id="tab-nav-guide" onclick="switchNav('guide')">
+      <button class="nav-btn" id="tab-nav-guide" onclick="switchNav('guide')">
         📖 Guida Base
       </button>
-      <button class="nav-btn" id="tab-nav-lab" onclick="switchNav('lab')">
+      <button class="nav-btn active" id="tab-nav-lab" onclick="switchNav('lab')">
         ⚡ Laboratorio
       </button>
       <button class="nav-btn" id="tab-nav-challenges" onclick="switchNav('challenges')">
@@ -1122,7 +1226,7 @@
     <!-- ======================================================================
          SEZIONE 1: GUIDA PASSO DOPO PASSO PER PRINCIPIANTI
          ====================================================================== -->
-    <section id="view-guide" class="page-view active">
+    <section id="view-guide" class="page-view">
       <div class="guide-container">
         
         <div class="guide-hero">
@@ -1349,7 +1453,7 @@ const recuperata = JSON.parse(localStorage.getItem("lista") || "[]");</div>
     <!-- ======================================================================
          SEZIONE 2: LABORATORIO INTERATTIVO (PLAYGROUND COMPLETO)
          ====================================================================== -->
-    <section id="view-lab" class="page-view">
+    <section id="view-lab" class="page-view active">
       <div class="lab-container">
         
         <!-- TOOLBAR DEI TEMPLATE -->
@@ -1409,7 +1513,7 @@ const recuperata = JSON.parse(localStorage.getItem("lista") || "[]");</div>
         </div>
 
         <!-- WORKSPACE: CODICE A SINISTRA / ANTEPRIMA A DESTRA -->
-        <div class="lab-workspace">
+        <div class="lab-workspace layout-split" id="lab-workspace">
           
           <!-- PANNELLO EDITOR -->
           <div class="editor-pane mobile-hidden" id="editor-pane">
@@ -1419,19 +1523,46 @@ const recuperata = JSON.parse(localStorage.getItem("lista") || "[]");</div>
                 <span id="editor-mode-label">Editor JavaScript</span>
               </div>
               <div class="pane-controls">
-                <button class="btn-action" onclick="toggleEditorMode()" id="btn-toggle-mode" title="Passa tra modalità JS rapida e modalità completa HTML+JS">
+                <!-- Bottone Allarga Schermo Intero / Vista Divisa -->
+                <button type="button" class="btn-action" id="btn-toggle-layout" onclick="toggleLayoutMode()" title="Allarga l'editor a tutta larghezza (100%) per vedere tutto il codice senza limitazioni">
+                  ⛶ Allarga Editor
+                </button>
+
+                <!-- Bottone A Capo Automatico (Wrap) -->
+                <button type="button" class="btn-action active-toggle" id="btn-toggle-wrap" onclick="toggleWordWrap()" title="Attiva/Disattiva a capo automatico">
+                  ↩ Wrap: ON
+                </button>
+
+                <!-- Ridimensionamento Caratteri A- / A+ -->
+                <div style="display:inline-flex; align-items:center; background:var(--bg-card); border:1px solid var(--border-color); border-radius:6px; padding:1px 3px;">
+                  <button type="button" class="btn-action" style="padding:2px 6px; border:none; background:transparent;" onclick="changeFontSize(-1)" title="Riduci dimensione testo">A-</button>
+                  <span id="font-size-display" style="font-size:11px; font-weight:800; min-width:26px; text-align:center; color:var(--text-muted);">16px</span>
+                  <button type="button" class="btn-action" style="padding:2px 6px; border:none; background:transparent;" onclick="changeFontSize(1)" title="Ingrandisci dimensione testo">A+</button>
+                </div>
+
+                <!-- Modalità HTML+JS -->
+                <button type="button" class="btn-action" onclick="toggleEditorMode()" id="btn-toggle-mode" title="Passa tra modalità JS rapida e modalità completa HTML+JS">
                   ⇄ HTML + JS
                 </button>
-                <button class="btn-action" onclick="resetCurrentTemplate()" title="Ripristina il codice originale dell'esempio">
+
+                <button type="button" class="btn-action" onclick="resetCurrentTemplate()" title="Ripristina il codice originale dell'esempio">
                   🔄 Reset
                 </button>
-                <button class="btn-action" onclick="clearEditor()" title="Svuota l'editor per scrivere codice libero">
+                <button type="button" class="btn-action" onclick="clearEditor()" title="Svuota l'editor per scrivere codice libero">
                   🧹 Svuota
                 </button>
-                <button class="btn-run-code" onclick="executeCurrentCode()">
+                <button type="button" class="btn-run-code" onclick="executeCurrentCode()">
                   ▶ ESEGUI
                 </button>
               </div>
+            </div>
+
+            <!-- SUB-BARRA SELETTORE PER MODALITÀ HTML + JS -->
+            <div class="dual-mode-tabs" id="dual-mode-tabs">
+              <span style="font-size:11px; font-weight:800; color:var(--text-muted); padding:4px 4px;">Vista Editor:</span>
+              <button type="button" class="btn-action active-toggle" id="btn-dual-js" onclick="setDualActiveTab('js')">⚡ Solo JavaScript (Piena Altezza)</button>
+              <button type="button" class="btn-action" id="btn-dual-html" onclick="setDualActiveTab('html')">🌐 Solo HTML/CSS (Piena Altezza)</button>
+              <button type="button" class="btn-action" id="btn-dual-both" onclick="setDualActiveTab('both')">⬍ Entrambi</button>
             </div>
 
             <!-- CONTENITORE DEGLI EDITOR -->
@@ -1454,6 +1585,20 @@ const recuperata = JSON.parse(localStorage.getItem("lista") || "[]");</div>
                 <textarea id="editor-js" class="code-editor" spellcheck="false" placeholder="// Scrivi qui il tuo codice JavaScript..."></textarea>
               </div>
             </div>
+
+            <!-- BARRA DI STATO DELL'EDITOR -->
+            <div class="editor-status-bar" id="editor-status-bar">
+              <div class="status-left">
+                <span id="status-cursor">📍 Riga: 17, Col: 60</span>
+                <span id="status-lines">📄 17 righe</span>
+                <span id="status-chars">🔤 750 car.</span>
+              </div>
+              <div class="status-right">
+                <span id="status-wrap-badge">A capo: Attivo</span>
+                <span>JavaScript</span>
+              </div>
+            </div>
+
           </div>
 
           <!-- PANNELLO ANTEPRIMA & CONSOLE -->
@@ -1464,6 +1609,9 @@ const recuperata = JSON.parse(localStorage.getItem("lista") || "[]");</div>
                 <span>Risultato in Tempo Reale</span>
               </div>
               <div class="pane-controls">
+                <button type="button" class="btn-action" id="btn-back-to-editor" style="display:none;" onclick="setLayoutMode('code-only')">
+                  ⬅ Modifica Codice
+                </button>
                 <span id="preview-status-badge" style="font-size:11px; font-weight:700; color:#059669; background:#d1fae5; padding:2px 8px; border-radius:6px;">
                   ● Attivo
                 </span>
@@ -1490,7 +1638,7 @@ const recuperata = JSON.parse(localStorage.getItem("lista") || "[]");</div>
       Questo contenuto è stato creato dinamicamente con JavaScript.
     </p>
     <div style="display: inline-block; padding: 8px 16px; background: #e0f2fe; color: #0369a1; border-radius: 20px; font-weight: bold; font-size: 14px;">
-      ⏰ Orario attuale: 18:26:53
+      ⏰ Orario attuale: 18:46:54
     </div>
   </div>
 </div>
@@ -1502,10 +1650,17 @@ const recuperata = JSON.parse(localStorage.getItem("lista") || "[]");</div>
             <!-- DRAWER CONSOLE DI DEBUG -->
             <div class="console-drawer" id="console-drawer">
               <div class="console-header">
-                <span>Console di Debug (console.log)</span>
-                <button class="btn-action" style="padding:2px 6px; font-size:10px;" onclick="clearConsole()">
-                  Pulisci
-                </button>
+                <div style="display:flex; align-items:center; gap:6px;">
+                  <span>Console di Debug (console.log)</span>
+                </div>
+                <div style="display:flex; align-items:center; gap:6px;">
+                  <button type="button" class="btn-action" style="padding:2px 6px; font-size:10px;" onclick="clearConsole()">
+                    Pulisci
+                  </button>
+                  <button type="button" class="btn-action" id="btn-toggle-console" style="padding:2px 6px; font-size:10px;" onclick="toggleConsoleDrawer()">
+                    ▼ Riduci
+                  </button>
+                </div>
               </div>
               <div class="console-logs" id="console-logs">
                 <div class="log-entry">
@@ -1513,7 +1668,13 @@ const recuperata = JSON.parse(localStorage.getItem("lista") || "[]");</div>
                   <span class="log-text info">Console pronta per i tuoi output. Usa console.log("...") per stampare qui i valori.</span>
                 </div>
               <div class="log-entry">
-        <span class="log-time">[18:26:53]</span>
+        <span class="log-time">[18:46:20]</span>
+        <span class="log-text text">Saluto generato con successo per: Silvia</span>
+      </div><div class="log-entry">
+        <span class="log-time">[18:46:31]</span>
+        <span class="log-text text">Saluto generato con successo per: Silvia</span>
+      </div><div class="log-entry">
+        <span class="log-time">[18:46:54]</span>
         <span class="log-text text">Saluto generato con successo per: Silvia</span>
       </div></div>
             </div>
@@ -2500,11 +2661,19 @@ console.log("Animazione avviata a 60 FPS.");`
     let currentTemplateKey = "saluto";
     let isSplitEditorMode = false; // false = solo JS rapido, true = HTML/CSS + JS
     let currentTheme = localStorage.getItem("jslab_theme") || "dark";
+    
+    // Nuove preferenze editor per massima visibilità e comodità di scrittura
+    let currentLayoutMode = 'split'; // 'split' (50/50) | 'code-only' (100% editor) | 'preview-only'
+    let isWordWrap = true;
+    let editorFontSize = parseInt(localStorage.getItem("jslab_editor_font") || "16", 10);
+    let dualActiveTab = 'both'; // 'js' | 'html' | 'both'
+    let isConsoleCollapsed = false;
 
     // Elementi DOM Principali
     const editorJs = document.getElementById('editor-js');
     const editorHtml = document.getElementById('editor-html');
     const sectionHtml = document.getElementById('section-html-editor');
+    const sectionJs = document.getElementById('section-js-editor');
     const labelJs = document.getElementById('label-js-section');
     const directOutput = document.getElementById('direct-output');
     const iframePreview = document.getElementById('iframe-preview');
@@ -2537,7 +2706,146 @@ console.log("Animazione avviata a 60 FPS.");`
     applyTheme(currentTheme);
 
     /* ==========================================================================
-       4. NAVIGAZIONE PRINCIPALE (GUIDA, LABORATORIO, SFIDE)
+       4. GESTIONE LAYOUT EDITOR (SCHERMO INTERO 100% / DIVISO 50-50)
+       ========================================================================== */
+    function setLayoutMode(mode) {
+      currentLayoutMode = mode;
+      const workspace = document.getElementById('lab-workspace');
+      const btnToggleLayout = document.getElementById('btn-toggle-layout');
+      const btnBack = document.getElementById('btn-back-to-editor');
+
+      workspace.classList.remove('layout-split', 'layout-code-only', 'layout-preview-only');
+      workspace.classList.add('layout-' + mode);
+
+      if (mode === 'code-only') {
+        btnToggleLayout.textContent = '◫ Vista Divisa (50/50)';
+        btnToggleLayout.classList.add('active-toggle');
+        if (btnBack) btnBack.style.display = 'none';
+        showToast("Editor allargato al 100%: ora puoi vedere e scrivere tutto il codice comodamente!");
+      } else {
+        btnToggleLayout.textContent = '⛶ Allarga Editor';
+        btnToggleLayout.classList.remove('active-toggle');
+        if (btnBack) btnBack.style.display = 'none';
+      }
+    }
+
+    function toggleLayoutMode() {
+      if (currentLayoutMode === 'split') {
+        setLayoutMode('code-only');
+      } else {
+        setLayoutMode('split');
+      }
+    }
+
+    // A Capo Automatico (Word Wrap)
+    function toggleWordWrap() {
+      isWordWrap = !isWordWrap;
+      const btnWrap = document.getElementById('btn-toggle-wrap');
+      const badgeWrap = document.getElementById('status-wrap-badge');
+
+      [editorJs, editorHtml].forEach(ed => {
+        if (isWordWrap) {
+          ed.classList.remove('no-wrap');
+        } else {
+          ed.classList.add('no-wrap');
+        }
+      });
+
+      if (isWordWrap) {
+        btnWrap.textContent = '↩ Wrap: ON';
+        btnWrap.classList.add('active-toggle');
+        if (badgeWrap) badgeWrap.textContent = 'A capo: Attivo';
+        showToast("A capo automatico attivo: le righe lunghe non vengono tagliate.");
+      } else {
+        btnWrap.textContent = '➡ Wrap: OFF';
+        btnWrap.classList.remove('active-toggle');
+        if (badgeWrap) badgeWrap.textContent = 'A capo: Disattivato';
+        showToast("A capo disattivato: scroll orizzontale.");
+      }
+    }
+
+    // Ingrandimento e Riduzione Carattere (A- / A+)
+    function changeFontSize(delta) {
+      editorFontSize = Math.max(12, Math.min(26, editorFontSize + delta));
+      document.documentElement.style.setProperty('--editor-font-size', editorFontSize + 'px');
+      const display = document.getElementById('font-size-display');
+      if (display) display.textContent = editorFontSize + 'px';
+      localStorage.setItem("jslab_editor_font", editorFontSize);
+    }
+
+    // Inizializza dimensione font memorizzata
+    changeFontSize(0);
+
+    // Barra di stato: tracciamento riga, colonna e caratteri
+    function updateCursorAndStats(targetEl) {
+      const el = targetEl || (document.activeElement === editorHtml ? editorHtml : editorJs);
+      if (!el) return;
+
+      const text = el.value || '';
+      const selStart = el.selectionStart || 0;
+
+      const textBefore = text.substring(0, selStart);
+      const lines = textBefore.split('\n');
+      const currentLine = lines.length;
+      const currentCol = lines[lines.length - 1].length + 1;
+
+      const totalLines = text.split('\n').length;
+      const totalChars = text.length;
+
+      const statusCursor = document.getElementById('status-cursor');
+      const statusLines = document.getElementById('status-lines');
+      const statusChars = document.getElementById('status-chars');
+
+      if (statusCursor) statusCursor.textContent = `📍 Riga: ${currentLine}, Col: ${currentCol}`;
+      if (statusLines) statusLines.textContent = `📄 ${totalLines} righe`;
+      if (statusChars) statusChars.textContent = `🔤 ${totalChars} car.`;
+    }
+
+    // Sub-tab in modalità HTML + JS per sfruttare il 100% dell'altezza disponibile
+    function setDualActiveTab(tab) {
+      dualActiveTab = tab;
+      const btnJs = document.getElementById('btn-dual-js');
+      const btnHtml = document.getElementById('btn-dual-html');
+      const btnBoth = document.getElementById('btn-dual-both');
+      const secHtml = document.getElementById('section-html-editor');
+      const secJs = document.getElementById('section-js-editor');
+
+      [btnJs, btnHtml, btnBoth].forEach(b => b?.classList.remove('active-toggle'));
+
+      if (tab === 'js') {
+        secJs.style.display = 'flex';
+        secHtml.style.display = 'none';
+        btnJs?.classList.add('active-toggle');
+        updateCursorAndStats(editorJs);
+      } else if (tab === 'html') {
+        secJs.style.display = 'none';
+        secHtml.style.display = 'flex';
+        btnHtml?.classList.add('active-toggle');
+        updateCursorAndStats(editorHtml);
+      } else {
+        secJs.style.display = 'flex';
+        secHtml.style.display = 'flex';
+        btnBoth?.classList.add('active-toggle');
+        updateCursorAndStats(editorJs);
+      }
+    }
+
+    // Riduci o Espandi la console di debug
+    function toggleConsoleDrawer() {
+      isConsoleCollapsed = !isConsoleCollapsed;
+      const drawer = document.getElementById('console-drawer');
+      const btn = document.getElementById('btn-toggle-console');
+      if (isConsoleCollapsed) {
+        drawer.classList.add('collapsed');
+        btn.textContent = '▲ Espandi';
+      } else {
+        drawer.classList.remove('collapsed');
+        btn.textContent = '▼ Riduci';
+      }
+    }
+
+    /* ==========================================================================
+       5. NAVIGAZIONE PRINCIPALE (GUIDA, LABORATORIO, SFIDE)
        ========================================================================== */
     function switchNav(target) {
       document.querySelectorAll('.page-view').forEach(p => p.classList.remove('active'));
@@ -2547,7 +2855,6 @@ console.log("Animazione avviata a 60 FPS.");`
       document.getElementById('tab-nav-' + target).classList.add('active');
 
       if (target === 'lab') {
-        // Riassegna focus o forza re-render
         executeCurrentCode();
       }
       window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -2559,30 +2866,26 @@ console.log("Animazione avviata a 60 FPS.");`
     }
 
     /* ==========================================================================
-       5. GESTIONE DEI TEMPLATE NEL LABORATORIO
+       6. GESTIONE DEI TEMPLATE NEL LABORATORIO
        ========================================================================== */
     function loadTemplate(key) {
       if (!templates[key]) return;
       currentTemplateKey = key;
 
-      // Aggiorna bottoni toolbar
       document.querySelectorAll('.template-btn').forEach(b => b.classList.remove('active'));
       const activeBtn = document.getElementById('btn-tpl-' + key);
       if (activeBtn) activeBtn.classList.add('active');
 
       const tpl = templates[key];
       
-      // Carica codice negli editor
       editorJs.value = tpl.js;
       editorHtml.value = tpl.html || "";
 
-      // Se il template richiede HTML, abilita split mode automaticamente
       if (tpl.mode === "split" && !isSplitEditorMode) {
         setEditorMode(true);
-      } else if (tpl.mode === "direct" && isSplitEditorMode) {
-        // Possiamo lasciarlo in split se l'utente lo ha scelto esplicitamente
       }
 
+      updateCursorAndStats(editorJs);
       executeCurrentCode();
     }
 
@@ -2596,6 +2899,7 @@ console.log("Animazione avviata a 60 FPS.");`
       editorHtml.value = "";
       directOutput.innerHTML = '<div style="padding: 20px; text-align: center; color: #94a3b8; font-style: italic;">Editor vuoto. Scrivi il tuo codice e clicca ESEGUI!</div>';
       clearConsole();
+      updateCursorAndStats(editorJs);
       showToast("Editor svuotato.");
     }
 
@@ -2603,14 +2907,18 @@ console.log("Animazione avviata a 60 FPS.");`
       isSplitEditorMode = split;
       const btnToggle = document.getElementById('btn-toggle-mode');
       const label = document.getElementById('editor-mode-label');
+      const dualTabs = document.getElementById('dual-mode-tabs');
 
       if (isSplitEditorMode) {
-        sectionHtml.style.display = 'flex';
+        dualTabs.style.display = 'flex';
         labelJs.style.display = 'flex';
         btnToggle.textContent = '⇄ Solo JS';
         label.textContent = 'HTML + JavaScript';
+        setDualActiveTab(dualActiveTab);
       } else {
+        dualTabs.style.display = 'none';
         sectionHtml.style.display = 'none';
+        sectionJs.style.display = 'flex';
         labelJs.style.display = 'none';
         btnToggle.textContent = '⇄ HTML + JS';
         label.textContent = 'Editor JavaScript';
@@ -2829,8 +3137,23 @@ console.log("Animazione avviata a 60 FPS.");`
           const end = this.selectionEnd;
           this.value = this.value.substring(0, start) + "  " + this.value.substring(end);
           this.selectionStart = this.selectionEnd = start + 2;
+          updateCursorAndStats(this);
         }
       });
+
+      // Aggiorna la barra di stato alla digitazione e al movimento del cursore
+      area.addEventListener('input', () => updateCursorAndStats(area));
+      area.addEventListener('keyup', () => updateCursorAndStats(area));
+      area.addEventListener('click', () => updateCursorAndStats(area));
+      area.addEventListener('focus', () => updateCursorAndStats(area));
+    });
+
+    // Scorciatoia Alt+Z per attivare/disattivare Word Wrap velocemente (come su VS Code)
+    window.addEventListener('keydown', (e) => {
+      if (e.altKey && (e.key === 'z' || e.key === 'Z')) {
+        e.preventDefault();
+        toggleWordWrap();
+      }
     });
 
     /* ==========================================================================
